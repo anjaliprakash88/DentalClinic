@@ -1,0 +1,433 @@
+{% load static %}
+<html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Dr. Arif's Dental Clinic | Superadmin Dashboard</title>
+      <link rel="icon" type="image/x-icon" sizes="1008x1008" href="{% static 'images/favicon.png' %}">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+      <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      />
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #46ACD1;
+            --secondary: #1C4453;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        html, body {
+              height: 100%;
+              overflow-x: hidden;
+              margin: 0;
+              padding: 0;
+        }
+
+      body {
+          min-height: 100vh;
+          background-image: url("{% static 'images/Background-Img.jpg' %}");
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          background-position: center center;
+          background-size: cover;
+          font-family: 'Poppins', sans-serif !important;
+
+
+      }
+
+      .top-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1000px;
+            height: auto;
+            min-height: 70px;
+            padding: 10px 20px;
+            background-color: rgba(70, 172, 209, 0.8); /* Sky blue with opacity */
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+      .sidebar-logo {
+            display: flex;
+            align-items: center;
+      }
+
+      .sidebar-logo img {
+            width: 80px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo img:hover {
+            transform: scale(1.1);
+        }
+
+      .dashboard-title {
+            flex: 1;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            margin: 0 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+
+        .sidebar-icon i {
+            font-size: 24px;
+            margin: 0 10px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-icon i:hover {
+            transform: scale(1.2);
+            color: var(--secondary);
+        }
+        .container {
+        flex: 1;
+        flex-direction: column;
+        margin-top:85px;
+        align-items: center;
+    padding: 3rem 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns */
+            gap: 1.5rem;
+            width: 90%;
+            max-width: 800px;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .dashboard-item {
+            background: white;
+            border-radius: 16px;
+            padding: 1rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            width: 80%;
+            height: 140px;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+        }
+
+        .dashboard-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 16px 16px 0 0;
+            opacity: 0.8;
+            transition: height 0.3s ease;
+        }
+
+        .dashboard-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(70, 172, 209, 0.3);
+        }
+
+        .dashboard-item:hover::before {
+            height: 8px;
+        }
+
+        .dashboard-item:hover::after {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .dashboard-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, transparent, rgba(70, 172, 209, 0.2));
+            border-radius: 0 0 16px 0;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .icon-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, rgba(70, 172, 209, 0.1), rgba(28, 68, 83, 0.1));
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .dashboard-item:hover .icon-wrapper {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, rgba(70, 172, 209, 0.2), rgba(28, 68, 83, 0.2));
+        }
+
+        .dashboard-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .dashboard-item p {
+            color: var(--secondary);
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-top: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .dashboard-item:hover p {
+            color: var(--primary);
+        }
+
+        /* Media Queries for Better Responsiveness */
+        @media (max-width: 992px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .dashboard-item {
+                height: 130px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-box {
+                padding: 10px;
+            }
+
+            .dashboard-title {
+                font-size: 22px;
+            }
+
+            .sidebar-logo img {
+                width: 60px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .top-box {
+                flex-direction: column;
+                height: auto;
+                padding: 15px 10px;
+            }
+
+            .sidebar-logo {
+                margin-bottom: 10px;
+            }
+
+            .dashboard-title {
+                margin: 10px 0;
+                font-size: 20px;
+            }
+
+            .sidebar-icon {
+                margin-top: 10px;
+            }
+
+            .container {
+                padding-top: 170px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .dashboard-item {
+                height: 120px;
+                padding: 1rem 0.6rem;
+            }
+
+            .icon-wrapper {
+                width: 50px;
+                height: 50px;
+            }
+
+            .dashboard-item img {
+                width: 35px;
+                height: 35px;
+            }
+
+            .dashboard-item p {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-item {
+                width: 100%;
+                height: 110px;
+            }
+        }
+
+        /* Animation for page load */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-item {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .dashboard-item:nth-child(1) { animation-delay: 0.1s; }
+        .dashboard-item:nth-child(2) { animation-delay: 0.2s; }
+        .dashboard-item:nth-child(3) { animation-delay: 0.3s; }
+        .dashboard-item:nth-child(4) { animation-delay: 0.4s; }
+        .dashboard-item:nth-child(5) { animation-delay: 0.5s; }
+        .dashboard-item:nth-child(6) { animation-delay: 0.6s; }
+        .dashboard-item:nth-child(7) { animation-delay: 0.7s; }
+        .dashboard-item:nth-child(8) { animation-delay: 0.8s; }
+        .dashboard-item:nth-child(9) { animation-delay: 0.9s; }
+        .dashboard-item:nth-child(10) { animation-delay: 1s; }
+        .dashboard-item:nth-child(11) { animation-delay: 1.1s; }
+        .dashboard-item:nth-child(12) { animation-delay: 1.2s; }
+    </style>
+  </head>
+  <body>
+    <!-- Top center box -->
+    <div class="top-box">
+      <div class="sidebar-logo">
+        <img
+          src="{% static 'images/logo (2).png' %}"
+          alt="Dr. Arif's Dental Clinic Logo"
+        />
+      </div>
+      <h1 class="dashboard-title">Superadmin Dashboard</h1>
+      <div class="sidebar-icon">
+        <i class="fa-solid fa-message" style="color: #ffffff;"></i>
+        <i class="fa-solid fa-right-from-bracket" style="color: #ffffff;"></i>
+      </div>
+    </div>
+
+    <div class="container py-5">
+      <div class="dashboard-grid">
+        <a href="profile.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/profile.png' %}" alt="profile" />
+          </div>
+          <p>profile</p>
+        </a>
+        <a href="branches.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/branch.png' %}" alt="Branches" />
+          </div>
+          <p>Branches</p>
+        </a>
+
+        <a href="doctors.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/doctor.png' %}" alt="Doctor" />
+          </div>
+          <p>Doctors</p>
+        </a>
+
+        <a href="reception.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/img13.png' %}" alt="Reception" />
+          </div>
+          <p>Reception</p>
+        </a>
+
+        <a href="pharmacy.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/pharmacy.png' %}" alt="Pharmacist" />
+          </div>
+          <p>Pharmacy</p>
+        </a>
+
+        <a href="suppliers.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/img15.png' %}" alt="Supplier" />
+          </div>
+          <p>Suppliers</p>
+        </a>
+
+        <a href="hospital-inventory.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/img 16.png' %}" alt="Hospital Inventory" />
+          </div>
+          <p>Hospital Inventory</p>
+        </a>
+
+        <a href="medicine-inventory.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/medicine.png' %}" alt="Medicine Inventory" />
+          </div>
+          <p>Medicine Inventory</p>
+        </a>
+
+        <a href="prescriptions.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/img20.png' %}" alt="Prescribed Inventory" />
+          </div>
+          <p>Prescriptions</p>
+        </a>
+
+        <a href="reports.html" class="dashboard-item">
+          <div class="icon-wrapper">
+            <img src="{% static 'images/img17.png' %}" alt="Reports" />
+          </div>
+          <p>Reports</p>
+        </a>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

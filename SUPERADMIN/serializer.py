@@ -3,6 +3,18 @@ from django.contrib.auth import authenticate
 from .models import (User,
                      SuperAdmin)
 
+
+# --------------SUPERADMIN DASHBOARD SERIALIZER--------------
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+
+class SuperAdminUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SuperAdmin
+        fields = ['phone_number', 'address', 'designation']
+
 # ---------------SUPER ADMIN REGISTER SERIALIZER---------------
 """ ONLY FOR SUPER-ADMIN """
 class UserSerializer(serializers.ModelSerializer):
