@@ -16,6 +16,23 @@ from .serializer import (SuperAdminLoginSerializer,
 from rest_framework.response import Response
 from .models import (SuperAdmin)
 
+# ---------------DOCTOR CREATION--------------
+class DoctorCreate(APIView):
+    renderer_classes = [JSONRenderer]
+
+    def get(self, request):
+        doctor_data = Doctor.objects.all()
+        serializer = DoctorCreateSerializer(doctor_data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = DoctorCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print("Validation errors:", serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 # --------------SUPER ADMIN DASHBOARD-------------
 class SuperAdminDashboard(APIView):
     permission_classes = [IsAuthenticated]
