@@ -12,19 +12,24 @@ from django.contrib.auth import login
 from .serializer import (SuperAdminLoginSerializer,
                          SuperAdminSerializer,
                          SuperAdminUpdateSerializer,
-                         UserUpdateSerializer)
+                         UserUpdateSerializer,
+                         DoctorCreateSerializer)
 from rest_framework.response import Response
-from .models import (SuperAdmin)
+from .models import (SuperAdmin,
+                     Doctor)
 
 # ---------------DOCTOR CREATION--------------
+def get_specializations(request):
+    specializations = dict(Doctor._meta.get_field('specialization').choices)
+    return JsonResponse(specializations)
+
 class DoctorCreate(APIView):
-    renderer_classes = [JSONRenderer]
-
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'superadmin/doctor_profile_creation.html'
     def get(self, request):
-        doctor_data = Doctor.objects.all()
-        serializer = DoctorCreateSerializer(doctor_data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+        reception_data =Doctor.objects.all()
+        serializer = DoctorCreateSerializer(reception_data, many=True)
+        return Response({"serializer":serializer.data}, status=status.HTTP_200_OK)
     def post(self, request):
         serializer = DoctorCreateSerializer(data=request.data)
         if serializer.is_valid():

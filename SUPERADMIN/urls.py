@@ -8,4 +8,5 @@ urlpatterns = [
     path('superadmindashboard/', views.SuperAdminDashboard.as_view(), name='superadmindashboard'),
 
     path('doctor-create/', views.DoctorCreate.as_view(), name='Doctor-Create'),
+   path('specializations/', views.get_specializations, name='specializations'),
 ]
