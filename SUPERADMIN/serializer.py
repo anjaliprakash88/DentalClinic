@@ -8,8 +8,13 @@ from .models import (User,
                      SuperAdmin,
                      Doctor,
                      Branch)
+# --------------BRANCH SERIALIZER --------------
+class BranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Branch
+        fields = '__all__'
 
-#----------------------Doctor Serializer--------------------------------
+#----------------------DOCTOR SERIALIZER---------------
 class UserSerializer2(serializers.ModelSerializer):
     class Meta:
         model = User

@@ -239,56 +239,56 @@
         {% csrf_token %}
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">First Name</label>
-                <input type="text" id="modal-first-name" class="form-control" placeholder="Enter first name" required>
+                <label class="form-label fw-bold">First Name</label>
+                <input type="text" id="modal-first-name" class="form-control"  required>
             </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">Last Name</label>
-                <input type="text" id="modal-last-name" class="form-control" placeholder="Enter last name" required>
+                <label class="form-label fw-bold">Last Name</label>
+                <input type="text" id="modal-last-name" class="form-control"  required>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Phone Number</label>
-                <input type="tel" id="modal-phone-number" class="form-control" placeholder="Enter phone number" required>
+                <label class="form-label fw-bold">Phone Number</label>
+                <input type="tel" id="modal-phone-number" class="form-control"  required>
             </div>
             <div class="col-md-6 mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" id="modal-email" class="form-control" placeholder="Enter email" required>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Address</label>
-                <input type="text" id="modal-address" class="form-control" placeholder="Enter address" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">Qualification</label>
-                <input type="text" id="modal-qualification" class="form-control" placeholder="Enter qualification" required>
+                <label class="form-label fw-bold">Email</label>
+                <input type="email" id="modal-email" class="form-control"  required>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label class="form-label">Specialization</label>
+                <label class="form-label fw-bold">Address</label>
+                <input type="text" id="modal-address" class="form-control"  required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Qualification</label>
+                <input type="text" id="modal-qualification" class="form-control"  required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Specialization</label>
                 <select id="modal-specialization" class="form-select" required>
-                    <option value="">Select Specialization</option>
+                    <option value="">Select</option>
                 </select>
             </div>
 
             <div class="col-md-6 mb-3">
-                <label class="form-label">Experience Years</label>
-                <input type="number" id="modal-experience-years" class="form-control" placeholder="Enter experience years" required>
+                <label class="form-label fw-bold">Experience Years</label>
+                <input type="number" id="modal-experience-years" class="form-control"  required>
             </div>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Branch</label>
+            <label class="form-label fw-bold">Branch</label>
             <select id="model-branch" class="form-select" required>
-                <option value="">Select a Branch</option>
+                <option value="">Select</option>
             </select>
         </div>
         <div class="d-grid gap-3">
@@ -336,7 +336,7 @@
                 success: function (response) {
                     console.log("Specializations API Response:", response);
                     const specializationSelect = $("#modal-specialization");
-                    specializationSelect.empty().append(`<option value="">Select Specialization</option>`);
+                    specializationSelect.empty().append(`<option value="">Select</option>`);
                     $.each(response, function (key, value) {
                         specializationSelect.append(`<option value="${key}">${value}</option>`);
                     });

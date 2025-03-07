@@ -13,10 +13,32 @@ from .serializer import (SuperAdminLoginSerializer,
                          SuperAdminSerializer,
                          SuperAdminUpdateSerializer,
                          UserUpdateSerializer,
-                         DoctorCreateSerializer)
+                         DoctorCreateSerializer,
+                         BranchSerializer)
 from rest_framework.response import Response
 from .models import (SuperAdmin,
-                     Doctor)
+                     Doctor,
+                     Branch)
+
+# -------------- BRANCH CREATION -------------
+class BranchCreate(APIView):
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'superadmin/branch_creation.html'
+
+    def get(self, request):
+        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            branches = Branch.objects.all().filter(is_active = True)
+            serializer = BranchSerializer(branches, many=True)
+            return JsonResponse(serializer.data, safe=False)
+        return Response({}, template_name=self.template_name)
+
+    def post(self, request):
+        serializer = BranchSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # ---------------DOCTOR CREATION--------------
 def get_specializations(request):
