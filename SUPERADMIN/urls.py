@@ -1,0 +1,6 @@
+from django.urls import path
+from .import views
+
+urlpatterns = [
+    path('login/', views.SuperAdminLogin.as_view(), name='superadmin_login'),
+]
