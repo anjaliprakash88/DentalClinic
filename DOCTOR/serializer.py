@@ -1,6 +1,26 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from SUPERADMIN.models import User, Branch, Doctor
 
+
+#---------------DOCTOR PROFILE SERIALIZER---------------
+class UserViewProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+class BranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Branch
+        fields = '__all__'
+
+class DoctorViewProfileSerializer(serializers.ModelSerializer):
+    user = UserViewProfileSerializer()
+    branch = BranchSerializer()
+
+    class Meta:
+        model = Doctor
+        fields = '__all__'
 
 #-----------------------------------Doctor LOGIN SERIALIZER--------------------------------------
 class DoctorLoginSerializer(serializers.Serializer):
