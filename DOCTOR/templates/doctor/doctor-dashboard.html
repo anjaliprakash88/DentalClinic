@@ -108,7 +108,7 @@
             flex-direction: column;
             margin-top:150px;
             align-items: center;
-            width: 50%;
+            width: 100%;
             display: flex;
             justify-content: center;
             transition: var(--transition);
@@ -160,6 +160,10 @@
                 opacity: 1;
                 visibility: visible;
             }
+         #bookingsTable {
+        width: 1000px !important;
+        overflow-y: auto;
+    }
         </style>
   </head>
   <body>
@@ -180,52 +184,82 @@
       </div>
     </div>
 
-     <div class="container p-3">
+    <div class="container p-3">
+    <h2 class="text-center my-4">Today's Bookings</h2>
+    <table id="bookingsTable" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Patient Name</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Appointment Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be loaded dynamically here -->
+        </tbody>
+    </table>
+</div>
 
-         <h2 class="text-center my-4">Today's Bookings</h2>
-      <div id="bookingsContainer" class="row">
-         <!-- Cards will be loaded dynamically here -->
-      </div>
 
-     </div>
 
-<!-- jQuery and Bootstrap JS -->
+<!-- jQuery, Bootstrap JS, and DataTables -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
 <script>
-$(document).ready(function(){
+$(document).ready(function() {
+
+    var table = $('#bookingsTable').DataTable({
+        responsive: true,
+        columns: [
+            { data: 'patient_name' },
+            { data: 'gender' },
+            { data: 'age' },
+            { data: 'appointment_time' },
+            { data: 'actions', orderable: false } // Disable sorting for actions column
+        ]
+    });
+
+    // Fetch bookings and populate the table
     function fetchBookings() {
         $.ajax({
-            url: `/doctor/dashboard/`,  // Update with your API URL name
+            url: `/doctor/dashboard/`,  // Update with your API URL
             type: "GET",
             dataType: "json",
             success: function(response) {
-                $("#bookingsContainer").empty(); // Clear cards before updating
+                table.clear(); // Clear existing data
 
                 if (response.appointments.length > 0) {
                     $.each(response.appointments, function(index, booking) {
-                        $("#bookingsContainer").append(`
-                            <div class="col-md-4">
-                                <div class="card shadow-lg mb-4">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${booking.patient.first_name} ${booking.patient.last_name}</h5>
-<!--                                        <p class="card-text"><strong>Patient Code:</strong> ${booking.patient.patient_code}</p>-->
-                                        <p class="card-text"><strong>Gender:</strong> ${booking.patient.gender}</p>
-                                        <p class="card-text"><strong>Age:</strong> ${booking.patient.age}</p>
-<!--                                        <p class="card-text"><strong>Appointment Time:</strong> ${booking.appointment_time}</p>-->
-                                        <div class="d-flex justify-content-between mt-3">
-                                            <button class="btn btn-primary treatment-summary" data-id="${booking.id}">Summary</button>
-                                            <button class="btn btn-secondary previous-note" data-id="${booking.id}">Previous Notes</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `);
+                        // Add a row to the DataTable
+                        table.row.add({
+                            patient_name: booking.patient_name,
+                            gender: booking.gender,
+                            appointment_time: booking.appointment_time,
+                            age: booking.age,
+                            actions: `
+                                <button class="btn btn-primary examine-btn" data-id="${booking.id}">
+                                    <i class="fa-solid fa-person-circle-check" style="color: #ffffff;"></i>
+                                </button>
+                            `
+                        });
                     });
                 } else {
-                    $("#bookingsContainer").append(`<p class="text-center w-100">No bookings today</p>`);
+                    // Add a placeholder row if no bookings are found
+                    table.row.add({
+                        patient_name: "No bookings today",
+                        gender: "",
+                        age: "",
+                        actions: ""
+                    });
                 }
+
+                table.draw(); // Redraw the table with new data
             },
             error: function() {
                 alert("Failed to load bookings. Please try again.");
@@ -233,21 +267,47 @@ $(document).ready(function(){
         });
     }
 
-    fetchBookings();  // Call function on page load
-});
+    fetchBookings(); // Call function on page load
 
-
-    $(document).ready(function() {
+    // Handle click events for buttons
     $(document).on("click", ".treatment-summary", function() {
         var bookingId = $(this).data("id");
         if (!bookingId) {
             alert("Invalid booking ID!");
             return;
         }
-
-
+        // Add your logic for handling the "Summary" button click
     });
+
+    $(document).on("click", ".previous-note", function() {
+        var bookingId = $(this).data("id");
+        if (!bookingId) {
+            alert("Invalid booking ID!");
+            return;
+        }
+        // Add your logic for handling the "Previous Notes" button click
+    });
+
 });
+
+
+ $(document).on("click", ".examine-btn", function (e) {
+    e.preventDefault();
+
+    var bookingId = $(this).data("id");
+
+    if (!bookingId) {
+        alert("Invalid booking ID!");
+        return;
+    }
+
+    console.log("Button Clicked! Booking ID:", bookingId);  // Debugging
+
+    // Redirecting after successful AJAX call
+    window.location.href = `/doctor/patient_examination/${bookingId}/`;
+});
+
+
 </script>
 </body>
 </html>

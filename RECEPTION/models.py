@@ -63,3 +63,5 @@ class PatientBooking(models.Model):
     def __str__(self):
         return f"Booking for {self.patient.first_name} {self.patient.last_name} with {self.doctor} on {self.appointment_date} at {self.appointment_time}"
 
+
+

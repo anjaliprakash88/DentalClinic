@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .serializer import (DoctorLoginSerializer,
-                         DoctorViewProfileSerializer)
+                         )
 from RECEPTION.serializer import PatientBookingSerializer
 from SUPERADMIN.models import Doctor
 from RECEPTION.models import PatientBooking
@@ -15,6 +15,17 @@ from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import now
 
 
+class PatientExaminationView(APIView):
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'doctor/patient-examination.html'
+
+    def get(self, request, booking_id, *args, **kwargs):
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+        serializer = PatientBookingSerializer(booking)
+
+        if request.accepted_renderer.format == 'html':
+            return render(request, self.template_name, {'booking': booking})
+        return Response(serializer.data)
 
 # -------------------------- DOCTOR DASHBOARD --------------------------
 class DoctorDashboard(APIView):
