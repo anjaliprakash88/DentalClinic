@@ -7,14 +7,51 @@ from rest_framework.authtoken.models import Token
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .serializer import (DoctorLoginSerializer,
-                         DentalChartSerializer)
+                         DentalChartSerializer,
+                         GeneralExaminationSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
-from .models import DentalChart, Tooth
+from .models import DentalChart, Tooth, GeneralExamination
 from SUPERADMIN.models import Doctor
 from RECEPTION.models import PatientBooking, Patient
 from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import now
 import json
+
+
+class GeneralExaminationAPIView(APIView):
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = "doctor/general_examination.html"
+
+    def get(self, request, booking_id, *args, **kwargs):
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+        patient = booking.patient
+
+        last_exam = GeneralExamination.objects.filter(patient=patient).order_by("-created_at").first()
+        prev_data = GeneralExaminationSerializer(last_exam).data if last_exam else None
+
+        # Handle JSON response for AJAX
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return Response({"previous_data": prev_data})
+
+        return render(request, self.template_name, {"previous_data": prev_data, "booking_id": booking_id})
+
+    def post(self, request, booking_id, *args, **kwargs):
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+        patient = booking.patient
+
+        try:
+            # Use DRF request.data instead of manually decoding JSON
+            serializer = GeneralExaminationSerializer(data=request.data)
+
+            if serializer.is_valid():
+                serializer.save(patient=patient, booking=booking)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class DentalChartAPIView(APIView):

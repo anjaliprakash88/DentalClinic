@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Examination</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+      <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      />
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <h2>General Examination</h2>
+
+    <div id="previous-data">
+        <h3>Previous Examination</h3>
+        <p><strong>Previous Visit:</strong> <span id="prev-visit">-</span></p>
+        <p><strong>Previous Sugar Level:</strong> <span id="prev-sugar">-</span></p>
+        <p><strong>Previous Blood Pressure:</strong> <span id="prev-pressure">-</span></p>
+        <p><strong>Previous Notes:</strong> <span id="prev-notes">-</span></p>
+    </div>
+
+    <h3>New Examination</h3>
+    <form id="general-exam-form">
+            {% csrf_token %}
+
+        <label>Sugar Level:</label>
+        <input type="text" id="sugar-level" required><br>
+
+        <label>Blood Pressure:</label>
+        <input type="text" id="blood-pressure" required><br>
+
+        <label>Notes:</label>
+        <textarea id="notes"></textarea><br>
+
+        <button type="submit">Save</button>
+    </form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+$(document).ready(function () {
+    var bookingId = "{{ booking_id }}";
+
+    function getCSRFToken() {
+        let tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        return tokenElement ? tokenElement.value : null;
+    }
+
+    const csrftoken = getCSRFToken();
+
+    $.ajax({
+        url: `/doctor/generalchart/${bookingId}/`,
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+            if (data.previous_data) {
+                $("#prev-visit").text(data.previous_data.previous_visit || "-");
+                $("#prev-sugar").text(data.previous_data.previous_sugar_level || "-");
+                $("#prev-pressure").text(data.previous_data.previous_pressure_level || "-");
+                $("#prev-notes").text(data.previous_data.previous_notes || "-");
+            }
+        },
+        error: function () {
+            alert("Failed to load previous data.");
+        }
+    });
+
+    $("#general-exam-form").submit(function (e) {
+        e.preventDefault();
+
+        var formData = {
+            sugar_level: $("#sugar-level").val(),
+            blood_pressure: $("#blood-pressure").val(),
+            notes: $("#notes").val()
+        };
+
+        $.ajax({
+            url: `/doctor/generalchart/${bookingId}/`,
+            type: "POST",
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+            dataType: "json",
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                alert("Data saved successfully!");
+                location.reload();
+            },
+            error: function (xhr) {
+                alert("Error: " + JSON.stringify(xhr.responseJSON));
+            }
+        });
+    });
+});
+</script>
+
+
+
+
+</body>
+</html>

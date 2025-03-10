@@ -243,9 +243,10 @@ $(document).ready(function() {
                             appointment_time: booking.appointment_time,
                             age: booking.age,
                             actions: `
-                                <button class="btn btn-primary examine-btn" data-id="${booking.id}">
-                                    <i class="fa-solid fa-person-circle-check" style="color: #ffffff;"></i>
-                                </button>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" id="dental-btn" data-id="${booking.id}">Dental</button>
+                                <button class="btn btn-primary" id="general-btn" data-id="${booking.id}">General</button>
+                            </div>
                             `
                         });
                     });
@@ -290,8 +291,8 @@ $(document).ready(function() {
 
 });
 
-
- $(document).on("click", ".examine-btn", function (e) {
+<!------------------------DENTAL BUTTON------------------------->
+ $(document).on("click", "#dental-btn", function (e) {
     e.preventDefault();
 
     var bookingId = $(this).data("id");
@@ -300,11 +301,21 @@ $(document).ready(function() {
         alert("Invalid booking ID!");
         return;
     }
-
-    console.log("Button Clicked! Booking ID:", bookingId);  // Debugging
-
-    // Redirecting after successful AJAX call
     window.location.href = `/doctor/dentalchart/${bookingId}/`;
+});
+
+
+<!------------------------GENERAL BUTTON------------------------->
+    $(document).on("click", "#general-btn", function (e) {
+    e.preventDefault();
+
+    var bookingId = $(this).data("id");
+
+    if (!bookingId) {
+        alert("Invalid booking ID!");
+        return;
+    }
+    window.location.href = `/doctor/generalchart/${bookingId}/`;
 });
 
 
