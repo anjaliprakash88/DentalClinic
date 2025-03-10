@@ -1,19 +1,200 @@
 {% load static %}
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dental Chart Application</title>
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Dr. Arif's Dental Clinic | Dental Examination</title>
+      <link rel="icon" type="image/x-icon" sizes="1008x1008" href="{% static 'images/favicon.png' %}">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+      <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      />
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px;
-            color: #333;
-            background-color: #f5f7fa;
+      :root {
+            --primary: #46ACD1;
+            --secondary: #1C4453;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
-        h1, h2, h3 {
+
+        html, body {
+              height: 100%;
+              overflow-x: hidden;
+              margin: 0;
+              padding: 0;
+        }
+
+      body {
+          min-height: 100vh;
+          background-image: url("{% static 'images/Background-Img.jpg' %}");
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          background-position: center center;
+          background-size: cover;
+          font-family: 'Poppins', sans-serif !important;
+
+
+      }
+
+      .top-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1000px;
+            height: auto;
+            min-height: 70px;
+            padding: 10px 20px;
+            background-color: rgba(70, 172, 209, 0.8); /* Sky blue with opacity */
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+      .sidebar-logo {
+            display: flex;
+            align-items: center;
+
+      }
+
+      .sidebar-logo img {
+            width: 80px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo img:hover {
+            transform: scale(1.1);
+        }
+
+      .dashboard-title {
+            flex: 1;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            margin: 0 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+
+
+        .sidebar-icon i {
+            font-size: 24px;
+            margin: 0 10px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+
+        }
+
+        .sidebar-icon i:hover {
+            transform: scale(1.2);
+            color: var(--secondary);
+        }
+
+      .back-arrow {
+            position: fixed;
+            top: 40px;
+            left: 20px;
+            background-color: rgb(0 97 168 / 10%);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1000;
+            backdrop-filter: blur(22px);
+            transition: all 0.3s ease;
+        }
+
+        .back-arrow:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-arrow svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }    @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .button {
+                padding: 1rem 2rem;
+                font-size: 2rem;
+            }
+
+            .back-arrow {
+                width: 40px;
+                height: 40px;
+            }
+
+            .back-arrow svg {
+                width: 24px;
+                height: 24px;
+            }
+        }
+      .white-link {
+            color: white; /* Set text color to white */
+            text-decoration: none; /* Remove underline */
+            font-size: 20px; /* Increase font size */
+            font-weight: bold; /* Make text bold */
+            transition: color 0.3s ease; /* Smooth color transition */
+        }
+
+        .white-link:hover {
+            color: #f0f0f0; /* Lighten color on hover */
+            text-decoration: underline; /* Underline on hover */
+        }
+
+            [data-tooltip] {
+                position: relative;
+                cursor: pointer;
+            }
+
+            /* Tooltip text */
+            [data-tooltip]::after {
+                content: attr(data-tooltip); /* Display the tooltip text */
+                position: absolute;
+                bottom: 100%; /* Position above the icon */
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(0, 0, 0, 0.8); /* Tooltip background */
+                color: white; /* Tooltip text color */
+                padding: 5px 10px; /* Padding inside the tooltip */
+                border-radius: 4px; /* Rounded corners */
+                font-size: 14px; /* Font size */
+                white-space: nowrap; /* Prevent text from wrapping */
+                opacity: 0; /* Hide by default */
+                visibility: hidden; /* Hide by default */
+                transition: opacity 0.3s ease, visibility 0.3s ease; /* Smooth transition */
+            }
+
+            /* Show tooltip on hover */
+            [data-tooltip]:hover::after {
+                opacity: 1; /* Show tooltip */
+                visibility: visible; /* Show tooltip */
+            }
+         h1, h2, h3 {
             color: #2a6496;
         }
         h1 {
@@ -23,6 +204,7 @@
         }
         .container {
             display: flex;
+            margin-top:150px;
             flex-direction: column;
             gap: 25px;
         }
@@ -243,17 +425,38 @@
                 width: 100%;
             }
         }
-    </style>
-</head>
-<body>
+        </style>
+  </head>
+  <body>
+  <button class="back-arrow" onclick="window.location.href='/doctor/dashboard/'">
+        <svg viewBox="0 0 24 24">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+    </button>
+    <!-- Top center box -->
+    <div class="top-box">
+      <div class="sidebar-logo">
+        <img
+          src="{% static 'images/logo (2).png' %}"
+          alt="Dr. Arif's Dental Clinic Logo"
+        />
+      </div>
+
+      <h1 class="dashboard-title">Dental Examination</h1>
+<!--      <div class="sidebar-icon">-->
+<!--        <a href="" class="white-link" data-tooltip="View"><i class="fa-solid fa-eye" style="color: #ffffff;"></i></a>-->
+<!--        <a href="/superadmin/doctor-create/" class="white-link" data-tooltip="Add"><i class="fa-solid fa-plus" style="color: #ffffff;"></i></a>-->
+<!--        <a href="" data-tooltip="Message"><i class="fa-solid fa-message"  style="color: #ffffff;"></i></a>-->
+<!--      </div>-->
+    </div>
+
+
     <div class="container">
-        <h1>Dental Chart Application</h1>
-        
         <div class="dental-chart">
             <!-- Upper Right Quadrant 1 -->
             <div class="quadrant">
                 <div class="quadrant-header">
-                    <span class="quadrant-title">Upper Right</span>
+                    <span class="quadrant-title">Upper Left</span>
                     <span class="quadrant-number">1</span>
                 </div>
                 <div class="teeth-row">
@@ -291,11 +494,11 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Upper Left Quadrant 2 -->
             <div class="quadrant">
                 <div class="quadrant-header">
-                    <span class="quadrant-title">Upper Left</span>
+                    <span class="quadrant-title">Upper Right</span>
                     <span class="quadrant-number">2</span>
                 </div>
                 <div class="teeth-row">
@@ -333,7 +536,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Lower Left Quadrant 3 -->
             <div class="quadrant">
                 <div class="quadrant-header">
@@ -375,7 +578,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Lower Right Quadrant 4 -->
             <div class="quadrant">
                 <div class="quadrant-header">
@@ -418,7 +621,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="legend">
             <h3>Quadrant and Tooth Numbering Guide</h3>
             <div class="legend-items">
@@ -439,23 +642,23 @@
                     <span>Lower Right (Teeth 1-8)</span>
                 </div>
             </div>
-            
+
             <h3>Tooth Status Legend</h3>
             <div class="legend-items">
                 <div class="legend-item">
-                    <span class="color-indicator" style="background-color: #d4edda;"></span>
+                    <span class="color-indicator" style="background-color: #00FF00;"></span>
                     <span>Healthy</span>
                 </div>
                 <div class="legend-item">
-                    <span class="color-indicator" style="background-color: #f8d7da;"></span>
+                    <span class="color-indicator" style="background-color: #FF0000;"></span>
                     <span>Carious</span>
                 </div>
                 <div class="legend-item">
-                    <span class="color-indicator" style="background-color: #d1ecf1;"></span>
+                    <span class="color-indicator" style="background-color: #ADD8E6;"></span>
                     <span>Filled</span>
                 </div>
                 <div class="legend-item">
-                    <span class="color-indicator" style="background-color: #f2f2f2;"></span>
+                    <span class="color-indicator" style="background-color: #FF007F;"></span>
                     <span>Missing</span>
                 </div>
                 <div class="legend-item">
@@ -464,30 +667,30 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="controls">
             <h2>Treatment Controls</h2>
-            
+
             <div class="selected-info">
                 <div id="selected-teeth">No teeth selected</div>
             </div>
-            
+
             <h3>Tooth Status</h3>
 <div class="status-controls">
     <button data-status="healthy">
-        <span class="color-indicator" style="background-color: #d4edda;"></span>
+        <span class="color-indicator" style="background-color: #00FF00;"></span>
         Healthy
     </button>
     <button data-status="carious">
-        <span class="color-indicator" style="background-color: #f8d7da;"></span>
+        <span class="color-indicator" style="background-color: #FF0000;"></span>
         Carious
     </button>
     <button data-status="filled">
-        <span class="color-indicator" style="background-color: #d1ecf1;"></span>
+        <span class="color-indicator" style="background-color: #ADD8E6;"></span>
         Filled
     </button>
     <button data-status="missing">
-        <span class="color-indicator" style="background-color: #f2f2f2;"></span>
+        <span class="color-indicator" style="background-color: #FF007F;"></span>
         Missing
     </button>
     <button data-status="needs-cleaning">
@@ -535,7 +738,7 @@
         </label>
     </div>
 </div>
-
+        </div>
 <div class="action-buttons">
     <button id="save-changes">Save Changes</button>
     <button id="clear-selection">Clear Selection</button>
@@ -543,15 +746,19 @@
         </div>
     </div>
 
-    <script>
-        // Initialize variables
+<!-- jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+   // Initialize variables
         let selectedTeeth = [];
         let currentStatus = 'healthy';
         let treatments = [];
-    
+
         // Get all tooth elements
         const teeth = document.querySelectorAll('.tooth');
-        
+
         // Add click event listeners to all teeth
         teeth.forEach(tooth => {
             tooth.addEventListener('click', function() {
@@ -559,11 +766,11 @@
                 updateSelectedInfo();
             });
         });
-        
+
         // Function to toggle tooth selection
         function toggleToothSelection(tooth) {
             const toothId = tooth.id;
-            
+
             if (tooth.classList.contains('selected')) {
                 // Deselect tooth
                 tooth.classList.remove('selected');
@@ -574,11 +781,11 @@
                 selectedTeeth.push(toothId);
             }
         }
-        
+
         // Function to update the selected teeth info
         function updateSelectedInfo() {
             const selectedInfo = document.getElementById('selected-teeth');
-            
+
             if (selectedTeeth.length === 0) {
                 selectedInfo.textContent = 'No teeth selected';
             } else {
@@ -588,39 +795,39 @@
                     const number = tooth.dataset.number;
                     return `Quadrant ${quadrant}, Tooth ${number}`;
                 });
-                
+
                 selectedInfo.textContent = `Selected teeth: ${toothDetails.join('; ')}`;
             }
         }
-        
+
         // Function to apply status to selected teeth
         function applyStatus(status) {
             if (selectedTeeth.length === 0) {
                 alert('Please select at least one tooth first');
                 return;
             }
-            
+
             // Remove all status classes from selected teeth
             selectedTeeth.forEach(id => {
                 const tooth = document.getElementById(id);
                 tooth.classList.remove('healthy', 'carious', 'filled', 'missing', 'needs-cleaning');
-                
+
                 // Add the new status class
                 tooth.classList.add(status);
-                
+
                 // If missing, apply text decoration
                 if (status === 'missing') {
                     tooth.classList.add('missing');
                 }
             });
-            
+
             currentStatus = status;
         }
-        
+
         // Function to toggle treatment options
         function toggleTreatment(treatment) {
             const index = treatments.indexOf(treatment);
-            
+
             if (index === -1) {
                 // Add treatment
                 treatments.push(treatment);
@@ -629,22 +836,22 @@
                 treatments.splice(index, 1);
             }
         }
-        
+
         // Function to save changes
         function saveChanges() {
             if (selectedTeeth.length === 0) {
                 alert('Please select at least one tooth first');
                 return;
             }
-            
+
             // Here you would typically send data to a server
             // For this example, we'll just show what would be saved
-            
+
             const treatmentData = selectedTeeth.map(id => {
                 const tooth = document.getElementById(id);
                 const quadrant = tooth.dataset.quadrant;
                 const number = tooth.dataset.number;
-                
+
                 // Get status from class
                 let status = '';
                 if (tooth.classList.contains('healthy')) status = 'healthy';
@@ -652,67 +859,65 @@
                 if (tooth.classList.contains('filled')) status = 'filled';
                 if (tooth.classList.contains('missing')) status = 'missing';
                 if (tooth.classList.contains('needs-cleaning')) status = 'needs-cleaning';
-                
+
                 return {
                     tooth: `${quadrant}-${number}`,
                     status: status,
                     treatments: [...treatments]
                 };
             });
-            
+
             console.log('Saved treatment data:', treatmentData);
             alert('Changes saved successfully!');
-            
+
             // Clear selection after saving
             selectedTeeth.forEach(id => {
                 document.getElementById(id).classList.remove('selected');
             });
-            
+
             selectedTeeth = [];
             treatments = [];
             updateSelectedInfo();
-            
+
             // Uncheck all treatment checkboxes
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
         }
-        
+
         // Function to clear all selections
         function clearSelection() {
             selectedTeeth.forEach(id => {
                 document.getElementById(id).classList.remove('selected');
             });
-            
+
             selectedTeeth = [];
             treatments = [];
             updateSelectedInfo();
-            
+
             // Uncheck all treatment checkboxes
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
         }
-        
+
         // Add event listeners for status buttons
         document.querySelectorAll('.status-controls button').forEach(button => {
             button.addEventListener('click', function() {
                 applyStatus(this.dataset.status);
             });
         });
-        
+
         // Add event listeners for treatment checkboxes
         document.querySelectorAll('.treatment-controls input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
                 toggleTreatment(this.value);
             });
         });
-        
+
         // Add event listeners for action buttons
         document.getElementById('save-changes').addEventListener('click', saveChanges);
         document.getElementById('clear-selection').addEventListener('click', clearSelection);
     </script>
-    </body>
-    </html>
 </body>
 </html>

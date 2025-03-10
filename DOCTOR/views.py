@@ -56,7 +56,7 @@ class GeneralExaminationAPIView(APIView):
 
 class DentalChartAPIView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    template_name = "doctor/dental-chart.html"
+    template_name = "doctor/dental_examination.html"
 
     def get(self, request, *args, **kwargs):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
