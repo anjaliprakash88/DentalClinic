@@ -1,0 +1,718 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental Chart Application</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        h1, h2, h3 {
+            color: #2a6496;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .dental-chart {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .quadrant {
+            width: 45%;
+            min-width: 300px;
+            margin-bottom: 20px;
+        }
+        .quadrant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e0e5ea;
+        }
+        .quadrant-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2a6496;
+        }
+        .quadrant-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            background-color: #2a6496;
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .teeth-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 2px;
+        }
+        .tooth {
+            width: 40px;
+            height: 60px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: #fff;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .tooth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .tooth.selected {
+            background-color: #b3d9ff;
+            border-color: #2a6496;
+            box-shadow: 0 0 0 2px rgba(42,100,150,0.3);
+            transform: translateY(-2px);
+        }
+        .tooth.healthy {
+            background-color: #d4edda;
+        }
+        .tooth.carious {
+            background-color: #f8d7da;
+        }
+        .tooth.filled {
+            background-color: #d1ecf1;
+        }
+        .tooth.missing {
+            background-color: #f2f2f2;
+            text-decoration: line-through;
+        }
+        .tooth.needs-cleaning {
+            border: 2px dashed #ffc107;
+        }
+        .tooth-number {
+            font-size: 12px;
+            margin-bottom: 3px;
+            font-weight: bold;
+            color: #555;
+        }
+        .tooth-image {
+            width: 30px;
+            height: 30px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 25px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .controls h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e5ea;
+        }
+        .controls h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .status-controls, .treatment-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .color-indicator {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            vertical-align: middle;
+        }
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2a6496;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #1c4c74;
+        }
+        .status-btn, .treatment-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .treatment-checkbox label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f5f7fa;
+            transition: background-color 0.2s;
+        }
+        .treatment-checkbox label:hover {
+            background-color: #e0e5ea;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .action-buttons button {
+            flex: 1;
+            padding: 10px;
+        }
+        #save-changes {
+            background-color: #28a745;
+        }
+        #save-changes:hover {
+            background-color: #218838;
+        }
+        .selected-info {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f0f4f8;
+            border-left: 4px solid #2a6496;
+        }
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .legend h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e5ea;
+        }
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #f5f7fa;
+            border: 1px solid #ddd;
+        }
+        @media (max-width: 768px) {
+            .quadrant {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dental Chart Application</h1>
+        
+        <div class="dental-chart">
+            <!-- Upper Right Quadrant 1 -->
+            <div class="quadrant">
+                <div class="quadrant-header">
+                    <span class="quadrant-title">Upper Right</span>
+                    <span class="quadrant-number">1</span>
+                </div>
+                <div class="teeth-row">
+                    <div class="tooth" id="tooth-1-8" data-quadrant="1" data-number="8">
+                        <div class="tooth-number">18</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-1-7" data-quadrant="1" data-number="7">
+                        <div class="tooth-number">17</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-1-6" data-quadrant="1" data-number="6">
+                        <div class="tooth-number">16</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-1-5" data-quadrant="1" data-number="5">
+                        <div class="tooth-number">15</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-1-4" data-quadrant="1" data-number="4">
+                        <div class="tooth-number">14</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-1-3" data-quadrant="1" data-number="3">
+                        <div class="tooth-number">13</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-1-2" data-quadrant="1" data-number="2">
+                        <div class="tooth-number">12</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-1-1" data-quadrant="1" data-number="1">
+                        <div class="tooth-number">11</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upper Left Quadrant 2 -->
+            <div class="quadrant">
+                <div class="quadrant-header">
+                    <span class="quadrant-title">Upper Left</span>
+                    <span class="quadrant-number">2</span>
+                </div>
+                <div class="teeth-row">
+                    <div class="tooth" id="tooth-2-1" data-quadrant="2" data-number="1">
+                        <div class="tooth-number">21</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-2-2" data-quadrant="2" data-number="2">
+                        <div class="tooth-number">22</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-2-3" data-quadrant="2" data-number="3">
+                        <div class="tooth-number">23</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-2-4" data-quadrant="2" data-number="4">
+                        <div class="tooth-number">24</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-2-5" data-quadrant="2" data-number="5">
+                        <div class="tooth-number">25</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-2-6" data-quadrant="2" data-number="6">
+                        <div class="tooth-number">26</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-2-7" data-quadrant="2" data-number="7">
+                        <div class="tooth-number">27</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-2-8" data-quadrant="2" data-number="8">
+                        <div class="tooth-number">28</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lower Left Quadrant 3 -->
+            <div class="quadrant">
+                <div class="quadrant-header">
+                    <span class="quadrant-title">Lower Left</span>
+                    <span class="quadrant-number">3</span>
+                </div>
+                <div class="teeth-row">
+                    <div class="tooth" id="tooth-3-8" data-quadrant="3" data-number="8">
+                        <div class="tooth-number">48</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-3-7" data-quadrant="3" data-number="7">
+                        <div class="tooth-number">47</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-3-6" data-quadrant="3" data-number="6">
+                        <div class="tooth-number">46</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-3-5" data-quadrant="3" data-number="5">
+                        <div class="tooth-number">45</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-3-4" data-quadrant="3" data-number="4">
+                        <div class="tooth-number">44</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-3-3" data-quadrant="3" data-number="3">
+                        <div class="tooth-number">43</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-3-2" data-quadrant="3" data-number="2">
+                        <div class="tooth-number">42</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-3-1" data-quadrant="3" data-number="1">
+                        <div class="tooth-number">41</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lower Right Quadrant 4 -->
+            <div class="quadrant">
+                <div class="quadrant-header">
+                    <span class="quadrant-title">Lower Right</span>
+                    <span class="quadrant-number">4</span>
+                </div>
+                <div class="teeth-row">
+                    <div class="tooth" id="tooth-4-1" data-quadrant="4" data-number="1">
+                        <div class="tooth-number">31</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-4-2" data-quadrant="4" data-number="2">
+                        <div class="tooth-number">32</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-4-3" data-quadrant="4" data-number="3">
+                        <div class="tooth-number">33</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-4-4" data-quadrant="4" data-number="4">
+                        <div class="tooth-number">34</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-4-5" data-quadrant="4" data-number="5">
+                        <div class="tooth-number">35</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-4-6" data-quadrant="4" data-number="6">
+                        <div class="tooth-number">36</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-4-7" data-quadrant="4" data-number="7">
+                        <div class="tooth-number">37</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                    <div class="tooth" id="tooth-4-8" data-quadrant="4" data-number="8">
+                        <div class="tooth-number">38</div>
+                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <h3>Quadrant and Tooth Numbering Guide</h3>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <span class="quadrant-number">1</span>
+                    <span>Upper Right (Teeth 11-18)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="quadrant-number">2</span>
+                    <span>Upper Left (Teeth 21-28)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="quadrant-number">3</span>
+                    <span>Lower Left (Teeth 41-48)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="quadrant-number">4</span>
+                    <span>Lower Right (Teeth 1-8)</span>
+                </div>
+            </div>
+            
+            <h3>Tooth Status Legend</h3>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <span class="color-indicator" style="background-color: #d4edda;"></span>
+                    <span>Healthy</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-indicator" style="background-color: #f8d7da;"></span>
+                    <span>Carious</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-indicator" style="background-color: #d1ecf1;"></span>
+                    <span>Filled</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-indicator" style="background-color: #f2f2f2;"></span>
+                    <span>Missing</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-indicator" style="border: 2px dashed #ffc107; background-color: transparent;"></span>
+                    <span>Needs Cleaning</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h2>Treatment Controls</h2>
+            
+            <div class="selected-info">
+                <div id="selected-teeth">No teeth selected</div>
+            </div>
+            
+            <h3>Tooth Status</h3>
+<div class="status-controls">
+    <button data-status="healthy">
+        <span class="color-indicator" style="background-color: #d4edda;"></span>
+        Healthy
+    </button>
+    <button data-status="carious">
+        <span class="color-indicator" style="background-color: #f8d7da;"></span>
+        Carious
+    </button>
+    <button data-status="filled">
+        <span class="color-indicator" style="background-color: #d1ecf1;"></span>
+        Filled
+    </button>
+    <button data-status="missing">
+        <span class="color-indicator" style="background-color: #f2f2f2;"></span>
+        Missing
+    </button>
+    <button data-status="needs-cleaning">
+        <span class="color-indicator" style="border: 2px dashed #ffc107; background-color: transparent;"></span>
+        Needs Cleaning
+    </button>
+</div>
+
+<h3>Treatment Plan</h3>
+<div class="treatment-controls">
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="filling">
+            Filling
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="root-canal">
+            Root Canal
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="extraction">
+            Extraction
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="crown">
+            Crown
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="cleaning">
+            Professional Cleaning
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="implant">
+            Implant
+        </label>
+    </div>
+</div>
+
+<div class="action-buttons">
+    <button id="save-changes">Save Changes</button>
+    <button id="clear-selection">Clear Selection</button>
+</div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize variables
+        let selectedTeeth = [];
+        let currentStatus = 'healthy';
+        let treatments = [];
+    
+        // Get all tooth elements
+        const teeth = document.querySelectorAll('.tooth');
+        
+        // Add click event listeners to all teeth
+        teeth.forEach(tooth => {
+            tooth.addEventListener('click', function() {
+                toggleToothSelection(this);
+                updateSelectedInfo();
+            });
+        });
+        
+        // Function to toggle tooth selection
+        function toggleToothSelection(tooth) {
+            const toothId = tooth.id;
+            
+            if (tooth.classList.contains('selected')) {
+                // Deselect tooth
+                tooth.classList.remove('selected');
+                selectedTeeth = selectedTeeth.filter(id => id !== toothId);
+            } else {
+                // Select tooth
+                tooth.classList.add('selected');
+                selectedTeeth.push(toothId);
+            }
+        }
+        
+        // Function to update the selected teeth info
+        function updateSelectedInfo() {
+            const selectedInfo = document.getElementById('selected-teeth');
+            
+            if (selectedTeeth.length === 0) {
+                selectedInfo.textContent = 'No teeth selected';
+            } else {
+                const toothDetails = selectedTeeth.map(id => {
+                    const tooth = document.getElementById(id);
+                    const quadrant = tooth.dataset.quadrant;
+                    const number = tooth.dataset.number;
+                    return `Quadrant ${quadrant}, Tooth ${number}`;
+                });
+                
+                selectedInfo.textContent = `Selected teeth: ${toothDetails.join('; ')}`;
+            }
+        }
+        
+        // Function to apply status to selected teeth
+        function applyStatus(status) {
+            if (selectedTeeth.length === 0) {
+                alert('Please select at least one tooth first');
+                return;
+            }
+            
+            // Remove all status classes from selected teeth
+            selectedTeeth.forEach(id => {
+                const tooth = document.getElementById(id);
+                tooth.classList.remove('healthy', 'carious', 'filled', 'missing', 'needs-cleaning');
+                
+                // Add the new status class
+                tooth.classList.add(status);
+                
+                // If missing, apply text decoration
+                if (status === 'missing') {
+                    tooth.classList.add('missing');
+                }
+            });
+            
+            currentStatus = status;
+        }
+        
+        // Function to toggle treatment options
+        function toggleTreatment(treatment) {
+            const index = treatments.indexOf(treatment);
+            
+            if (index === -1) {
+                // Add treatment
+                treatments.push(treatment);
+            } else {
+                // Remove treatment
+                treatments.splice(index, 1);
+            }
+        }
+        
+        // Function to save changes
+        function saveChanges() {
+            if (selectedTeeth.length === 0) {
+                alert('Please select at least one tooth first');
+                return;
+            }
+            
+            // Here you would typically send data to a server
+            // For this example, we'll just show what would be saved
+            
+            const treatmentData = selectedTeeth.map(id => {
+                const tooth = document.getElementById(id);
+                const quadrant = tooth.dataset.quadrant;
+                const number = tooth.dataset.number;
+                
+                // Get status from class
+                let status = '';
+                if (tooth.classList.contains('healthy')) status = 'healthy';
+                if (tooth.classList.contains('carious')) status = 'carious';
+                if (tooth.classList.contains('filled')) status = 'filled';
+                if (tooth.classList.contains('missing')) status = 'missing';
+                if (tooth.classList.contains('needs-cleaning')) status = 'needs-cleaning';
+                
+                return {
+                    tooth: `${quadrant}-${number}`,
+                    status: status,
+                    treatments: [...treatments]
+                };
+            });
+            
+            console.log('Saved treatment data:', treatmentData);
+            alert('Changes saved successfully!');
+            
+            // Clear selection after saving
+            selectedTeeth.forEach(id => {
+                document.getElementById(id).classList.remove('selected');
+            });
+            
+            selectedTeeth = [];
+            treatments = [];
+            updateSelectedInfo();
+            
+            // Uncheck all treatment checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+        
+        // Function to clear all selections
+        function clearSelection() {
+            selectedTeeth.forEach(id => {
+                document.getElementById(id).classList.remove('selected');
+            });
+            
+            selectedTeeth = [];
+            treatments = [];
+            updateSelectedInfo();
+            
+            // Uncheck all treatment checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+        
+        // Add event listeners for status buttons
+        document.querySelectorAll('.status-controls button').forEach(button => {
+            button.addEventListener('click', function() {
+                applyStatus(this.dataset.status);
+            });
+        });
+        
+        // Add event listeners for treatment checkboxes
+        document.querySelectorAll('.treatment-controls input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                toggleTreatment(this.value);
+            });
+        });
+        
+        // Add event listeners for action buttons
+        document.getElementById('save-changes').addEventListener('click', saveChanges);
+        document.getElementById('clear-selection').addEventListener('click', clearSelection);
+    </script>
+    </body>
+    </html>
+</body>
+</html>

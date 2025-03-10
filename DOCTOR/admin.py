@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import Tooth,Treatment, DentalChart, Quadrant
 
-# Register your models here.
+admin.site.register(Tooth)
+admin.site.register(Treatment)
+admin.site.register(DentalChart)
+admin.site.register(Quadrant)
