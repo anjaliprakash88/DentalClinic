@@ -10,7 +10,7 @@ from .serializer import (DoctorLoginSerializer,
                          DentalChartSerializer,
                          GeneralExaminationSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
-from .models import DentalChart, Tooth, GeneralExamination
+from .models import Treatment, Tooth, GeneralExamination, Quadrant, DentalChart
 from SUPERADMIN.models import Doctor
 from RECEPTION.models import PatientBooking, Patient
 from django.shortcuts import get_object_or_404,render
@@ -53,50 +53,102 @@ class GeneralExaminationAPIView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class DentalChartUpdateAPIView(APIView):
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = "doctor/dental_examination.html"
+
+    def post(self, request, booking_id):
+        try:
+            print("Received Data:", json.dumps(request.data, indent=2))  # Debugging output
+
+            patient = get_object_or_404(Patient, id=booking_id)
+
+            selected_teeth = request.data.get("teeth", [])
+            status = request.data.get("status", "healthy")
+            treatments = request.data.get("treatments", [])
+
+            if not isinstance(selected_teeth, list):
+                return Response({"error": "Teeth data must be a list"}, status=400)
+
+            formatted_teeth = []
+            for item in selected_teeth:
+                if isinstance(item, str):
+                    formatted_teeth.append({"tooth_number": int(item), "status": status, "treatments": treatments})
+                elif isinstance(item, dict):
+                    formatted_teeth.append(item)
+                else:
+                    return Response({"error": "Invalid tooth data format"}, status=400)
+
+            if not formatted_teeth:
+                return Response({"error": "No valid teeth selected"}, status=400)
+
+            for tooth_data in formatted_teeth:
+                tooth_number = tooth_data.get("tooth_number")
+                tooth_status = tooth_data.get("status", "healthy")
+                tooth_treatments = tooth_data.get("treatments", [])
+
+                if not tooth_number:
+                    return Response({"error": "Invalid tooth number"}, status=400)
+
+                try:
+                    quadrant_number = int(str(tooth_number)[0])
+                except ValueError:
+                    return Response({"error": "Invalid tooth number format"}, status=400)
+
+                quadrant = Quadrant.objects.filter(number=quadrant_number).first()
+                if not quadrant:
+                    return Response({"error": f"Quadrant {quadrant_number} not found"}, status=404)
+
+                tooth, created = Tooth.objects.get_or_create(quadrant=quadrant, number=tooth_number)
+                tooth.status = tooth_status
+                tooth.save()
+
+                for treatment in tooth_treatments:
+                    Treatment.objects.create(tooth=tooth, treatment_type=treatment)
+
+            return Response({"message": "Data saved successfully!"}, status=200)
+
+        except Exception as e:
+            print("Internal Server Error:", str(e))  # Log in Django console
+            return Response({"error": "Internal server error"}, status=500, content_type="application/json")
+
+
+
 
 class DentalChartAPIView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = "doctor/dental_examination.html"
 
     def get(self, request, booking_id):
-        """Load the dental chart with correct FDI numbering (1-8 per quadrant)"""
-        teeth = []
-        quadrant_mapping = {
-            1: 10,  # Upper Right Quadrant (11-18)
-            2: 20,  # Upper Left Quadrant (21-28)
-            3: 40,  # Lower Left Quadrant (41-48)
-            4: 30,  # Lower Right Quadrant (31-38)
-        }
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+        patient = booking.patient  # ✅ Fetch Patient directly
 
-        for q in range(1, 5):
-            for n in range(1, 9):
-                teeth.append({
-                    "id": f"{q}-{n}",
-                    "tooth_number": quadrant_mapping[q] + n,
-                    "status": "healthy"
-                })
+        # Fetch or create a DentalChart for the patient
+        dental_chart, created = DentalChart.objects.get_or_create(patient=patient)
 
-        return Response({"teeth": teeth, "booking_id": booking_id}, template_name=self.template_name)
+        # Get all quadrants
+        quadrants = Quadrant.objects.all()
 
-    def post(self, request, booking_id):
-        """Save tooth status & treatment plans"""
-        user = request.user
-        selected_teeth = request.data.get("teeth", [])
-        status = request.data.get("status", "healthy")
-        treatments = request.data.get("treatments", [])
+        # Get all teeth associated with the quadrants
+        teeth = Tooth.objects.filter(quadrant__in=quadrants)
 
-        for tooth_id in selected_teeth:
-            tooth, created = Tooth.objects.get_or_create(user=user, tooth_number=tooth_id)
-            tooth.status = status
-            tooth.save()
+        # Serialize the data
+        serializer = DentalChartSerializer(dental_chart)
 
-            for treatment in treatments:
-                DentalChart.objects.create(user=user, tooth=tooth, treatment=treatment, booking_id=booking_id)
+        # If JSON is requested, return JSON response
+        if request.accepted_renderer.format == 'json':
+            return Response({
+                "dental_chart": serializer.data,
+                "teeth": list(teeth.values("id", "number", "quadrant", "status")),
+            })
 
-        return Response({"message": "Data saved successfully!"})
-
-
-
+        # If HTML is requested, render template with required data
+        return Response({
+            "dental_chart": serializer.data,
+            "quadrants": quadrants,
+            "teeth": teeth,
+            "booking_id": booking_id,
+        }, template_name=self.template_name)
 
 # -------------------------- DOCTOR DASHBOARD --------------------------
 class DoctorDashboard(APIView):

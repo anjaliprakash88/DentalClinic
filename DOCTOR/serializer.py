@@ -27,39 +27,33 @@ class QuadrantSerializer(serializers.ModelSerializer):
         model = Quadrant
         fields = '__all__'
 
-
 class ToothSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tooth
         fields = '__all__'
-
 
 class TreatmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Treatment
         fields = '__all__'
 
-
 class DentalChartSerializer(serializers.ModelSerializer):
-    quadrants = serializers.SerializerMethodField()
-    teeth = serializers.SerializerMethodField()
+    quadrants = QuadrantSerializer(many=True, read_only=True, source='get_quadrants')
     treatments = serializers.SerializerMethodField()
 
     class Meta:
         model = DentalChart
-        fields = ['id', 'patient', 'created_at', 'updated_at', 'quadrants', 'teeth', 'treatments']
-
-    def get_quadrants(self, obj):
-        quadrants = Quadrant.objects.all()
-        return QuadrantSerializer(quadrants, many=True).data
-
-    def get_teeth(self, obj):
-        teeth = Tooth.objects.filter(quadrant__in=Quadrant.objects.all())
-        return ToothSerializer(teeth, many=True).data
+        fields = ['id', 'patient', 'created_at', 'updated_at', 'quadrants', 'treatments']
 
     def get_treatments(self, obj):
-        treatments = Treatment.objects.filter(tooth__in=Tooth.objects.all())
+        # Fetch all teeth related to this patient's quadrants
+        quadrants = Quadrant.objects.all()
+        teeth = Tooth.objects.filter(quadrant__in=quadrants)
+
+        # Fetch treatments for these teeth
+        treatments = Treatment.objects.filter(tooth__in=teeth)
         return TreatmentSerializer(treatments, many=True).data
+
 
 #-----------------------------------Doctor LOGIN SERIALIZER--------------------------------------
 class DoctorLoginSerializer(serializers.Serializer):

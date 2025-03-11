@@ -93,7 +93,8 @@ class Treatment(models.Model):
 
 
 class DentalChart(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='examinations')
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="dental_examinations")
+    booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="dental_examinations")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
