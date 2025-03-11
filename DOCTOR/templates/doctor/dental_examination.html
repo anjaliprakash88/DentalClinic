@@ -12,6 +12,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
       />
+      <script src="https://kit.fontawesome.com/YOUR_KIT_CODE.js" crossorigin="anonymous"></script>
       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
       :root {
@@ -452,254 +453,100 @@
 
 
     <div class="container">
-        <div class="dental-chart">
-            <!-- Upper Right Quadrant 1 -->
-            <div class="quadrant">
-                <div class="quadrant-header">
-                    <span class="quadrant-title">Upper Left</span>
-                    <span class="quadrant-number">1</span>
+ <div class="dental-chart">
+<div class="quadrant">
+    <div class="quadrant-header">
+        <span class="quadrant-title">Upper Left</span>
+        <span class="quadrant-number">1</span>
+    </div>
+    <div class="teeth-row">
+        {% for tooth in teeth %}
+            {% if tooth.tooth_number >= 11 and tooth.tooth_number <= 18 %}
+                <div class="tooth"
+                     id="tooth-{{ tooth.id }}"
+                     data-tooth="{{ tooth.tooth_number }}"
+                     data-status="{{ tooth.status }}">
+                    <div class="tooth-number">{{ tooth.tooth_number }}</div>
+                    <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
                 </div>
-                <div class="teeth-row">
-                    <div class="tooth" id="tooth-1-8" data-quadrant="1" data-number="8">
-                        <div class="tooth-number">18</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-1-7" data-quadrant="1" data-number="7">
-                        <div class="tooth-number">17</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-1-6" data-quadrant="1" data-number="6">
-                        <div class="tooth-number">16</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-1-5" data-quadrant="1" data-number="5">
-                        <div class="tooth-number">15</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-1-4" data-quadrant="1" data-number="4">
-                        <div class="tooth-number">14</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-1-3" data-quadrant="1" data-number="3">
-                        <div class="tooth-number">13</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-1-2" data-quadrant="1" data-number="2">
-                        <div class="tooth-number">12</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-1-1" data-quadrant="1" data-number="1">
-                        <div class="tooth-number">11</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                </div>
-            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
 
-            <!-- Upper Left Quadrant 2 -->
-            <div class="quadrant">
-                <div class="quadrant-header">
-                    <span class="quadrant-title">Upper Right</span>
-                    <span class="quadrant-number">2</span>
+<div class="quadrant">
+    <div class="quadrant-header">
+        <span class="quadrant-title">Upper Right</span>
+        <span class="quadrant-number">2</span>
+    </div>
+    <div class="teeth-row">
+        {% for tooth in teeth %}
+            {% if tooth.tooth_number >= 21 and tooth.tooth_number <= 28 %}
+                <div class="tooth"
+                     id="tooth-{{ tooth.id }}"
+                     data-tooth="{{ tooth.tooth_number }}"
+                     data-status="{{ tooth.status }}">
+                    <div class="tooth-number">{{ tooth.tooth_number }}</div>
+                    <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
                 </div>
-                <div class="teeth-row">
-                    <div class="tooth" id="tooth-2-1" data-quadrant="2" data-number="1">
-                        <div class="tooth-number">21</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-2-2" data-quadrant="2" data-number="2">
-                        <div class="tooth-number">22</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-2-3" data-quadrant="2" data-number="3">
-                        <div class="tooth-number">23</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-2-4" data-quadrant="2" data-number="4">
-                        <div class="tooth-number">24</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-2-5" data-quadrant="2" data-number="5">
-                        <div class="tooth-number">25</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-2-6" data-quadrant="2" data-number="6">
-                        <div class="tooth-number">26</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-2-7" data-quadrant="2" data-number="7">
-                        <div class="tooth-number">27</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-2-8" data-quadrant="2" data-number="8">
-                        <div class="tooth-number">28</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                </div>
-            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
 
-            <!-- Lower Left Quadrant 3 -->
-            <div class="quadrant">
-                <div class="quadrant-header">
-                    <span class="quadrant-title">Lower Left</span>
-                    <span class="quadrant-number">3</span>
+<div class="quadrant">
+    <div class="quadrant-header">
+        <span class="quadrant-title">Lower Left</span>
+        <span class="quadrant-number">3</span>
+    </div>
+    <div class="teeth-row">
+        {% for tooth in teeth %}
+            {% if tooth.tooth_number >= 41 and tooth.tooth_number <= 48 %}
+                <div class="tooth"
+                     id="tooth-{{ tooth.id }}"
+                     data-tooth="{{ tooth.tooth_number }}"
+                     data-status="{{ tooth.status }}">
+                    <div class="tooth-number">{{ tooth.tooth_number }}</div>
+                    <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
                 </div>
-                <div class="teeth-row">
-                    <div class="tooth" id="tooth-3-8" data-quadrant="3" data-number="8">
-                        <div class="tooth-number">48</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-3-7" data-quadrant="3" data-number="7">
-                        <div class="tooth-number">47</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-3-6" data-quadrant="3" data-number="6">
-                        <div class="tooth-number">46</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-3-5" data-quadrant="3" data-number="5">
-                        <div class="tooth-number">45</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-3-4" data-quadrant="3" data-number="4">
-                        <div class="tooth-number">44</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-3-3" data-quadrant="3" data-number="3">
-                        <div class="tooth-number">43</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-3-2" data-quadrant="3" data-number="2">
-                        <div class="tooth-number">42</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-3-1" data-quadrant="3" data-number="1">
-                        <div class="tooth-number">41</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                </div>
-            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
 
-            <!-- Lower Right Quadrant 4 -->
-            <div class="quadrant">
-                <div class="quadrant-header">
-                    <span class="quadrant-title">Lower Right</span>
-                    <span class="quadrant-number">4</span>
+<div class="quadrant">
+    <div class="quadrant-header">
+        <span class="quadrant-title">Lower Right</span>
+        <span class="quadrant-number">4</span>
+    </div>
+    <div class="teeth-row">
+        {% for tooth in teeth %}
+            {% if tooth.tooth_number >= 31 and tooth.tooth_number <= 38 %}
+                <div class="tooth"
+                     id="tooth-{{ tooth.id }}"
+                     data-tooth="{{ tooth.tooth_number }}"
+                     data-status="{{ tooth.status }}">
+                    <div class="tooth-number">{{ tooth.tooth_number }}</div>
+                    <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
                 </div>
-                <div class="teeth-row">
-                    <div class="tooth" id="tooth-4-1" data-quadrant="4" data-number="1">
-                        <div class="tooth-number">31</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-4-2" data-quadrant="4" data-number="2">
-                        <div class="tooth-number">32</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-4-3" data-quadrant="4" data-number="3">
-                        <div class="tooth-number">33</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-4-4" data-quadrant="4" data-number="4">
-                        <div class="tooth-number">34</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-4-5" data-quadrant="4" data-number="5">
-                        <div class="tooth-number">35</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-4-6" data-quadrant="4" data-number="6">
-                        <div class="tooth-number">36</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-4-7" data-quadrant="4" data-number="7">
-                        <div class="tooth-number">37</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                    <div class="tooth" id="tooth-4-8" data-quadrant="4" data-number="8">
-                        <div class="tooth-number">38</div>
-                        <img class="tooth-image" src="{% static 'images/tooth.png' %}" alt="Tooth Image">
-                    </div>
-                </div>
-            </div>
-        </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
 
-        <div class="legend">
-            <h3>Quadrant and Tooth Numbering Guide</h3>
-            <div class="legend-items">
-                <div class="legend-item">
-                    <span class="quadrant-number">1</span>
-                    <span>Upper Right (Teeth 11-18)</span>
-                </div>
-                <div class="legend-item">
-                    <span class="quadrant-number">2</span>
-                    <span>Upper Left (Teeth 21-28)</span>
-                </div>
-                <div class="legend-item">
-                    <span class="quadrant-number">3</span>
-                    <span>Lower Left (Teeth 41-48)</span>
-                </div>
-                <div class="legend-item">
-                    <span class="quadrant-number">4</span>
-                    <span>Lower Right (Teeth 1-8)</span>
-                </div>
-            </div>
-
-            <h3>Tooth Status Legend</h3>
-            <div class="legend-items">
-                <div class="legend-item">
-                    <span class="color-indicator" style="background-color: #00FF00;"></span>
-                    <span>Healthy</span>
-                </div>
-                <div class="legend-item">
-                    <span class="color-indicator" style="background-color: #FF0000;"></span>
-                    <span>Carious</span>
-                </div>
-                <div class="legend-item">
-                    <span class="color-indicator" style="background-color: #ADD8E6;"></span>
-                    <span>Filled</span>
-                </div>
-                <div class="legend-item">
-                    <span class="color-indicator" style="background-color: #FF007F;"></span>
-                    <span>Missing</span>
-                </div>
-                <div class="legend-item">
-                    <span class="color-indicator" style="border: 2px dashed #ffc107; background-color: transparent;"></span>
-                    <span>Needs Cleaning</span>
-                </div>
-            </div>
+            <button id="select-all">Select All Teeth</button>
         </div>
 
         <div class="controls">
            <div class="d-flex justify-content-between align-items-center">
                 <h2>Treatment Controls</h2>
-                <i class="fa-solid fa-circle-info" style="font-size:20px;" title="More Info"></i>
+                <i class="fa-solid fa-circle-info" style="font-size:20px; cursor:pointer;" title="More Info" data-bs-toggle="modal" data-bs-target="#infoModal"></i>
             </div>
             <div class="selected-info">
                 <div id="selected-teeth">No teeth selected</div>
             </div>
 
-            <h3>Tooth Status</h3>
-<div class="status-controls">
-    <button data-status="healthy">
-        <span class="color-indicator" style="background-color: #00FF00;"></span>
-        Healthy
-    </button>
-    <button data-status="carious">
-        <span class="color-indicator" style="background-color: #FF0000;"></span>
-        Carious
-    </button>
-    <button data-status="filled">
-        <span class="color-indicator" style="background-color: #ADD8E6;"></span>
-        Filled
-    </button>
-    <button data-status="missing">
-        <span class="color-indicator" style="background-color: #FF007F;"></span>
-        Missing
-    </button>
-    <button data-status="needs-cleaning">
-        <span class="color-indicator" style="border: 2px dashed #ffc107; background-color: transparent;"></span>
-        Needs Cleaning
-    </button>
-</div>
+
 
 <h3>Treatment Plan</h3>
 <div class="treatment-controls">
@@ -730,13 +577,43 @@
     <div class="treatment-checkbox">
         <label>
             <input type="checkbox" value="cleaning">
-            Professional Cleaning
+            Teeth Cleaning
         </label>
     </div>
     <div class="treatment-checkbox">
         <label>
             <input type="checkbox" value="implant">
             Implant
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="implant">
+            Teeth Whitening
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="implant">
+             Veneers
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="implant">
+            Braces
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="implant">
+             Bonding
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label>
+            <input type="checkbox" value="implant">
+             Dentures
         </label>
     </div>
 </div>
@@ -746,6 +623,37 @@
     <button id="clear-selection">Clear Selection</button>
 </div>
         </div>
+
+<!-----------------MODEL POP UP---------------->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoModalLabel">Quadrant and Tooth Numbering Guide & Tooth Status Legend</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="quadrant-number">1</span>
+                            <span>Upper Right (Teeth 11-18)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="quadrant-number">2</span>
+                            <span>Upper Left (Teeth 21-28)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="quadrant-number">3</span>
+                            <span>Lower Left (Teeth 41-48)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="quadrant-number">4</span>
+                            <span>Lower Right (Teeth 1-8)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 <!-- jQuery and Bootstrap JS -->
@@ -753,23 +661,70 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-   // Initialize variables
+  $(document).ready(function () {
+    // Set default color for healthy teeth
+    $(".tooth").css("background-color", "#00FF00");
+
+    // Function to update selected teeth display
+function updateSelectedTeeth() {
+    let selectedTeeth = [];
+
+    $(".tooth.selected").each(function () {
+        selectedTeeth.push($(this).attr("data-tooth")); // Get tooth number or ID from data attribute
+    });
+
+    if (selectedTeeth.length > 0) {
+        $("#selected-teeth").text("Selected Teeth: " + selectedTeeth.join(", "));
+    } else {
+        $("#selected-teeth").text("No teeth selected");
+    }
+}
+
+// Select All Teeth (toggle selection)
+$("#select-all").click(function () {
+    if ($(".tooth").hasClass("selected")) {
+        $(".tooth").removeClass("selected");
+    } else {
+        $(".tooth").addClass("selected");
+    }
+    updateSelectedTeeth();
+});
+
+// Select individual teeth
+$(".tooth").click(function () {
+    $(this).toggleClass("selected");
+    updateSelectedTeeth();
+});
+
+    // Save Data via AJAX
+    $("#save-changes").click(function () {
         let selectedTeeth = [];
-        let currentStatus = 'healthy';
-        let treatments = [];
-
-        // Get all tooth elements
-        const teeth = document.querySelectorAll('.tooth');
-
-        // Add click event listeners to all teeth
-        teeth.forEach(tooth => {
-            tooth.addEventListener('click', function() {
-                toggleToothSelection(this);
-                updateSelectedInfo();
-            });
+        $(".tooth.selected").each(function () {
+            selectedTeeth.push($(this).attr("id"));
         });
 
-        // Function to toggle tooth selection
+        let selectedStatus = $(".status-controls button.active").data("status");
+        let selectedTreatments = [];
+        $(".treatment-checkbox input:checked").each(function () {
+            selectedTreatments.push($(this).val());
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/api/save-tooth-status/",
+            data: JSON.stringify({
+                teeth: selectedTeeth,
+                status: selectedStatus,
+                treatments: selectedTreatments,
+            }),
+            contentType: "application/json",
+            success: function (response) {
+                alert(response.message);
+            },
+        });
+    });
+});
+      // Function to toggle tooth selection
         function toggleToothSelection(tooth) {
             const toothId = tooth.id;
 
@@ -838,88 +793,6 @@
                 treatments.splice(index, 1);
             }
         }
-
-        // Function to save changes
-        function saveChanges() {
-            if (selectedTeeth.length === 0) {
-                alert('Please select at least one tooth first');
-                return;
-            }
-
-            // Here you would typically send data to a server
-            // For this example, we'll just show what would be saved
-
-            const treatmentData = selectedTeeth.map(id => {
-                const tooth = document.getElementById(id);
-                const quadrant = tooth.dataset.quadrant;
-                const number = tooth.dataset.number;
-
-                // Get status from class
-                let status = '';
-                if (tooth.classList.contains('healthy')) status = 'healthy';
-                if (tooth.classList.contains('carious')) status = 'carious';
-                if (tooth.classList.contains('filled')) status = 'filled';
-                if (tooth.classList.contains('missing')) status = 'missing';
-                if (tooth.classList.contains('needs-cleaning')) status = 'needs-cleaning';
-
-                return {
-                    tooth: `${quadrant}-${number}`,
-                    status: status,
-                    treatments: [...treatments]
-                };
-            });
-
-            console.log('Saved treatment data:', treatmentData);
-            alert('Changes saved successfully!');
-
-            // Clear selection after saving
-            selectedTeeth.forEach(id => {
-                document.getElementById(id).classList.remove('selected');
-            });
-
-            selectedTeeth = [];
-            treatments = [];
-            updateSelectedInfo();
-
-            // Uncheck all treatment checkboxes
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-        }
-
-        // Function to clear all selections
-        function clearSelection() {
-            selectedTeeth.forEach(id => {
-                document.getElementById(id).classList.remove('selected');
-            });
-
-            selectedTeeth = [];
-            treatments = [];
-            updateSelectedInfo();
-
-            // Uncheck all treatment checkboxes
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-        }
-
-        // Add event listeners for status buttons
-        document.querySelectorAll('.status-controls button').forEach(button => {
-            button.addEventListener('click', function() {
-                applyStatus(this.dataset.status);
-            });
-        });
-
-        // Add event listeners for treatment checkboxes
-        document.querySelectorAll('.treatment-controls input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                toggleTreatment(this.value);
-            });
-        });
-
-        // Add event listeners for action buttons
-        document.getElementById('save-changes').addEventListener('click', saveChanges);
-        document.getElementById('clear-selection').addEventListener('click', clearSelection);
     </script>
 </body>
 </html>

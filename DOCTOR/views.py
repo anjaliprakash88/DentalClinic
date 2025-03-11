@@ -58,36 +58,43 @@ class DentalChartAPIView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = "doctor/dental_examination.html"
 
-    def get(self, request, *args, **kwargs):
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            charts = DentalChart.objects.all()
-            serializer = DentalChartSerializer(charts, many=True)
-            return Response(serializer.data, safe=False)
-        return render(request, self.template_name)
+    def get(self, request, booking_id):
+        """Load the dental chart with correct FDI numbering (1-8 per quadrant)"""
+        teeth = []
+        quadrant_mapping = {
+            1: 10,  # Upper Right Quadrant (11-18)
+            2: 20,  # Upper Left Quadrant (21-28)
+            3: 40,  # Lower Left Quadrant (41-48)
+            4: 30,  # Lower Right Quadrant (31-38)
+        }
 
+        for q in range(1, 5):
+            for n in range(1, 9):
+                teeth.append({
+                    "id": f"{q}-{n}",
+                    "tooth_number": quadrant_mapping[q] + n,
+                    "status": "healthy"
+                })
 
-    def post(self, request, *args, **kwargs):
-        try:
-            data = json.loads(request.body)
-            selected_teeth = data.get("selected_teeth", [])
-            status = data.get("status")
-            treatment_plan = data.get("treatment_plan", [])
-            patient_id = data.get("patient_id")
+        return Response({"teeth": teeth, "booking_id": booking_id}, template_name=self.template_name)
 
-            # Ensure a dental chart exists for the patient
-            dental_chart, created = DentalChart.objects.get_or_create(patient_id=patient_id)
+    def post(self, request, booking_id):
+        """Save tooth status & treatment plans"""
+        user = request.user
+        selected_teeth = request.data.get("teeth", [])
+        status = request.data.get("status", "healthy")
+        treatments = request.data.get("treatments", [])
 
-            for tooth in selected_teeth:
-                Tooth.objects.update_or_create(
-                    dental_chart=dental_chart,
-                    tooth_number=tooth["number"],
-                    quadrant=tooth["quadrant"],
-                    defaults={"status": status, "treatment_plan": ",".join(treatment_plan)}
-                )
+        for tooth_id in selected_teeth:
+            tooth, created = Tooth.objects.get_or_create(user=user, tooth_number=tooth_id)
+            tooth.status = status
+            tooth.save()
 
-            return Response({"message": "Data saved successfully!"}, status=200)
-        except Exception as e:
-            return Response({"error": str(e)}, status=400)
+            for treatment in treatments:
+                DentalChart.objects.create(user=user, tooth=tooth, treatment=treatment, booking_id=booking_id)
+
+        return Response({"message": "Data saved successfully!"})
+
 
 
 

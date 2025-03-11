@@ -46,12 +46,10 @@ class Quadrant(models.Model):
         (3, 'Lower Left'),
         (4, 'Lower Right'),
     ]
-
     number = models.IntegerField(choices=QUADRANT_CHOICES, unique=True)
-    name = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"{self.get_number_display()} - {self.name}"
+        return self.get_number_display()
 
 
 class Tooth(models.Model):
@@ -77,8 +75,13 @@ class Treatment(models.Model):
         ('root-canal', 'Root Canal'),
         ('extraction', 'Extraction'),
         ('crown', 'Crown'),
-        ('cleaning', 'Professional Cleaning'),
+        ('teeth-cleaning', 'Teeth Cleaning'),
         ('implant', 'Implant'),
+        ('teeth-whitening', 'Teeth Whitening'),
+        ('veneers','Veneers'),
+        ('braces','Braces'),
+        ('bonding','Bonding'),
+        ('dentures','Dentures')
     ]
 
     tooth = models.ForeignKey(Tooth, on_delete=models.CASCADE, related_name='treatments')
@@ -95,7 +98,8 @@ class DentalChart(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Dental Chart for {self.patient_name}"
+        return f"Dental Chart for {self.patient.name}"
+
 
     def get_quadrants(self):
         return Quadrant.objects.all()
