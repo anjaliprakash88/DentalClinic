@@ -30,7 +30,7 @@
         }
 
       body {
-          min-height: 100vh;
+          max-height: 100vh;
           background-image: url("{% static 'images/Background-Img.jpg' %}");
           background-repeat: no-repeat;
           background-attachment: fixed;
@@ -378,12 +378,8 @@
             flex: 1;
             padding: 10px;
         }
-        #save-changes {
-            background-color: #28a745;
-        }
-        #save-changes:hover {
-            background-color: #218838;
-        }
+
+
         .selected-info {
             margin-bottom: 15px;
             padding: 15px;
@@ -453,6 +449,10 @@
 
 
   <div class="container">
+      <div>
+          <button class="btn btn-primary">Adult</button>
+          <button class="btn btn-primary">Paediatric</button>
+      </div>
       <div class="dental-chart">
           <div class="quadrant">
               <div class="quadrant-header">
@@ -623,7 +623,7 @@
 
 
     </div>
-          <button id="select-all">Select All Teeth</button>
+          <button id="select-all" class="btn btn-primary">Select All Teeth</button>
 
 
 
@@ -649,67 +649,73 @@
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
 
-        <label>
+        <label style="background-color: #069494; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="filling">
             Filling
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color: #7DF9FF; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="root-canal">
             Root Canal
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color: #C2CCC5; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="missing">
+            Missing
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #FFD700; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="extraction">
             Extraction
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color: #ffe79b; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="crown">
             Crown
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color: #FFC1CC ; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="teeth-cleaning">
             Teeth Cleaning
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color: #228B22; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="implant">
             Implant
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color: #FF6961; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="teeth-whitening">
             Teeth Whitening
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color:  #CCCCFF; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="veneers">
              Veneers
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color: #7851A9; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="braces">
             Braces
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color:#9ACD32; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="bonding">
              Bonding
         </label>
     </div>
     <div class="treatment-checkbox">
-        <label>
+        <label style="background-color: #A7967E; padding: 5px; border-radius: 5px;">
             <input type="checkbox" value="dentures">
              Dentures
         </label>
@@ -717,12 +723,8 @@
 </div>
         </div>
 
-
-
-
 <div class="action-buttons">
-    <button id="save-changes">Save Changes</button>
-    <button id="clear-selection">Clear Selection</button>
+    <button id="save-changes" class="btn btn-primary">Save Changes</button>
 </div>
   </div>
 
@@ -826,6 +828,22 @@ $(".tooth").css("background-color", "#00FF00");
             return $(this).val();
         }).get();
 
+        let selectedTreatment = $("input[type='checkbox']:checked").val(); // Get selected treatment
+        let toothColorMap = {
+            "filling": "#069494",
+            "root-canal": "#7DF9FF",
+            "missing": "#C2CCC5",
+            "extraction": "#FFD700",
+            "crown": "#ffe79b",
+            "teeth-cleaning": "#FFC1CC",
+            "implant": "#228B22",
+            "teeth-whitening": "#FF6961",
+            "veneers": "#CCCCFF",
+            "braces": "#7851A9",
+            "bonding": "#9ACD32",
+            "dentures": "#A7967E"
+        };
+
         if (!patientId) {
             alert("Patient ID is missing!");
             return;
@@ -848,11 +866,13 @@ $(".tooth").css("background-color", "#00FF00");
                 console.log(response);
 
                 selectedTeeth.forEach(tooth => {
-                    $(`.tooth[data-tooth='${tooth}']`).css("background-color", "#FF0000"); // Red (Saved)
+                    if (selectedTreatment && toothColorMap[selectedTreatment]) {
+                        $(`.tooth[data-tooth='${tooth}']`).css("background-color", toothColorMap[selectedTreatment]);
+                    }
                 });
 
-                // ✅ Clear the selection after saving
                 selectedTeeth = [];
+                $("input[type='checkbox']").prop("checked", false);
                 updateSelectedTeethText();
             },
             error: function (xhr) {
