@@ -838,6 +838,7 @@ $(".tooth").css("background-color", "#00FF00");
                 selectedTeeth = [];
                 $("input[type='checkbox']").prop("checked", false);
                 updateSelectedTeethText();
+                window.location.href = `/doctor/treatment-summary/${bookingId}/`;
             },
             error: function (xhr) {
                 alert("Error saving treatment: " + xhr.responseText);

@@ -8,13 +8,51 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .serializer import (DoctorLoginSerializer,
                          GeneralExaminationSerializer,
-                         DentalExaminationSerializer)
+                         DentalExaminationSerializer,
+                         TreatmentNoteSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
 from .models import GeneralExamination, DentalExamination
 from SUPERADMIN.models import Doctor
 from RECEPTION.models import PatientBooking, Patient
 from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import now
+
+
+class TreatmentSummaryView(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = "doctor/treatment_summary.html"
+
+    def get(self, request, booking_id, *args, **kwargs):
+        doctor = get_object_or_404(Doctor, user=request.user)
+        booking = get_object_or_404(PatientBooking, id=booking_id, doctor=doctor)
+
+        serialized_booking = PatientBookingSerializer(booking)
+
+        if request.accepted_renderer.format == "html":
+            return render(request, self.template_name, {"booking": serialized_booking.data})
+
+        return Response(serialized_booking.data, status=status.HTTP_200_OK)
+
+    def post(self, request, booking_id, format=None):
+        doctor = get_object_or_404(Doctor, user=request.user)
+        booking = get_object_or_404(PatientBooking, id=booking_id, doctor=doctor)
+
+        # Get the data and ensure it includes booking ID
+        data = request.data.copy()
+        if 'booking' not in data:
+            data['booking'] = booking_id  # Add booking ID if not present
+
+        section = data.get("section")
+
+        if section == "treatment_note":
+            serializer = TreatmentNoteSerializer(data=data)
+
+
+        if serializer.is_valid():
+            serializer.save()  # booking is already in the validated data
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

@@ -2,6 +2,16 @@ from django.db import models
 from RECEPTION.models import Patient, PatientBooking
 
 
+# -------------------- Treatment Note Model --------------------
+class TreatmentNote(models.Model):
+    booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_notes")
+    note = models.TextField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Treatment Note for {self.booking.patient} on {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+# -------------------------------------------------------------
+
 class GeneralExamination(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="general_examinations")
     booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="general_examinations")

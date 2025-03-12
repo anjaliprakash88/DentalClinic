@@ -1,10 +1,22 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import (DentalExamination,
-                     GeneralExamination)
+                     GeneralExamination,
+                     TreatmentNote)
 
 
+# --------------------------------------------------------------
+class TreatmentNoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TreatmentNote
+        fields = '__all__'
 
+    def create(self, validated_data):
+        booking = validated_data.pop('booking')  # Remove and store booking
+        treatment_note = TreatmentNote.objects.create(booking=booking, **validated_data)
+        return treatment_note
+
+# ------------------------------------------------------------
 class GeneralExaminationSerializer(serializers.ModelSerializer):
     patient_name = serializers.CharField(source="patient.name", read_only=True)
     booking_id = serializers.IntegerField(source="booking.id", read_only=True)
