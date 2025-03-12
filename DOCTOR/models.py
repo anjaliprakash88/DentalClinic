@@ -39,74 +39,13 @@ class GeneralExamination(models.Model):
 
 
 
-class Quadrant(models.Model):
-    QUADRANT_CHOICES = [
-        (1, 'Upper Right'),
-        (2, 'Upper Left'),
-        (3, 'Lower Left'),
-        (4, 'Lower Right'),
-    ]
-    number = models.IntegerField(choices=QUADRANT_CHOICES, unique=True)
-
-    def __str__(self):
-        return self.get_number_display()
-
-
-class Tooth(models.Model):
-    TOOTH_STATUS_CHOICES = [
-        ('healthy', 'Healthy'),
-        ('carious', 'Carious'),
-        ('filled', 'Filled'),
-        ('missing', 'Missing'),
-        ('needs-cleaning', 'Needs Cleaning'),
-    ]
-
-    quadrant = models.ForeignKey(Quadrant, on_delete=models.CASCADE, related_name='teeth')
-    number = models.IntegerField()  # Tooth number within the quadrant (e.g., 1-8)
-    status = models.CharField(max_length=20, choices=TOOTH_STATUS_CHOICES, default='healthy')
-
-    def __str__(self):
-        return f"Tooth {self.quadrant.number}-{self.number} ({self.get_status_display()})"
-
-
-class Treatment(models.Model):
-    TREATMENT_CHOICES = [
-        ('filling', 'Filling'),
-        ('root-canal', 'Root Canal'),
-        ('extraction', 'Extraction'),
-        ('crown', 'Crown'),
-        ('teeth-cleaning', 'Teeth Cleaning'),
-        ('implant', 'Implant'),
-        ('teeth-whitening', 'Teeth Whitening'),
-        ('veneers','Veneers'),
-        ('braces','Braces'),
-        ('bonding','Bonding'),
-        ('dentures','Dentures')
-    ]
-
-    tooth = models.ForeignKey(Tooth, on_delete=models.CASCADE, related_name='treatments')
-    treatment_type = models.CharField(max_length=20, choices=TREATMENT_CHOICES)
-    date = models.DateTimeField(auto_now_add=True)  # Date when the treatment was added
-
-    def __str__(self):
-        return f"{self.get_treatment_type_display()} for {self.tooth}"
-
-
-class DentalChart(models.Model):
+class DentalExamination(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="dental_examinations")
-    booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="dental_examinations")
+    booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="dental_examinations")  # Link to PatientBooking
+    selected_teeth = models.JSONField()  # Store selected teeth as a list (e.g., ["11", "12", "13"])
+    treatments = models.JSONField()  # Store treatments as a list (e.g., ["filling", "root-canal"])
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Dental Chart for {self.patient.name}"
+        return f"Treatment for {self.booking.patient.first_name} {self.booking.patient.last_name} on {self.booking.appointment_date}"
 
-
-    def get_quadrants(self):
-        return Quadrant.objects.all()
-
-    def get_teeth(self):
-        return Tooth.objects.filter(quadrant__in=self.get_quadrants())
-
-    def get_treatments(self):
-        return Treatment.objects.filter(tooth__in=self.get_teeth())

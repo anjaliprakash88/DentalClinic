@@ -645,6 +645,10 @@
 <h3>Treatment Plan</h3>
 <div class="treatment-controls">
     <div class="treatment-checkbox">
+        <input type="hidden" id="patientId" value="{{ patient_id }}">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+
         <label>
             <input type="checkbox" value="filling">
             Filling
@@ -713,6 +717,9 @@
 </div>
         </div>
 
+
+
+
 <div class="action-buttons">
     <button id="save-changes">Save Changes</button>
     <button id="clear-selection">Clear Selection</button>
@@ -757,101 +764,178 @@
 
 <script>
 $(document).ready(function () {
-    // Set default color for healthy teeth
-    $(".tooth").css("background-color", "#00FF00");
+    var bookingId = "{{ booking_id|default:'' }}";  // Ensure booking_id is assigned
+    var patientId = $("#patientId").val();  // ✅ Correctly fetch patientId
 
-    // Function to update selected teeth display
-    function updateSelectedTeeth() {
-        let selectedTeeth = [];
+    console.log("Booking ID:", bookingId);
+    console.log("Patient ID:", patientId);
 
-        $(".tooth.selected").each(function () {
-            selectedTeeth.push($(this).attr("data-tooth")); // Get tooth number from data-tooth
-        });
+    let selectedTeeth = [];
 
-        if (selectedTeeth.length > 0) {
-            $("#selected-teeth").text("Selected Teeth: " + selectedTeeth.join(", "));
-        } else {
-            $("#selected-teeth").text("No teeth selected");
-        }
-    }
-
-    // Select All Teeth (toggle selection)
-    $("#select-all").click(function () {
-        if ($(".tooth").hasClass("selected")) {
-            $(".tooth").removeClass("selected");
-        } else {
-            $(".tooth").addClass("selected");
-        }
-        updateSelectedTeeth();
-    });
-
-    // Select individual teeth
     $(".tooth").click(function () {
-        $(this).toggleClass("selected");
-        updateSelectedTeeth();
+        let toothNumber = $(this).attr("data-tooth");
+
+        if (selectedTeeth.includes(toothNumber)) {
+            selectedTeeth = selectedTeeth.filter(t => t !== toothNumber);
+            $(this).removeClass("selected");
+        } else {
+            selectedTeeth.push(toothNumber);
+            $(this).addClass("selected");
+        }
+
+        $("#selected-teeth").text(selectedTeeth.length > 0 ? selectedTeeth.join(", ") : "No teeth selected");
     });
 
-    // Clear selection
-    $("#clear-selection").click(function() {
+    $("#select-all").click(function () {
+        selectedTeeth = $(".tooth").map(function () { return $(this).attr("data-tooth"); }).get();
+        $(".tooth").addClass("selected");
+        $("#selected-teeth").text(selectedTeeth.join(", "));
+    });
+
+    $("#clear-selection").click(function () {
+        selectedTeeth = [];
         $(".tooth").removeClass("selected");
-        updateSelectedTeeth();
+        $("#selected-teeth").text("No teeth selected");
     });
 
-    // CSRF Token function
+
     function getCSRFToken() {
-        return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+        return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
     }
 
-    // Save Changes Button Click Event
+    const csrftoken = getCSRFToken();
+
     $("#save-changes").click(function () {
-        var bookingId = "{{ booking_id }}".trim();  // Ensure no extra spaces
-         console.log("Booking ID:", bookingId);
-        var csrftoken = getCSRFToken();
+        let selectedTreatments = $("input[type='checkbox']:checked").map(function () {
+            return $(this).val();
+        }).get();
 
-        let selectedTeeth = [];
-        $(".tooth.selected").each(function () {
-            selectedTeeth.push($(this).attr("data-tooth"));
-        });
-
-        let selectedStatus = $(".status-controls button.active").data("status") || "healthy";
-
-        let selectedTreatments = [];
-        $(".treatment-checkbox input:checked").each(function () {
-            selectedTreatments.push($(this).val());
-        });
+        if (!patientId) {
+            alert("Patient ID is missing!");
+            return;
+        }
 
         $.ajax({
+            url: `/doctor/dentalchart/${bookingId}/`,
             type: "POST",
-            url: `/doctor/dentalchart/${bookingId}/update/`.trim(),  // Remove unwanted spaces or newlines
-            data: JSON.stringify({
-                teeth: selectedTeeth,
-                status: selectedStatus,
-                treatments: selectedTreatments,
-            }),
             contentType: "application/json",
+            data: JSON.stringify({
+                patient_id: patientId,
+                selected_teeth: selectedTeeth,
+                treatments: selectedTreatments
+            }),
             headers: {
-                "X-CSRFToken": csrftoken
+                "X-CSRFToken": csrftoken // ✅ Correct way to set CSRF Token
             },
             success: function (response) {
-                alert(response.message);
+                alert("Treatment saved successfully!");
+                console.log(response);
             },
-            error: function(xhr, status, error) {
-                console.error("Full Error Response:", xhr);
-                let errorMessage = "Unknown error occurred";
-
-                try {
-                    let jsonResponse = JSON.parse(xhr.responseText);  // Try to parse response as JSON
-                    errorMessage = jsonResponse?.error || errorMessage;
-                } catch (e) {
-                    console.error("Error parsing response:", e);
-                }
-
-                alert("Error saving changes: " + errorMessage);
+            error: function (xhr) {
+                alert("Error saving treatment: " + xhr.responseText);
             }
         });
-
     });
 });
+
+
+
+<!--$(document).ready(function () {-->
+<!--    // Set default color for healthy teeth-->
+<!--    $(".tooth").css("background-color", "#00FF00");-->
+
+<!--    // Function to update selected teeth display-->
+<!--    function updateSelectedTeeth() {-->
+<!--        let selectedTeeth = [];-->
+
+<!--        $(".tooth.selected").each(function () {-->
+<!--            selectedTeeth.push($(this).attr("data-tooth")); // Get tooth number from data-tooth-->
+<!--        });-->
+
+<!--        if (selectedTeeth.length > 0) {-->
+<!--            $("#selected-teeth").text("Selected Teeth: " + selectedTeeth.join(", "));-->
+<!--        } else {-->
+<!--            $("#selected-teeth").text("No teeth selected");-->
+<!--        }-->
+<!--    }-->
+
+<!--    // Select All Teeth (toggle selection)-->
+<!--    $("#select-all").click(function () {-->
+<!--        if ($(".tooth").hasClass("selected")) {-->
+<!--            $(".tooth").removeClass("selected");-->
+<!--        } else {-->
+<!--            $(".tooth").addClass("selected");-->
+<!--        }-->
+<!--        updateSelectedTeeth();-->
+<!--    });-->
+
+<!--    // Select individual teeth-->
+<!--    $(".tooth").click(function () {-->
+<!--        $(this).toggleClass("selected");-->
+<!--        updateSelectedTeeth();-->
+<!--    });-->
+
+<!--    // Clear selection-->
+<!--    $("#clear-selection").click(function() {-->
+<!--        $(".tooth").removeClass("selected");-->
+<!--        updateSelectedTeeth();-->
+<!--    });-->
+
+<!--    // CSRF Token function-->
+<!--    function getCSRFToken() {-->
+<!--        return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];-->
+<!--    }-->
+
+<!--    // Save Changes Button Click Event-->
+<!--    $("#save-changes").click(function () {-->
+<!--        var bookingId = "{{ booking_id }}-->
+<!--         console.log("Booking ID:", bookingId);-->
+<!--        var csrftoken = getCSRFToken();-->
+
+<!--        let selectedTeeth = [];-->
+<!--        $(".tooth.selected").each(function () {-->
+<!--            selectedTeeth.push($(this).attr("data-tooth"));-->
+<!--        });-->
+
+<!--        let selectedStatus = $(".status-controls button.active").data("status") || "healthy";-->
+
+<!--        let selectedTreatments = [];-->
+<!--        $(".treatment-checkbox input:checked").each(function () {-->
+<!--            selectedTreatments.push($(this).val());-->
+<!--        });-->
+
+<!--        $.ajax({-->
+<!--            type: "POST",-->
+<!--            url: `/doctor/dentalchart/${bookingId}/update/`,-->
+<!--            data: JSON.stringify({-->
+<!--                teeth: selectedTeeth,-->
+<!--                status: selectedStatus,-->
+<!--                treatments: selectedTreatments,-->
+<!--            }),-->
+<!--            contentType: "application/json",-->
+<!--            headers: {-->
+<!--                "X-CSRFToken": csrftoken-->
+<!--            },-->
+<!--            success: function (response) {-->
+<!--                alert(response.message);-->
+<!--            },-->
+<!--            error: function(xhr, status, error) {-->
+<!--                console.error("Full Error Response:", xhr);-->
+<!--                let errorMessage = "Unknown error occurred";-->
+
+<!--                try {-->
+<!--                    let jsonResponse = JSON.parse(xhr.responseText);  // Try to parse response as JSON-->
+<!--                    errorMessage = jsonResponse?.error || errorMessage;-->
+<!--                } catch (e) {-->
+<!--                    console.error("Error parsing response:", e);-->
+<!--                }-->
+
+<!--                alert("Error saving changes: " + errorMessage);-->
+<!--            }-->
+<!--        });-->
+
+<!--    });-->
+<!--});-->
     </script>
 </body>
 </html>

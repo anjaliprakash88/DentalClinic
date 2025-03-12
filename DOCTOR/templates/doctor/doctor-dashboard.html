@@ -244,7 +244,7 @@ $(document).ready(function() {
                             age: booking.age,
                             actions: `
                             <div class="d-flex gap-2">
-                                <button class="btn btn-primary" id="dental-btn" data-id="${booking.id}">Dental</button>
+                                <button class="btn btn-primary dental-btn"  data-id="${booking.id}">Dental</button>
                                 <button class="btn btn-primary" id="general-btn" data-id="${booking.id}">General</button>
                             </div>
                             `
@@ -292,7 +292,7 @@ $(document).ready(function() {
 });
 
 <!------------------------DENTAL BUTTON------------------------->
- $(document).on("click", "#dental-btn", function (e) {
+ $(document).on("click", ".dental-btn", function (e) {
     e.preventDefault();
 
     var bookingId = $(this).data("id");
