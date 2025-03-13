@@ -1,6 +1,22 @@
 from django.db import models
 from RECEPTION.models import Patient, PatientBooking
+from SUPERADMIN.models import PharmaceuticalMedicine
 
+
+# -------------------- Medicine Prescription Model --------------------
+class MedicinePrescription(models.Model):
+    booking = models.ForeignKey(
+        PatientBooking, on_delete=models.CASCADE, related_name="prescription"
+    )
+    medicine = models.ForeignKey(
+        PharmaceuticalMedicine, on_delete=models.CASCADE, related_name="prescriptions"
+    )
+    dosage_days = models.IntegerField(default=1)
+    medicine_times = models.JSONField()
+    meal_times = models.JSONField()
+
+    def __str__(self):
+        return self.medicine.medicine_name
 
 # -------------------- Treatment Note Model --------------------
 class TreatmentNote(models.Model):
@@ -52,8 +68,8 @@ class GeneralExamination(models.Model):
 class DentalExamination(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="dental_examinations")
     booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="dental_examinations")  # Link to PatientBooking
-    selected_teeth = models.JSONField()  # Store selected teeth as a list (e.g., ["11", "12", "13"])
-    treatments = models.JSONField()  # Store treatments as a list (e.g., ["filling", "root-canal"])
+    selected_teeth = models.JSONField()
+    treatments = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

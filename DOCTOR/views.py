@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import JsonResponse
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework import status
 from django.contrib.auth import login
@@ -9,15 +10,86 @@ from django.urls import reverse
 from .serializer import (DoctorLoginSerializer,
                          GeneralExaminationSerializer,
                          DentalExaminationSerializer,
-                         TreatmentNoteSerializer)
+                         TreatmentNoteSerializer,
+                         PrescriptionSerializer,
+                         MedicineSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
-from .models import GeneralExamination, DentalExamination
-from SUPERADMIN.models import Doctor
+
+from .models import (GeneralExamination,
+                     DentalExamination,
+
+                    )
+from SUPERADMIN.models import Doctor, PharmaceuticalMedicine
 from RECEPTION.models import PatientBooking, Patient
 from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import now
 
 
+
+#-----------------------------------------------------------
+class MedicineAPIView(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = "doctor/prescription.html"
+
+    def get(self, request, booking_id, *args, **kwargs):
+        medicines = PharmaceuticalMedicine.objects.all()
+        doctor = get_object_or_404(Doctor, user=request.user)
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+
+        if request.accepted_renderer.format == "html":
+            return render(request, self.template_name, {'medicines': medicines, 'booking': booking})
+
+        serializer = MedicineSerializer(medicines, many=True)
+        return Response({'medicines': serializer.data})
+
+    def post(self, request, booking_id, *args, **kwargs):
+        doctor = get_object_or_404(Doctor, user=request.user)
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+
+        if not booking:
+            return Response({"error": "Booking ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        medicines_data = request.data.get('medicines', [])
+        if not medicines_data:
+            return Response({"error": "No medicine data provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        created_prescriptions = []
+        errors = []
+
+        for med in medicines_data:
+            try:
+                medicine_id = med.get('medicine')
+                medicine = get_object_or_404(PharmaceuticalMedicine, id=medicine_id)
+
+                prescription_data = {
+                    'booking': booking.id,  # Pass actual booking instance
+                    'medicine': medicine.id,
+                    'dosage_days': med.get('dosage_days', 1),
+                    'medicine_times': med.get('medicine_times', []),  # Now expects a JSON list
+                    'meal_times': med.get('meal_times', [])  # Now expects a JSON list
+                }
+
+                serializer = PrescriptionSerializer(data=prescription_data)
+                if serializer.is_valid():
+                    prescription = serializer.save()
+                    created_prescriptions.append(PrescriptionSerializer(prescription).data)
+                else:
+                    errors.append(serializer.errors)
+            except Exception as e:
+                errors.append(str(e))
+
+        if errors:
+            return Response(
+                {"error": "Some medicines could not be saved", "details": errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(
+            {"success": True, "created_prescriptions": created_prescriptions},
+            status=status.HTTP_201_CREATED
+        )
+
+# -------------------------------------------------
 class TreatmentSummaryView(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = "doctor/treatment_summary.html"

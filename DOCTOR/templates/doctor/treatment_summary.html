@@ -103,22 +103,7 @@
             transform: scale(1.2);
             color: var(--secondary);
         }
-      .container {
-            flex: 1;
-            flex-direction: column;
-            margin-top:150px;
-            align-items: center;
-            width: 50%;
-            display: flex;
-            justify-content: center;
-            transition: var(--transition);
-            background: rgba(255, 255, 255, 0.2); /* Semi-transparent white background */
-            backdrop-filter: blur(10px); /* Blur effect for the glass morphism */
-            border-radius: 15px; /* Rounded corners */
-            border: 1px solid rgba(255, 255, 255, 0.3); /* Light border for depth */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 
-        }
       .back-arrow {
             position: fixed;
             top: 40px;
@@ -209,6 +194,15 @@
                 opacity: 1; /* Show tooltip */
                 visibility: visible; /* Show tooltip */
             }
+        .glassmorphism {
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+    backdrop-filter: blur(10px); /* Blur effect */
+    border-radius: 15px; /* Rounded corners */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Light border */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    margin-top:150px;
+}
+
         </style>
   </head>
   <body>
@@ -226,7 +220,7 @@
         />
       </div>
 
-      <h1 class="dashboard-title">Doctor Profile</h1>
+      <h1 class="dashboard-title">Treatment Summary</h1>
       <div class="sidebar-icon">
         <a href="" class="white-link" data-tooltip="View"><i class="fa-solid fa-eye" style="color: #ffffff;"></i></a>
         <a href="/superadmin/doctor-create/" class="white-link" data-tooltip="Add"><i class="fa-solid fa-plus" style="color: #ffffff;"></i></a>
@@ -234,17 +228,19 @@
       </div>
     </div>
 
-     <div class="container p-3">
-        <h2 class="text-center my-4">Treatment Summary</h2>
+
 
      <!-- Treatment Note Form -->
+        <div class="container mt-5 d-flex justify-content-center">
+    <div class="glassmorphism p-4 w-50">
+        <!-- Treatment Note Form -->
         <form id="treatment-form">
             {% csrf_token %}
             <input type="hidden" id="patientId" value="{{ patient_id }}">
             <input type="hidden" id="booking_id" value="{{ booking.id }}">
-
             <input type="hidden" id="treatment_note_id" name="id" value="">
-            <div class="card mb-4">
+
+            <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Treatment Note</h5>
                     <textarea id="treatment_note" class="form-control" rows="3" name="note"></textarea>
@@ -252,7 +248,9 @@
                 </div>
             </div>
         </form>
-        </div>
+    </div>
+</div>
+
 
 
 <!-- jQuery and Bootstrap JS -->

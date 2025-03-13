@@ -7,7 +7,25 @@ from django.conf import settings
 from .models import (User,
                      SuperAdmin,
                      Doctor,
-                     Branch)
+                     Branch,
+                     PharmaceuticalMedicine)
+
+class PharmaceuticalMedicineSerializer(serializers.ModelSerializer):
+    unit_price = serializers.SerializerMethodField()
+    total_price = serializers.SerializerMethodField()
+    quantity = serializers.IntegerField(default=1)
+
+    class Meta:
+        model = PharmaceuticalMedicine
+        fields = ["id", "medicine_name", "batch_number", "unit_price", "quantity", "total_price"]
+
+    def get_unit_price(self, obj):  # Ensure this method name matches "unit_price"
+        return obj.unit_price if obj.unit_price else 0
+
+    def get_total_price(self, obj):  # Ensure this method name matches "total_price"
+        return self.get_unit_price(obj) * 1
+
+
 # --------------BRANCH SERIALIZER --------------
 class BranchSerializer(serializers.ModelSerializer):
     class Meta:

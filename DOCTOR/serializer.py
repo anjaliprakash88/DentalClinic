@@ -1,8 +1,48 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from SUPERADMIN.models import PharmaceuticalMedicine
 from .models import (DentalExamination,
                      GeneralExamination,
-                     TreatmentNote)
+                     TreatmentNote,
+
+                     MedicinePrescription)
+
+
+
+#--------------------------------------------------
+class MedicineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PharmaceuticalMedicine
+        fields = ['id', 'medicine_name']
+
+
+class PrescriptionSerializer(serializers.ModelSerializer):
+    medicine = serializers.PrimaryKeyRelatedField(
+        queryset=PharmaceuticalMedicine.objects.all()
+    )
+    medicine_times = serializers.ListField(
+        child=serializers.CharField(), required=False
+    )
+    meal_times = serializers.ListField(
+        child=serializers.CharField(), required=False
+    )
+
+    class Meta:
+        model = MedicinePrescription
+        fields = ['id', 'medicine', 'dosage_days', 'medicine_times', 'meal_times','booking']
+        read_only_fields = ['id']
+
+    def create(self, validated_data):
+        return MedicinePrescription.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.medicine = validated_data.get("medicine", instance.medicine)
+        instance.dosage_days = validated_data.get("dosage_days", instance.dosage_days)
+        instance.medicine_times = validated_data.get("medicine_times", instance.medicine_times)
+        instance.meal_times = validated_data.get("meal_times", instance.meal_times)
+
+        instance.save()
+        return instance
 
 
 # --------------------------------------------------------------
