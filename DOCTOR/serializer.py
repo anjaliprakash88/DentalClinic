@@ -4,9 +4,19 @@ from SUPERADMIN.models import PharmaceuticalMedicine
 from .models import (DentalExamination,
                      GeneralExamination,
                      TreatmentNote,
-
+                     TreatmentBill,
                      MedicinePrescription)
 
+# --------------------------------------------------------
+class TreatmentBillSerializer(serializers.ModelSerializer):
+    treatments = serializers.SerializerMethodField()  # Fetch treatments from JSONField
+
+    class Meta:
+        model = TreatmentBill
+        fields = ['id', 'booking', 'dental_examination', 'treatments', 'price']
+
+    def get_treatments(self, obj):
+        return obj.get_treatments()
 
 
 #--------------------------------------------------

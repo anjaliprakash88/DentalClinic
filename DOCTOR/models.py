@@ -75,3 +75,24 @@ class DentalExamination(models.Model):
     def __str__(self):
         return f"Treatment for {self.booking.patient.first_name} {self.booking.patient.last_name} on {self.booking.appointment_date}"
 
+
+class TreatmentBill(models.Model):
+    booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_billing")
+    dental_examination = models.ForeignKey(DentalExamination, on_delete=models.CASCADE, related_name="treatment_billing")
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    def get_treatments(self):
+        if isinstance(self.dental_examination.treatments, str):
+            try:
+                import json
+                return json.loads(self.dental_examination.treatments)  # Convert string to JSON
+            except json.JSONDecodeError:
+                return {"error": "Invalid JSON format"}
+        return self.dental_examination.treatments  # If already a dictionary/list
+
+    def __str__(self):
+        return f"Bill for {self.booking.patient.first_name} {self.booking.patient.last_name} - ${self.price}"
+
+
+
+
