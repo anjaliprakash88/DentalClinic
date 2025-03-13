@@ -291,6 +291,7 @@
                 // Update the ID field with the returned ID
                 $("#treatment_note_id").val(response.id);
                 alert(isUpdate ? "Treatment note updated successfully!" : "Treatment note saved successfully!");
+                window.location.href = `/doctor/medicine-prescription/${bookingId}/`;
             },
             error: function(xhr) {
                 alert("Failed to save treatment note. Please check console.");

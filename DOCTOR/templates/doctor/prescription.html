@@ -98,27 +98,15 @@
             transition: all 0.3s ease;
 
         }
+        .container{
+            margin-top:100px;
+        }
 
         .sidebar-icon i:hover {
             transform: scale(1.2);
             color: var(--secondary);
         }
-      .container {
-            flex: 1;
-            flex-direction: column;
-            margin-top:150px;
-            align-items: center;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            transition: var(--transition);
-            background: rgba(255, 255, 255, 0.2); /* Semi-transparent white background */
-            backdrop-filter: blur(10px); /* Blur effect for the glass morphism */
-            border-radius: 15px; /* Rounded corners */
-            border: 1px solid rgba(255, 255, 255, 0.3); /* Light border for depth */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 
-        }
       .white-link {
             color: white; /* Set text color to white */
             text-decoration: none; /* Remove underline */
@@ -176,7 +164,7 @@
         />
       </div>
 
-      <h1 class="dashboard-title">Doctor Dashboard</h1>
+      <h1 class="dashboard-title">Medicine Prescription</h1>
       <div class="sidebar-icon">
           <a href="" class="white-link" data-tooltip="view"><i class="fa-solid fa-circle-user" style="color: #ffffff;"></i></a>
           <a href="" data-tooltip="Message"><i class="fa-solid fa-message"  style="color: #ffffff;"></i></a>
@@ -184,25 +172,25 @@
       </div>
     </div>
 
-<div class="container p-3">
-    <form id="medicine-form">
+<div class="container p-5">
+    <form id="medicine-form" class="bg-light p-4 rounded shadow">
         {% csrf_token %}
         <input type="hidden" id="booking_id" value="{{ booking.id|default:'' }}">
 
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Medicine Prescription</h5>
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header">
                 <div id="medicine-items-container">
                     <!-- Dynamic medicine items will be added here -->
                 </div>
-                <button type="button" id="add-medicine-btn" class="btn btn-primary mt-2">+</button>
-                <button type="submit" class="btn btn-success mt-2">Save</button>
+                <button type="button" id="add-medicine-btn" class="btn btn-outline-primary mt-2"><i class="bi bi-plus-lg"></i> Add Medicine</button>
+                <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i>Save</button>
             </div>
         </div>
     </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 <script>
 $(document).ready(function() {
     let medicineCount = 1;
@@ -225,34 +213,56 @@ $(document).ready(function() {
 
     function addMedicineItem() {
         const newItemHtml = `
-            <div class="medicine-item mb-3" id="medicine-item-${medicineCount}">
+            <div class="medicine-item p-3 mb-3 border rounded bg-white shadow-sm" id="medicine-item-${medicineCount}">
                 <div class="row">
                     <div class="col-md-4">
-                        <select id="medicine_name_${medicineCount}" class="form-control" name="medicine_${medicineCount}">
+                        <label class="form-label">Medicine</label>
+                        <select id="medicine_name_${medicineCount}" class="form-select" name="medicine_${medicineCount}">
                             <option value="">Select Medicine</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <input type="number" id="dosage_days_${medicineCount}" class="form-control" placeholder="Days" name="dosage_days_${medicineCount}" min="1">
+                        <label class="form-label">Days</label>
+                        <input type="number" id="dosage_days_${medicineCount}" class="form-control"  name="dosage_days_${medicineCount}" min="1">
                     </div>
                     <div class="col-md-4">
-                        <label class="d-block">Medicine Times:</label>
-                        <input type="checkbox" value="Morning" name="medicine_time_${medicineCount}"> Morning
-                        <input type="checkbox" value="Afternoon" name="medicine_time_${medicineCount}"> Afternoon
-                        <input type="checkbox" value="Evening" name="medicine_time_${medicineCount}"> Evening
-                        <input type="checkbox" value="Night" name="medicine_time_${medicineCount}"> Night
+                        <label class="form-label d-block">Medicine Times</label>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Morning" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Morning</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Afternoon" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Afternoon</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Evening" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Evening</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Night" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Night</label>
+                        </div>
                     </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger remove-medicine" data-id="${medicineCount}">-</button>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger remove-medicine" data-id="${medicineCount}">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-12">
-                        <label>Meal Time:</label>
-                        <input type="checkbox" value="Before Meal" name="meal_time_${medicineCount}"> Before Meal
-                        <input type="checkbox" value="After Meal" name="meal_time_${medicineCount}"> After Meal
+                        <label class="form-label">Meal Time</label>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Before Meal" name="meal_time_${medicineCount}">
+                            <label class="form-check-label">Before Meal</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="After Meal" name="meal_time_${medicineCount}">
+                            <label class="form-check-label">After Meal</label>
+                        </div>
                     </div>
-                </div>
+                   </div>
             </div>
         `;
 
