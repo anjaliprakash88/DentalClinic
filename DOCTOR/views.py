@@ -12,12 +12,13 @@ from .serializer import (DoctorLoginSerializer,
                          DentalExaminationSerializer,
                          TreatmentNoteSerializer,
                          PrescriptionSerializer,
-                         MedicineSerializer)
+                         MedicineSerializer,
+                         TreatmentBillSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
 
 from .models import (GeneralExamination,
                      DentalExamination,
-
+                    TreatmentBill
                     )
 from SUPERADMIN.models import Doctor, PharmaceuticalMedicine
 from RECEPTION.models import PatientBooking, Patient
@@ -25,6 +26,85 @@ from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import now
 
 
+class TreatmentBillView(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'doctor/treatment_bill.html'
+
+    def get(self, request, booking_id, *args, **kwargs):
+        """
+        Fetch or create a TreatmentBill entry for a specific booking.
+        Supports JSON and HTML rendering.
+        """
+        # Ensure the booking exists
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+
+        # Get related patient details
+        patient = booking.patient
+        patient_name = f"{patient.first_name} {patient.last_name}"
+        patient_age = patient.age  # Use the existing 'age' field
+
+        # Current date and time
+        current_datetime = now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Try fetching the related DentalExamination
+        dental_examination = DentalExamination.objects.filter(booking=booking).first()
+
+        if not dental_examination:
+            return Response(
+                {"error": "No dental examination found for this booking."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Fetch or create the TreatmentBill with the correct dental_examination
+        treatment_bill, created = TreatmentBill.objects.get_or_create(
+            booking=booking,
+            dental_examination=dental_examination,
+            defaults={'price': 0.00}
+        )
+
+        serializer = TreatmentBillSerializer(treatment_bill)
+
+        response_data = {
+            "patient_name": patient_name,
+            "patient_age": patient_age,
+            "current_datetime": current_datetime,
+            "booking_id": booking.id,
+            "price": treatment_bill.price,
+            "treatments": dental_examination.treatments if isinstance(dental_examination.treatments, list) else []
+        }
+
+        if request.accepted_renderer.format == 'html':
+            return Response(response_data, template_name=self.template_name)
+        return Response(response_data, status=status.HTTP_200_OK)
+
+    def post(self, request, booking_id, *args, **kwargs):
+        """
+        Create or update a TreatmentBill for the given booking_id.
+        """
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+
+        # Ensure a related dental examination exists
+        dental_examination = DentalExamination.objects.filter(booking=booking).first()
+        if not dental_examination:
+            return Response(
+                {"error": "No dental examination found for this booking."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Fetch or create the TreatmentBill with the correct dental_examination
+        treatment_bill, created = TreatmentBill.objects.get_or_create(
+            booking=booking,
+            dental_examination=dental_examination
+        )
+
+        serializer = TreatmentBillSerializer(treatment_bill, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Treatment bill updated successfully!", "data": serializer.data},
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #-----------------------------------------------------------
 class MedicineAPIView(APIView):

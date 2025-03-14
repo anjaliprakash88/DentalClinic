@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treatment Bill</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+       <style>
+            .container {
+                width: 50%;
+                margin: auto;
+                font-family: Arial, sans-serif;
+            }
+
+            .bill-table, .form-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+
+            .bill-table th, .bill-table td,
+            .form-table th, .form-table td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: left;
+            }
+
+            .bill-table th {
+                background-color: #f2f2f2;
+                width: 30%;
+            }
+
+            .form-table th {
+                background-color: #f9f9f9;
+                width: 30%;
+            }
+
+            .form-table td {
+                text-align: left;
+            }
+
+            ul.treatment-list {
+                list-style: none;
+                padding: 0;
+            }
+
+            ul.treatment-list li {
+                margin: 5px 0;
+            }
+
+            button {
+                background-color: #28a745;
+                color: white;
+                padding: 10px 15px;
+                border: none;
+                cursor: pointer;
+                font-size: 16px;
+            }
+
+            button:hover {
+                background-color: #218838;
+            }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Treatment Bill</h2>
+
+    <table class="bill-table">
+        <tr>
+            <th>Patient Name</th>
+            <td id="patient-name"></td>
+        </tr>
+        <tr>
+            <th>Patient Age</th>
+            <td id="patient-age"></td>
+        </tr>
+        <tr>
+            <th>Current Date & Time</th>
+            <td id="current-datetime"></td>
+        </tr>
+        <tr>
+            <th>Booking ID</th>
+            <td id="booking-id"></td>
+        </tr>
+        <tr>
+            <th>Treatments</th>
+            <td>
+                <ul id="treatment-list" class="treatment-list"></ul>
+            </td>
+        </tr>
+        <tr>
+            <th>Total Price</th>
+            <td>$<span id="total-price"></span></td>
+        </tr>
+    </table>
+
+    <h3>Add New Treatment Bill</h3>
+    <form id="treatment-form">
+        <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+        <table class="form-table">
+            <tr>
+                <th>Price</th>
+                <td>
+                    <input type="number" id="price-input" step="0.01" required>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button type="submit">Save Treatment Bill</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+    <script>
+       $(document).ready(function() {
+    let booking_id = 1; // Replace with dynamic ID
+
+    // Function to get CSRF token from cookies
+    function getCSRFToken() {
+        let csrfToken = null;
+        if (document.cookie) {
+            document.cookie.split(';').forEach(function(cookie) {
+                let parts = cookie.split('=');
+                if (parts[0].trim() === 'csrftoken') {
+                    csrfToken = parts[1];
+                }
+            });
+        }
+        return csrfToken;
+    }
+
+    // Setup AJAX to include CSRF token
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+            }
+        }
+    });
+
+    // Fetch Treatment Bill
+    $.ajax({
+        url: `/doctor/treatment-bill/${booking_id}/`,
+        type: "GET",
+        dataType: "json",
+        success: function(response) {
+            $("#patient-name").text(response.patient_name);
+            $("#patient-age").text(response.patient_age);
+            $("#current-datetime").text(response.current_datetime);
+            $("#booking-id").text(response.booking_id);
+            $("#total-price").text(response.price);
+
+            $("#treatment-list").empty();
+            if (Array.isArray(response.treatments)) {
+                response.treatments.forEach(function(treatment) {
+                    $("#treatment-list").append(`<li>${treatment}</li>`);
+                });
+            } else {
+                $("#treatment-list").append(`<li>No treatments found</li>`);
+            }
+        },
+        error: function(xhr) {
+            console.error(xhr.responseText);
+        }
+    });
+
+    // Submit Form to Save Treatment Bill
+    $("#treatment-form").on("submit", function(e) {
+        e.preventDefault();
+
+        let data = {
+            price: $("#price-input").val()
+        };
+
+        $.ajax({
+            url: `/doctor/treatment-bill/${booking_id}/`,
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function(response) {
+                alert("Treatment bill saved successfully!");
+                location.reload();
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+            }
+        });
+    });
+});
+
+    </script>
+
+</body>
+</html>

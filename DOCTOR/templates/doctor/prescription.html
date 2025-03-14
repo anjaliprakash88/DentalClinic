@@ -330,6 +330,7 @@ $(document).ready(function() {
                 alert('Medicine saved successfully!');
                 $('#medicine-items-container').empty();
                 addMedicineItem();
+                window.location.href = `/doctor/treatment-bill/${bookingId}/`
             },
             error: function(xhr) { console.error('Error:', xhr.responseText); }
         });
