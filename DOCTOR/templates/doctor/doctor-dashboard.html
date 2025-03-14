@@ -244,6 +244,7 @@ $(document).ready(function() {
                             age: booking.age,
                             actions: `
                             <div class="d-flex gap-2">
+                                <button class="btn btn-primary previous_treatment-btn"  data-id="${booking.id}">Pre.Treatment</button>
                                 <button class="btn btn-primary dental-btn"  data-id="${booking.id}">Dental</button>
                                 <button class="btn btn-primary" id="general-btn" data-id="${booking.id}">General</button>
                             </div>
@@ -289,6 +290,18 @@ $(document).ready(function() {
         // Add your logic for handling the "Previous Notes" button click
     });
 
+});
+<!------------------------DENTAL BUTTON------------------------->
+ $(document).on("click", ".previous_treatment-btn", function (e) {
+    e.preventDefault();
+
+    var bookingId = $(this).data("id");
+
+    if (!bookingId) {
+        alert("Invalid booking ID!");
+        return;
+    }
+    window.location.href = `/doctor/previous-treatment/${bookingId}/`;
 });
 
 <!------------------------DENTAL BUTTON------------------------->

@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from SUPERADMIN.models import PharmaceuticalMedicine
+from RECEPTION.models import PatientBooking
+from datetime import date
 from .models import (DentalExamination,
                      GeneralExamination,
                      TreatmentNote,
@@ -92,39 +94,6 @@ class DentalExaminationSerializer(serializers.ModelSerializer):
     def get_patient_name(self, obj):
         return f"{obj.booking.patient.first_name} {obj.booking.patient.last_name}" if obj.booking.patient else None
 
-# class QuadrantSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Quadrant
-#         fields = '__all__'
-#
-# class ToothSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Tooth
-#         fields = '__all__'
-#
-# class TreatmentSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Treatment
-#         fields = '__all__'
-#
-# class DentalChartSerializer(serializers.ModelSerializer):
-#     quadrants = QuadrantSerializer(many=True, read_only=True, source='get_quadrants')
-#     treatments = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         model = DentalChart
-#         fields = ['id', 'patient', 'created_at', 'updated_at', 'quadrants', 'treatments']
-#
-#     def get_treatments(self, obj):
-#         # Fetch all teeth related to this patient's quadrants
-#         quadrants = Quadrant.objects.all()
-#         teeth = Tooth.objects.filter(quadrant__in=quadrants)
-#
-#         # Fetch treatments for these teeth
-#         treatments = Treatment.objects.filter(tooth__in=teeth)
-#         return TreatmentSerializer(treatments, many=True).data
-
-
 #-----------------------------------Doctor LOGIN SERIALIZER--------------------------------------
 class DoctorLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -139,3 +108,58 @@ class DoctorLoginSerializer(serializers.Serializer):
         if not user.is_doctor:
             raise serializers.ValidationError("You are not authorized as a doctor")
         return {'user': user}
+
+
+class PreviousTreatmentSerializer(serializers.ModelSerializer):
+    patient_name = serializers.SerializerMethodField()
+    last_appointment_date = serializers.SerializerMethodField()
+
+    # Custom filtering to exclude today's records
+    dental_examinations = serializers.SerializerMethodField()
+    treatment_bills = serializers.SerializerMethodField()
+    prescriptions = serializers.SerializerMethodField()
+    treatment_notes = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PatientBooking
+        fields = ['id', 'patient_name', 'appointment_date', 'last_appointment_date',
+                  'dental_examinations', 'treatment_bills', 'prescriptions', 'treatment_notes']
+
+    def get_patient_name(self, obj):
+        return f"{obj.patient.first_name} {obj.patient.last_name}" if obj.patient else None
+
+    def get_last_appointment_date(self, obj):
+        """ Fetch the last appointment date of this patient (excluding today) """
+        last_booking = PatientBooking.objects.filter(
+            patient=obj.patient
+        ).exclude(id=obj.id).exclude(appointment_date=date.today()).order_by('-appointment_date').first()
+
+        return last_booking.appointment_date if last_booking else None
+
+    def get_dental_examinations(self, obj):
+        exams = obj.dental_examinations.all()  # Fetch all first
+        print("All Dental Examinations:", exams)  # Debugging
+        filtered_exams = exams.exclude(created_at__date=date.today())
+        print("Filtered Examinations:", filtered_exams)  # Debugging
+        return DentalExaminationSerializer(filtered_exams, many=True).data
+
+    def get_treatment_bills(self, obj):
+        bills = obj.treatment_bills.all()
+        print("All Treatment Bills:", bills)  # Debugging
+        filtered_bills = bills.exclude(created_at__date=date.today())
+        print("Filtered Bills:", filtered_bills)  # Debugging
+        return TreatmentBillSerializer(filtered_bills, many=True).data
+
+    def get_prescriptions(self, obj):
+        prescriptions = obj.prescriptions.all()
+        print("All Prescriptions:", prescriptions)  # Debugging
+        filtered_prescriptions = prescriptions.exclude(created_at__date=date.today())
+        print("Filtered Prescriptions:", filtered_prescriptions)  # Debugging
+        return PrescriptionSerializer(filtered_prescriptions, many=True).data
+
+    def get_treatment_notes(self, obj):
+        notes = obj.treatment_notes.all()
+        print("All Treatment Notes:", notes)  # Debugging
+        filtered_notes = notes.exclude(created_at__date=date.today())
+        print("Filtered Notes:", filtered_notes)  # Debugging
+        return TreatmentNoteSerializer(filtered_notes, many=True).data

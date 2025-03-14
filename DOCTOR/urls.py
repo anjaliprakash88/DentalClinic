@@ -11,7 +11,7 @@ urlpatterns = [
 
     path('treatment-bill/<int:booking_id>/', views.TreatmentBillView.as_view(), name='treatment-bill'),
 
-
+    path('previous-treatment/<int:id>/', views.PreviousTreatmentView.as_view(), name='previous-treatment'),
 
     path('generalchart/<int:booking_id>/', views.GeneralExaminationAPIView.as_view(), name="generalchart"),
 

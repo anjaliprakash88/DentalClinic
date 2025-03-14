@@ -13,7 +13,8 @@ from .serializer import (DoctorLoginSerializer,
                          TreatmentNoteSerializer,
                          PrescriptionSerializer,
                          MedicineSerializer,
-                         TreatmentBillSerializer)
+                         TreatmentBillSerializer,
+                         PreviousTreatmentSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
 
 from .models import (GeneralExamination,
@@ -26,6 +27,22 @@ from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import now
 
 
+class PreviousTreatmentView(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'doctor/previous_treatment.html'
+
+    def get(self, request, id, format=None):
+        booking = get_object_or_404(PatientBooking, id=id)
+        serializer = PreviousTreatmentSerializer(booking)
+        print(serializer.data)
+
+        if request.accepted_renderer.format == 'html':
+            return Response({"data": serializer.data}, template_name='doctor/previous_treatment.html')
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# ------------------------------
 class TreatmentBillView(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'doctor/treatment_bill.html'

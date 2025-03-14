@@ -6,7 +6,7 @@ from SUPERADMIN.models import PharmaceuticalMedicine
 # -------------------- Medicine Prescription Model --------------------
 class MedicinePrescription(models.Model):
     booking = models.ForeignKey(
-        PatientBooking, on_delete=models.CASCADE, related_name="prescription"
+        PatientBooking, on_delete=models.CASCADE, related_name="prescriptions"
     )
     medicine = models.ForeignKey(
         PharmaceuticalMedicine, on_delete=models.CASCADE, related_name="prescriptions"
@@ -14,6 +14,7 @@ class MedicinePrescription(models.Model):
     dosage_days = models.IntegerField(default=1)
     medicine_times = models.JSONField()
     meal_times = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.medicine.medicine_name
@@ -77,9 +78,10 @@ class DentalExamination(models.Model):
 
 
 class TreatmentBill(models.Model):
-    booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_billing")
-    dental_examination = models.ForeignKey(DentalExamination, on_delete=models.CASCADE, related_name="treatment_billing")
+    booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_bills")
+    dental_examination = models.ForeignKey(DentalExamination, on_delete=models.CASCADE, related_name="ttreatment_bills")
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def get_treatments(self):
         if isinstance(self.dental_examination.treatments, str):

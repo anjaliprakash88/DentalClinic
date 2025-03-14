@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previous Treatment</title>
+</head>
+<body>
+    <h2>Previous Treatment Details</h2>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% else %}
+        <p><strong>Patient Name:</strong> {{ data.patient_name }}</p>
+        <p><strong>Last Appointment Date:</strong> {{ data.last_appointment_date }}</p>
+
+        <h3>Dental Examinations</h3>
+        {% if data.dental_examinations %}
+            <ul>
+                {% for exam in data.dental_examinations %}
+                    <li>
+                        <strong>Selected Teeth:</strong> {{ exam.selected_teeth }} <br>
+                        <strong>Treatments:</strong>
+                        {% if exam.treatments %}
+                            {{ exam.treatments|join:", " }}
+                        {% else %}
+                            No treatments recorded.
+                        {% endif %}
+                        <br>
+                        <strong>Created At:</strong> {{ exam.created_at }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No dental examinations available.</p>
+        {% endif %}
+
+        <h3>Treatment Bills</h3>
+        {% if data.treatment_bills %}
+            <ul>
+                {% for bill in data.treatment_bills %}
+                    <li>
+                        <strong>Treatments:</strong>
+                        {% if bill.treatments %}
+                            {{ bill.treatments|join:", " }}
+                        {% else %}
+                            No treatments billed.
+                        {% endif %}
+                        <br>
+                        <strong>Price:</strong> ${{ bill.price }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No treatment bills available.</p>
+        {% endif %}
+
+        <h3>Prescriptions</h3>
+        {% if data.prescriptions %}
+            <ul>
+                {% for prescription in data.prescriptions %}
+                    <li>
+                        <strong>Medicine:</strong> {{ prescription.medicine }} <br>
+                        <strong>Dosage Days:</strong> {{ prescription.dosage_days }} <br>
+                        <strong>Times:</strong>
+                        {% if prescription.medicine_times %}
+                            {{ prescription.medicine_times|join:", " }}
+                        {% else %}
+                            Not specified.
+                        {% endif %}
+                        <br>
+                        <strong>Meal Timing:</strong>
+                        {% if prescription.meal_times %}
+                            {{ prescription.meal_times|join:", " }}
+                        {% else %}
+                            Not specified.
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No prescriptions available.</p>
+        {% endif %}
+
+        <h3>Treatment Notes</h3>
+        {% if data.treatment_notes %}
+            <ul>
+                {% for note in data.treatment_notes %}
+                    <li>
+                        <strong>Note:</strong> {{ note.note }} <br>
+                        <strong>Created At:</strong> {{ note.created_at }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No treatment notes available.</p>
+        {% endif %}
+
+    {% endif %}  <!-- Closing IF block -->
+
+</body>
+</html>
