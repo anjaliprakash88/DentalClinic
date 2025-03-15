@@ -34,7 +34,6 @@ class PreviousTreatmentView(APIView):
     def get(self, request, id, format=None):
         booking = get_object_or_404(PatientBooking, id=id)
         serializer = PreviousTreatmentSerializer(booking)
-        print(serializer.data)
 
         if request.accepted_renderer.format == 'html':
             return Response({"data": serializer.data}, template_name='doctor/previous_treatment.html')

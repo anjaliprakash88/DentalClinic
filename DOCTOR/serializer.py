@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from SUPERADMIN.models import PharmaceuticalMedicine
 from RECEPTION.models import PatientBooking
 from datetime import date
+from django.db.models.functions import TruncDate
 from .models import (DentalExamination,
                      GeneralExamination,
                      TreatmentNote,
@@ -114,7 +115,7 @@ class PreviousTreatmentSerializer(serializers.ModelSerializer):
     patient_name = serializers.SerializerMethodField()
     last_appointment_date = serializers.SerializerMethodField()
 
-    # Custom filtering to exclude today's records
+    # Fetch previous appointment's records
     dental_examinations = serializers.SerializerMethodField()
     treatment_bills = serializers.SerializerMethodField()
     prescriptions = serializers.SerializerMethodField()
@@ -136,30 +137,32 @@ class PreviousTreatmentSerializer(serializers.ModelSerializer):
 
         return last_booking.appointment_date if last_booking else None
 
+    def get_last_booking(self, obj):
+        """ Helper function to fetch the last previous appointment """
+        return PatientBooking.objects.filter(
+            patient=obj.patient
+        ).exclude(id=obj.id).order_by('-appointment_date').first()
+
     def get_dental_examinations(self, obj):
-        exams = obj.dental_examinations.all()  # Fetch all first
-        print("All Dental Examinations:", exams)  # Debugging
-        filtered_exams = exams.exclude(created_at__date=date.today())
-        print("Filtered Examinations:", filtered_exams)  # Debugging
-        return DentalExaminationSerializer(filtered_exams, many=True).data
+        last_booking = self.get_last_booking(obj)
+        if last_booking:
+            return DentalExaminationSerializer(last_booking.dental_examinations.all(), many=True).data
+        return []
 
     def get_treatment_bills(self, obj):
-        bills = obj.treatment_bills.all()
-        print("All Treatment Bills:", bills)  # Debugging
-        filtered_bills = bills.exclude(created_at__date=date.today())
-        print("Filtered Bills:", filtered_bills)  # Debugging
-        return TreatmentBillSerializer(filtered_bills, many=True).data
+        last_booking = self.get_last_booking(obj)
+        if last_booking:
+            return TreatmentBillSerializer(last_booking.treatment_bills.all(), many=True).data
+        return []
 
     def get_prescriptions(self, obj):
-        prescriptions = obj.prescriptions.all()
-        print("All Prescriptions:", prescriptions)  # Debugging
-        filtered_prescriptions = prescriptions.exclude(created_at__date=date.today())
-        print("Filtered Prescriptions:", filtered_prescriptions)  # Debugging
-        return PrescriptionSerializer(filtered_prescriptions, many=True).data
+        last_booking = self.get_last_booking(obj)
+        if last_booking:
+            return PrescriptionSerializer(last_booking.prescriptions.all(), many=True).data
+        return []
 
     def get_treatment_notes(self, obj):
-        notes = obj.treatment_notes.all()
-        print("All Treatment Notes:", notes)  # Debugging
-        filtered_notes = notes.exclude(created_at__date=date.today())
-        print("Filtered Notes:", filtered_notes)  # Debugging
-        return TreatmentNoteSerializer(filtered_notes, many=True).data
+        last_booking = self.get_last_booking(obj)
+        if last_booking:
+            return TreatmentNoteSerializer(last_booking.treatment_notes.all(), many=True).data
+        return []
