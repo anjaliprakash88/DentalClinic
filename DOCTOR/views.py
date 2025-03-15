@@ -36,7 +36,7 @@ class PreviousTreatmentView(APIView):
         serializer = PreviousTreatmentSerializer(booking)
 
         if request.accepted_renderer.format == 'html':
-            return Response({"data": serializer.data}, template_name='doctor/previous_treatment.html')
+            return Response({"data": serializer.data}, template_name=self.template_name)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

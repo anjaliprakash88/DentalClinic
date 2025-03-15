@@ -109,7 +109,13 @@ class DoctorLoginSerializer(serializers.Serializer):
         if not user.is_doctor:
             raise serializers.ValidationError("You are not authorized as a doctor")
         return {'user': user}
+# ---------------------------------------------------
+class PreviousPrescriptionSerializer(serializers.ModelSerializer):
+    medicine_name = serializers.CharField(source='medicine.medicine_name', read_only=True)
 
+    class Meta:
+        model = MedicinePrescription
+        fields = ['id', 'medicine_name', 'dosage_days', 'medicine_times', 'meal_times']
 
 class PreviousTreatmentSerializer(serializers.ModelSerializer):
     patient_name = serializers.SerializerMethodField()
@@ -158,7 +164,7 @@ class PreviousTreatmentSerializer(serializers.ModelSerializer):
     def get_prescriptions(self, obj):
         last_booking = self.get_last_booking(obj)
         if last_booking:
-            return PrescriptionSerializer(last_booking.prescriptions.all(), many=True).data
+            return PreviousPrescriptionSerializer(last_booking.prescriptions.all(), many=True).data
         return []
 
     def get_treatment_notes(self, obj):
