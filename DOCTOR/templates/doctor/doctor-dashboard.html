@@ -178,6 +178,9 @@
 
       <h1 class="dashboard-title">Doctor Dashboard</h1>
       <div class="sidebar-icon">
+          <a href="#" class="white-link view-patients" data-doctor-id="{{ doctor.id }}" data-tooltip="Patient view">
+             <i class="fa-solid fa-hospital-user" style="color: #ffffff;"></i>
+          </a>
           <a href="" class="white-link" data-tooltip="view"><i class="fa-solid fa-circle-user" style="color: #ffffff;"></i></a>
           <a href="" data-tooltip="Message"><i class="fa-solid fa-message"  style="color: #ffffff;"></i></a>
           <a href="" class="white-link" data-tooltip="Logout"><i class="fa-solid fa-power-off" style="color: #ffffff;"></i></a>
@@ -291,7 +294,7 @@ $(document).ready(function() {
     });
 
 });
-<!------------------------DENTAL BUTTON------------------------->
+<!------------------------PREVIOUS TREATMENT BUTTON------------------------->
  $(document).on("click", ".previous_treatment-btn", function (e) {
     e.preventDefault();
 
@@ -330,6 +333,19 @@ $(document).ready(function() {
     }
     window.location.href = `/doctor/generalchart/${bookingId}/`;
 });
+
+<!--------------------ALL PATIENT VIEW--------------->
+$(document).on("click", ".view-patients", function (e) {
+    e.preventDefault();
+
+    let doctorId = $(this).data("doctor-id");
+    if (doctorId) {
+        window.location.href = `/doctor/patients/${doctorId}/`;
+    } else {
+        alert("Doctor ID not found!");
+    }
+});
+
 
 
 </script>

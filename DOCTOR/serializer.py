@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from SUPERADMIN.models import PharmaceuticalMedicine
-from RECEPTION.models import PatientBooking
+from SUPERADMIN.models import PharmaceuticalMedicine, Doctor
+from RECEPTION.models import PatientBooking, Patient
 from datetime import date
 from django.db.models.functions import TruncDate
 from .models import (DentalExamination,
@@ -172,3 +172,32 @@ class PreviousTreatmentSerializer(serializers.ModelSerializer):
         if last_booking:
             return TreatmentNoteSerializer(last_booking.treatment_notes.all(), many=True).data
         return []
+
+
+
+# ---------------------------------------------
+class PatientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Patient
+        fields = ['first_name', 'last_name', 'age', 'phone', 'gender']
+
+
+
+class DoctorPatientSerializer(serializers.ModelSerializer):
+    doctor_name = serializers.SerializerMethodField()
+    patients = serializers.SerializerMethodField()  # Use a method to get actual patients
+
+    class Meta:
+        model = Doctor
+        fields = ['doctor_name', 'specialization', 'experience_years', 'qualification', 'phone_number', 'patients']
+
+    def get_doctor_name(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
+
+    def get_patients(self, obj):
+        """
+        Fetches unique patients who have booked an appointment with the doctor.
+        """
+        bookings = PatientBooking.objects.filter(doctor=obj).select_related('patient')
+        unique_patients = {booking.patient for booking in bookings}  # Get unique patients
+        return PatientSerializer(unique_patients, many=True).data

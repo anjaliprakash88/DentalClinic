@@ -15,6 +15,8 @@ urlpatterns = [
 
     path('generalchart/<int:booking_id>/', views.GeneralExaminationAPIView.as_view(), name="generalchart"),
 
+    path("patients/<int:doctor_id>/", views.DoctorPatientListView.as_view(), name="doctor-patients"),
+
 
 
 

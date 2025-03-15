@@ -14,7 +14,8 @@ from .serializer import (DoctorLoginSerializer,
                          PrescriptionSerializer,
                          MedicineSerializer,
                          TreatmentBillSerializer,
-                         PreviousTreatmentSerializer)
+                         PreviousTreatmentSerializer,
+                         DoctorPatientSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
 
 from .models import (GeneralExamination,
@@ -27,6 +28,30 @@ from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import now
 
 
+
+class DoctorPatientListView(APIView):
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'doctor/doctor_patient_list.html'
+
+    def get(self, request, doctor_id):
+        doctor = get_object_or_404(Doctor, id=doctor_id)
+
+        # Get all bookings for this doctor
+        bookings = PatientBooking.objects.filter(doctor=doctor).order_by('-appointment_date')
+        previous_treatments = PreviousTreatmentSerializer(bookings, many=True).data  # Serialize multiple bookings
+
+        serializer = DoctorPatientSerializer(doctor)
+
+        if request.accepted_renderer.format == 'html':  # Render HTML if requested
+            return render(request, self.template_name, {
+                "doctor": doctor,
+                "patients": serializer.data['patients'],
+                "previous_treatments": previous_treatments  # Pass previous treatments
+            })
+
+        return Response({"doctor": serializer.data, "previous_treatments": previous_treatments})
+
+    # ------------------------------------------
 class PreviousTreatmentView(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'doctor/previous_treatment.html'
