@@ -239,8 +239,8 @@ $(document).ready(function() {
 
                 if (response.appointments.length > 0) {
                     $.each(response.appointments, function(index, booking) {
-                        // Add a row to the DataTable
-                        table.row.add({
+                        let rowClass = booking.status === "Completed" ? "bg-secondary text-sucess" : "";
+                        let rowNode = table.row.add({
                             patient_name: booking.patient_name,
                             gender: booking.gender,
                             appointment_time: booking.appointment_time,
@@ -252,7 +252,8 @@ $(document).ready(function() {
                                 <button class="btn btn-primary" id="general-btn" data-id="${booking.id}">General</button>
                             </div>
                             `
-                        });
+                        }).draw().node();
+                        $(rowNode).addClass(rowClass);
                     });
                 } else {
                     // Add a placeholder row if no bookings are found
@@ -260,11 +261,10 @@ $(document).ready(function() {
                         patient_name: "No bookings today",
                         gender: "",
                         age: "",
+                        appointment_time: "",
                         actions: ""
-                    });
+                    }).draw();
                 }
-
-                table.draw(); // Redraw the table with new data
             },
             error: function() {
                 alert("Failed to load bookings. Please try again.");
@@ -272,7 +272,11 @@ $(document).ready(function() {
         });
     }
 
-    fetchBookings(); // Call function on page load
+ $(document).ready(function() {
+    if ($("#bookingsTable").length) {
+        fetchBookings();
+    }
+});
 
     // Handle click events for buttons
     $(document).on("click", ".treatment-summary", function() {
