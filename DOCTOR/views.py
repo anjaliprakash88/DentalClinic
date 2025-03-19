@@ -425,7 +425,7 @@ class DoctorDashboard(APIView):
 
         return Response({"appointments": serialized_data}, status=status.HTTP_200_OK)
 
-# -------------- DOCTOR LOGIN ---------------
+# --------------DOCTOR LOGIN---------------
 class DoctorLoginView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'doctor/docter_login.html'

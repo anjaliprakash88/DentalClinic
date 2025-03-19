@@ -95,7 +95,7 @@ class DentalExaminationSerializer(serializers.ModelSerializer):
     def get_patient_name(self, obj):
         return f"{obj.booking.patient.first_name} {obj.booking.patient.last_name}" if obj.booking.patient else None
 
-#-----------------------------------Doctor LOGIN SERIALIZER--------------------------------------
+# ---------------DOCTOR LOGIN SERIALIZER---------------
 class DoctorLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
@@ -109,6 +109,7 @@ class DoctorLoginSerializer(serializers.Serializer):
         if not user.is_doctor:
             raise serializers.ValidationError("You are not authorized as a doctor")
         return {'user': user}
+
 # ---------------------------------------------------
 class PreviousPrescriptionSerializer(serializers.ModelSerializer):
     medicine_name = serializers.CharField(source='medicine.medicine_name', read_only=True)
@@ -172,6 +173,7 @@ class PreviousTreatmentSerializer(serializers.ModelSerializer):
         if last_booking:
             return TreatmentNoteSerializer(last_booking.treatment_notes.all(), many=True).data
         return []
+
 
 
 

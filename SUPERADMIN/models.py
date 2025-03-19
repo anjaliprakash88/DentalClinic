@@ -33,18 +33,19 @@ class Branch(models.Model):
     def __str__(self):
         return self.name
 
-# ---------------DOCTOR MODEL-------------
+# ---------------DOCTOR MODEL---------------
 class Doctor(models.Model):
     user = models.OneToOneField(User, related_name="doctor", on_delete=models.CASCADE)
     branch = models.ForeignKey('Branch', related_name="doctors", on_delete=models.CASCADE)
-
     specialization = models.CharField(
         max_length=100,
         choices=[
             ('General Dentist', 'General Dentist'),
+            ('Pediatric Dentist', 'Pediatric Dentist'),
             ('Orthodontist', 'Orthodontist'),
             ('Periodontist', 'Periodontist'),
             ('Endodontist', 'Endodontist'),
+            ('Oral Pathologist', 'Oral Pathologist'),
             ('Prosthodontist', 'Prosthodontist')
         ]
     )
@@ -52,8 +53,6 @@ class Doctor(models.Model):
     qualification = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15, unique=True)
     address = models.TextField(blank=True, null=True)
-
-    # Certificate & License Uploads
     educational_certificate = models.FileField(upload_to='DOCTOR/certificates/', null=True, blank=True)
     medical_license = models.FileField(upload_to='DOCTOR/licenses/', null=True, blank=True)
 

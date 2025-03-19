@@ -69,8 +69,8 @@ class GeneralExamination(models.Model):
 class DentalExamination(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name="dental_examinations")
     booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="dental_examinations")  # Link to PatientBooking
-    selected_teeth = models.JSONField()
-    treatments = models.JSONField()
+    selected_teeth = models.JSONField(default=list)
+    treatments = models.JSONField(default=list)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
