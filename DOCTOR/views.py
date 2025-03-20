@@ -72,36 +72,24 @@ class TreatmentBillView(APIView):
     template_name = 'doctor/treatment_bill.html'
 
     def get(self, request, booking_id, *args, **kwargs):
-        try:
-            booking = get_object_or_404(PatientBooking, id=booking_id)
-        except Exception as e:
-            return Response({"error": "Booking not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        # Get related patient details
+        booking = get_object_or_404(PatientBooking, id=booking_id)
         patient = booking.patient
         patient_name = f"{patient.first_name} {patient.last_name}"
         patient_age = patient.age
-
-
-        # Current date and time
         current_datetime = now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Try fetching the related DentalExamination
         dental_examination = DentalExamination.objects.filter(booking=booking).first()
-
         if not dental_examination:
             return Response(
                 {"error": "No dental examination found for this booking."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-
         treatment_bill, created = TreatmentBill.objects.get_or_create(
             booking=booking,
             dental_examination=dental_examination,
-            defaults={'price': 0.00}
+            defaults={'total_amount': 0.00, 'paid_amount': 0.00}
         )
-
 
         serializer = TreatmentBillSerializer(treatment_bill)
 
@@ -110,10 +98,11 @@ class TreatmentBillView(APIView):
             "patient_age": patient_age,
             "current_datetime": current_datetime,
             "booking_id": booking.id,
-            "price": treatment_bill.price,
-            "treatments": dental_examination.treatments if isinstance(dental_examination.treatments, list) else []
+            "total_amount": serializer.data["total_amount"],
+            "paid_amount": serializer.data["paid_amount"],
+            "balance_amount": serializer.data["balance_amount"],  # Auto-calculated
+            "treatments": serializer.data["treatments"]
         }
-
 
         if request.accepted_renderer.format == 'html':
             return Response(response_data, template_name=self.template_name)
@@ -121,16 +110,13 @@ class TreatmentBillView(APIView):
 
     def post(self, request, booking_id, *args, **kwargs):
         booking = get_object_or_404(PatientBooking, id=booking_id)
-        print(f"Booking ID Found: {booking.id}, Current Status: {booking.status}")
         dental_examination = DentalExamination.objects.filter(booking=booking).first()
         if not dental_examination:
-            print("No related dental examination found!")
             return Response(
                 {"error": "No dental examination found for this booking."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Fetch or create the TreatmentBill with the correct dental_examination
         treatment_bill, created = TreatmentBill.objects.get_or_create(
             booking=booking,
             dental_examination=dental_examination
@@ -139,14 +125,14 @@ class TreatmentBillView(APIView):
         serializer = TreatmentBillSerializer(treatment_bill, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            updated_rows = PatientBooking.objects.filter(id=booking.id).update(status="Completed")
-            print(f"Booking Update Attempt: {updated_rows} row(s) updated")
 
-            # Refresh and print status again
-            booking.refresh_from_db()
-            print(f"Booking ID: {booking.id}, Updated Status: {booking.status}")
+            # Update PatientBooking status when the bill is updated
+            booking.status = "Completed"
+            booking.save()
+
             return Response(
-                {"message": "Treatment bill updated successfully!", "data": serializer.data, "updated_status": booking.status },
+                {"message": "Treatment bill updated successfully!", "data": serializer.data,
+                 "updated_status": booking.status},
                 status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -352,6 +338,7 @@ class DentalExaminationView(APIView):
     template_name = 'doctor/dental_examination.html'
 
     def get(self, request, booking_id, *args, **kwargs):
+        print(f"Received booking_id: {booking_id}")
         booking = get_object_or_404(PatientBooking, id=booking_id)
         patient = booking.patient
 
@@ -371,38 +358,30 @@ class DentalExaminationView(APIView):
     def post(self, request, booking_id, *args, **kwargs):
         booking = get_object_or_404(PatientBooking, id=booking_id)
         patient = booking.patient
+        print(f"Booking ID: {booking_id}, Patient ID: {patient.id}")
 
-        selected_teeth = request.data.get('selected_teeth')
-        treatments = request.data.get('treatments')
+        selected_teeth = request.data.get("selected_teeth")
+        treatments = request.data.get("treatments")
 
-
-        if not booking_id or not selected_teeth or not treatments or not booking_id:
+        if not selected_teeth or not treatments:
             return Response({"error": "Missing required data"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            patient = Patient.objects.get(id=booking_id)
-            booking = PatientBooking.objects.get(id=booking_id)
-
             record = DentalExamination.objects.create(
                 patient=patient,
                 booking=booking,
                 selected_teeth=selected_teeth,
-                treatments=treatments
+                treatments=treatments,
             )
 
             serializer = DentalExaminationSerializer(record)
+            return Response(
+                {"message": "Treatment saved successfully", "data": serializer.data},
+                status=status.HTTP_201_CREATED,
+            )
 
-            if format == 'html':
-                return Response({'record': serializer.data}, template_name=self.template_name)
-
-            return Response({"message": "Treatment saved successfully", "data": serializer.data},
-                            status=status.HTTP_201_CREATED)
-
-        except Patient.DoesNotExist:
-            return Response({"error": "Patient not found"}, status=status.HTTP_404_NOT_FOUND)
-        except PatientBooking.DoesNotExist:
-            return Response({"error": "Booking not found"}, status=status.HTTP_404_NOT_FOUND)
-
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # -------------------------- DOCTOR DASHBOARD --------------------------

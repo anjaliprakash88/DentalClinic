@@ -10,16 +10,33 @@ from .models import (DentalExamination,
                      TreatmentBill,
                      MedicinePrescription)
 
-# --------------------------------------------------------
+
 class TreatmentBillSerializer(serializers.ModelSerializer):
     treatments = serializers.SerializerMethodField()  # Fetch treatments from JSONField
+    balance_amount = serializers.SerializerMethodField()  # Auto-calculate balance
 
     class Meta:
         model = TreatmentBill
-        fields = ['id', 'booking', 'dental_examination', 'treatments', 'price']
+        fields = ['id', 'booking', 'dental_examination', 'treatments', 'total_amount', 'paid_amount', 'balance_amount',
+                  'created_at']
 
     def get_treatments(self, obj):
         return obj.get_treatments()
+
+    def get_balance_amount(self, obj):
+        total_amount = obj.total_amount if obj.total_amount is not None else 0
+        paid_amount = obj.paid_amount if obj.paid_amount is not None else 0
+        return total_amount - paid_amount
+
+    def update(self, instance, validated_data):
+        instance.total_amount = validated_data.get("total_amount", instance.total_amount) or 0
+        instance.paid_amount = validated_data.get("paid_amount", instance.paid_amount) or 0
+
+        # Auto-update balance amount
+        instance.balance_amount = instance.total_amount - instance.paid_amount
+
+        instance.save()
+        return instance
 
 
 #--------------------------------------------------

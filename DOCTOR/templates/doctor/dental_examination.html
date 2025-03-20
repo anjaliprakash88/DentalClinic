@@ -440,6 +440,8 @@
       </div>
 
       <h1 class="dashboard-title">Dental Examination</h1>
+        <p>Booking ID: {{ booking_id }}</p>
+
 <!--      <div class="sidebar-icon">-->
 <!--        <a href="" class="white-link" data-tooltip="View"><i class="fa-solid fa-eye" style="color: #ffffff;"></i></a>-->
 <!--        <a href="/superadmin/doctor-create/" class="white-link" data-tooltip="Add"><i class="fa-solid fa-plus" style="color: #ffffff;"></i></a>-->
@@ -766,7 +768,7 @@
 
 <script>
  document.getElementById("adult-btn").addEventListener("click", function () {
-    let bookingId = "{{ booking_id }}";  // Django will replace this with the actual value
+    let bookingId = "{{ booking_id }}";
     window.location.href = `/doctor/dentalchart/${bookingId}/`;
 });
 

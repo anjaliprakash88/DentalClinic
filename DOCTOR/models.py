@@ -80,7 +80,9 @@ class DentalExamination(models.Model):
 class TreatmentBill(models.Model):
     booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_bills")
     dental_examination = models.ForeignKey(DentalExamination, on_delete=models.CASCADE, related_name="ttreatment_bills")
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    balance_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def get_treatments(self):
@@ -93,8 +95,5 @@ class TreatmentBill(models.Model):
         return self.dental_examination.treatments  # If already a dictionary/list
 
     def __str__(self):
-        return f"Bill for {self.booking.patient.first_name} {self.booking.patient.last_name} - ${self.price}"
-
-
-
+        return f"Bill for {self.booking.patient.first_name} {self.booking.patient.last_name} - ${self.total_amount}"
 
