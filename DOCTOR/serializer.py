@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from SUPERADMIN.models import PharmaceuticalMedicine, Doctor
+from SUPERADMIN.models import PharmaceuticalMedicine, Doctor, Branch, User
 from RECEPTION.models import PatientBooking, Patient
 from datetime import date
 from django.db.models.functions import TruncDate
@@ -11,6 +11,45 @@ from .models import (DentalExamination,
                      MedicinePrescription)
 
 
+
+# ---------------DOCTOR VIEW PROFILE SERIALIZER---------------
+class UserViewProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+class BranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Branch
+        fields = '__all__'
+
+
+class DoctorViewProfileSerializer(serializers.ModelSerializer):
+    user = UserViewProfileSerializer()
+    branch = BranchSerializer()
+
+
+
+    class Meta:
+        model = Doctor
+        fields = '__all__'
+
+    def update(self, instance, validated_data):
+        # Update related user fields
+        user_data = validated_data.pop('user', {})
+        user = instance.user
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+        user.save()
+
+        # Update doctor fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
+# ---------------------------------------------------------
 class TreatmentBillSerializer(serializers.ModelSerializer):
     treatments = serializers.SerializerMethodField()  # Fetch treatments from JSONField
     balance_amount = serializers.SerializerMethodField()  # Auto-calculate balance

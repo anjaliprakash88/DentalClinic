@@ -1,0 +1,342 @@
+
+<style>
+    /* General Styling */
+    body {
+        font-family: 'Arial', sans-serif;
+        background: #f8f9fa;
+        margin: 0;
+        padding: 0;
+    }
+
+    .main-container {
+        margin-top: 20px; /* Reduced margin */
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* Ensures vertical centering */
+    }
+
+    .profile-card {
+        width: 100%;
+        max-width: 600px;
+        padding: 20px;
+        background: white;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .profile-card h2 {
+        color: #333; /* Changed from blue to neutral */
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+    }
+
+    .profile-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .profile-table th, .profile-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .profile-table th {
+        background: #f1f1f1; /* Neutral background */
+        color: black;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .profile-table td {
+        color: #333;
+        background: #fff; /* White background */
+    }
+
+    /* Edit Button */
+    .edit-btn-container {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .edit-btn {
+        display: inline-block;
+        padding: 6px 12px;
+        background: #333; /* Darker neutral color */
+        color: #ffffff;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+    }
+
+    .edit-btn:hover {
+        background: #555;
+    }
+
+    /* Modal Styling */
+    .modal-content {
+        border-radius: 12px;
+    }
+
+    .modal-header {
+        background: #333;
+        color: white;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .form-control {
+        border: 1px solid #ccc !important;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .btn-primary {
+        color:white;
+        background: #333;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.3s;
+    }
+
+    .btn-primary:hover {
+        background: #555;
+    }
+
+    @media (max-width: 768px) {
+        .profile-card {
+            width: 90%;
+        }
+    }
+</style>
+
+<div class="main-container">
+    <div class="profile-card">
+        <h2><u>DOCTOR PROFILE</u></h2>
+        {% if doctors %}
+            <table class="profile-table">
+                <tr>
+                    <th>USERNAME</th>
+                    <td>{{ doctors.user.username }}</td>
+                </tr>
+                <tr>
+                    <th>FIRST NAME</th>
+                    <td>{{ doctors.user.first_name }}</td>
+                </tr>
+                <tr>
+                    <th>LAST NAME</th>
+                    <td>{{ doctors.user.last_name }}</td>
+                </tr>
+                <tr>
+                    <th>EMAIL</th>
+                    <td>{{ doctors.user.email }}</td>
+                </tr>
+                <tr>
+                    <th>EXPERIENCE</th>
+                    <td>{{ doctors.experience_years }}</td>
+                </tr>
+                <tr>
+                    <th>QUALIFICATION</th>
+                    <td>{{ doctors.qualification }}</td>
+                </tr>
+                <tr>
+                    <th>PHONE</th>
+                    <td>{{ doctors.phone_number }}</td>
+                </tr>
+                <tr>
+                    <th>BRANCH</th>
+                    <td>{{ doctors.branch.name }}</td>
+                </tr>
+                <tr>
+                    <th>ADDRESS</th>
+                    <td>{{ doctors.address }}</td>
+                </tr>
+                <tr>
+                    <th>SPECIALIZATION</th>
+                    <td>{{ doctors.specialization}}</td>
+                </tr>
+            </table>
+
+            <!-- Edit Button -->
+            <div class="edit-btn-container">
+                <a href="#" class="edit-btn" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit</a>
+            </div>
+
+        {% else %}
+            <p class="not-found">Pharmacist profile not found.</p>
+        {% endif %}
+    </div>
+</div>
+
+
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="doctor_id" value="{{ doctors.id }}">
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">USERNAME</label>
+                            <input type="text" class="form-control" id="edit_username" value="{{ doctors.user.username }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">EMAIL</label>
+                            <input type="email" class="form-control" id="edit_email" value="{{ doctors.user.email }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">FIRST NAME</label>
+                            <input type="text" class="form-control" id="edit_first_name" value="{{ doctors.user.first_name }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">LAST NAME</label>
+                            <input type="text" class="form-control" id="edit_last_name" value="{{ doctors.user.last_name }}">
+                        </div>
+                    </div>
+
+
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">MOBILE</label>
+                            <input type="text" class="form-control" id="edit_phone_number" value="{{ doctors.phone_number }}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">ADDRESS</label>
+                            <textarea class="form-control" id="edit_address" rows="3">{{ doctors.address }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">QUALIFICATION</label>
+                            <input type="text" class="form-control" id="edit_qualification" value="{{ doctors.qualification }}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">EXPERIENCE(yr.)</label>
+                            <input type="number" class="form-control" id="edit_experience_years" value="{{ doctors.experience_years }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">SPECIALIZATION</label>
+                            <select class="form-control" id="edit_specialization">
+                                <option value="{{ doctors.specialization }}"></option>
+                                <option value="General Dentist" {% if doctors.specialization == "General Dentist" %}selected{% endif %}>General Dentist</option>
+                                <option value="Orthodontist" {% if doctors.specialization == "Orthodontist" %}selected{% endif %}>Orthodontist</option>
+                                <option value="Periodontist" {% if doctors.specialization == "Periodontist" %}selected{% endif %}>Periodontist</option>
+                                <option value="Endodontist" {% if doctors.specialization == "Endodontist" %}selected{% endif %}>Endodontist</option>
+                                <option value="Prosthodontist" {% if doctors.specialization == "Prosthodontist" %}selected{% endif %}>Prosthodontist</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- File Upload Fields -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">UPLOAD EDU.CERTIFICATE</label>
+                            <input type="file" class="form-control" id="edit_educational_certificate">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">UPLOAD MED.LICENSE</label>
+                            <input type="file" class="form-control" id="edit_medical_license">
+                        </div>
+                    </div>
+
+                    <button type="submit" style="border:None;" class="btn btn-dark" id="saveProfileChanges">
+                        Update
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $('#editProfileForm').submit(function (e) {
+         e.preventDefault();
+         var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+         var formData = new FormData();
+         formData.append("username", $("#edit_username").val());
+         formData.append("first_name", $("#edit_first_name").val());
+         formData.append("last_name", $("#edit_last_name").val());
+         formData.append("email", $("#edit_email").val());
+         formData.append("phone_number", $("#edit_phone_number").val());
+         formData.append("experience_years", $("#edit_experience_years").val());
+         formData.append("qualification", $("#edit_qualification").val());
+         formData.append("address", $("#edit_address").val());
+         formData.append("specialization", $("#edit_specialization").val());
+         // Append files if selected
+         var educationalCert = $("#edit_educational_certificate")[0].files[0];
+         if (educationalCert) {
+         formData.append("educational_certificate", educationalCert);
+         }
+         var medicalLicense = $("#edit_medical_license")[0].files[0];
+         if (medicalLicense) {
+         formData.append("medical_license", medicalLicense);
+         }
+         $.ajax({
+         url: "/doctor/update-profile/", // Ensure this matches Django's URL pattern
+         method: "POST",
+         processData: false,
+         contentType: false,
+         headers: { "X-CSRFToken": csrfToken },
+         data: formData,
+         success: function (response) {
+         alert("Doctor Profile updated successfully!");
+         window.location.href = "/doctor/profile/";
+         },
+         error: function (xhr, status, error) {
+         alert("Error updating doctor profile: " + xhr.responseText);
+         }
+       });
+     });
+
+
+</script>
+
+

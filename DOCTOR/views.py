@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import JsonResponse
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from rest_framework import status
 from django.contrib.auth import login
@@ -15,7 +14,8 @@ from .serializer import (DoctorLoginSerializer,
                          MedicineSerializer,
                          TreatmentBillSerializer,
                          PreviousTreatmentSerializer,
-                         DoctorPatientSerializer)
+                         DoctorPatientSerializer,
+                         DoctorViewProfileSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
 
 from .models import (GeneralExamination,
@@ -26,9 +26,73 @@ from SUPERADMIN.models import Doctor, PharmaceuticalMedicine
 from RECEPTION.models import PatientBooking, Patient
 from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import now
+from rest_framework.permissions import IsAuthenticated
 
 
 
+# ----------------------------LOGOUT VIEW------------------------------#
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        # Delete the token to log the user out
+        request.user.auth_token.delete()
+        return Response({"message": "Successfully logged out"}, status=200)
+
+#--------------DOCTOR PROFILE VIEW---------------
+class DoctorProfileView(APIView):
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'doctor/doctor_profile.html'
+
+    def get(self, request):
+        try:
+            doctor = get_object_or_404(Doctor, user=request.user)
+            doctor_serializer = DoctorViewProfileSerializer(doctor)
+
+            if request.accepted_renderer.format == 'json':
+                return Response({'doctors': doctor_serializer.data}, status=status.HTTP_200_OK)
+            return Response({'doctors': doctor_serializer.data}, template_name=self.template_name)
+
+        except Doctor.DoesNotExist:
+            return Response({'message': 'Doctor profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        doctor = get_object_or_404(Doctor, user=request.user)
+        # Extract user-related fields
+        user_data = {
+            "username": request.data.get("username"),
+            "first_name": request.data.get("first_name"),
+            "last_name": request.data.get("last_name"),
+            "email": request.data.get("email"),
+        }
+
+        for attr, value in user_data.items():
+            if value:
+                setattr(doctor.user, attr, value)
+            doctor.user.save()
+
+            # Update Doctor model fields
+        doctor_data = {
+            "phone_number": request.data.get("phone_number"),
+            "experience_years": request.data.get("experience_years"),
+            "qualification": request.data.get("qualification"),
+            "address": request.data.get("address"),
+            "specialization": request.data.get("specialization"),
+        }
+
+        for attr, value in doctor_data.items():
+            if value:
+                setattr(doctor, attr, value)
+
+        if "educational_certificate" in request.FILES:
+            doctor.educational_certificate = request.FILES["educational_certificate"]
+        if "medical_license" in request.FILES:
+            doctor.medical_license = request.FILES["medical_license"]
+        doctor.save()
+        return Response({"message": "Doctor profile updated successfully"}, status=status.HTTP_200_OK)
+
+
+# ------------------------------------------------
 class DoctorPatientListView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'doctor/doctor_patient_list.html'
