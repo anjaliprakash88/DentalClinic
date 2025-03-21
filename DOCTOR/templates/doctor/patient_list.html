@@ -293,6 +293,33 @@
        }
        window.location.href = `/doctor/previous-treatment/${bookingId}/`;
    });
+
+
+<!---------------LOGOUT-------------------->
+
+$(document).ready(function() {
+    $('.toggle-btn').on('click', function() {
+        $('.sidebar').toggleClass('active');
+    });
+
+    $('.logout-btn').on('click', function() {
+        const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        $.ajax({
+            url: '/doctor/logout/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            success: function(response) {
+                alert(response.message);
+                window.location.href = '/doctor/login';
+            },
+            error: function(xhr) {
+                let errorMessage = xhr.responseJSON?.error || xhr.statusText || 'Unknown error';
+                alert(`Logout failed: ${errorMessage}`);
+            }
+        });
+    });
+});
 </script>
 
 

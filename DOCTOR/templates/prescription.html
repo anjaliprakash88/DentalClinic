@@ -1,0 +1,342 @@
+{% load static %}
+<html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Dr. Arif's Dental Clinic | Doctor Profile</title>
+      <link rel="icon" type="image/x-icon" sizes="1008x1008" href="{% static 'images/favicon.png' %}">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+      <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      />
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+            --primary: #46ACD1;
+            --secondary: #1C4453;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        html, body {
+              height: 100%;
+              overflow-x: hidden;
+              margin: 0;
+              padding: 0;
+        }
+
+      body {
+          min-height: 100vh;
+          background-image: url("{% static 'images/Background-Img.jpg' %}");
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          background-position: center center;
+          background-size: cover;
+          font-family: 'Poppins', sans-serif !important;
+
+
+      }
+
+      .top-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1000px;
+            height: auto;
+            min-height: 70px;
+            padding: 10px 20px;
+            background-color: rgba(70, 172, 209, 0.8); /* Sky blue with opacity */
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+      .sidebar-logo {
+            display: flex;
+            align-items: center;
+
+      }
+
+      .sidebar-logo img {
+            width: 80px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo img:hover {
+            transform: scale(1.1);
+        }
+
+      .dashboard-title {
+            flex: 1;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            margin: 0 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+
+
+        .sidebar-icon i {
+            font-size: 24px;
+            margin: 0 10px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+
+        }
+        .container{
+            margin-top:100px;
+        }
+
+        .sidebar-icon i:hover {
+            transform: scale(1.2);
+            color: var(--secondary);
+        }
+
+      .white-link {
+            color: white; /* Set text color to white */
+            text-decoration: none; /* Remove underline */
+            font-size: 20px; /* Increase font size */
+            font-weight: bold; /* Make text bold */
+            transition: color 0.3s ease; /* Smooth color transition */
+        }
+
+        .white-link:hover {
+            color: #f0f0f0; /* Lighten color on hover */
+            text-decoration: underline; /* Underline on hover */
+        }
+
+            [data-tooltip] {
+                position: relative;
+                cursor: pointer;
+            }
+
+            /* Tooltip text */
+            [data-tooltip]::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-size: 14px;
+                white-space: nowrap;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+            }
+
+
+            [data-tooltip]:hover::after {
+                opacity: 1;
+                visibility: visible;
+            }
+         #bookingsTable {
+        width: 1000px !important;
+        overflow-y: auto;
+    }
+        </style>
+  </head>
+  <body>
+    <!-- Top center box -->
+    <div class="top-box">
+      <div class="sidebar-logo">
+        <img
+          src="{% static 'images/logo (2).png' %}"
+          alt="Dr. Arif's Dental Clinic Logo"
+        />
+      </div>
+
+      <h1 class="dashboard-title">Medicine Prescription</h1>
+      <div class="sidebar-icon">
+          <a href="" class="white-link" data-tooltip="view"><i class="fa-solid fa-circle-user" style="color: #ffffff;"></i></a>
+          <a href="" data-tooltip="Message"><i class="fa-solid fa-message"  style="color: #ffffff;"></i></a>
+          <a href="" class="white-link" data-tooltip="Logout"><i class="fa-solid fa-power-off" style="color: #ffffff;"></i></a>
+      </div>
+    </div>
+
+<div class="container p-5">
+    <form id="medicine-form" class="bg-light p-4 rounded shadow">
+        {% csrf_token %}
+        <input type="hidden" id="booking_id" value="{{ booking.id|default:'' }}">
+
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header">
+                <div id="medicine-items-container">
+                    <!-- Dynamic medicine items will be added here -->
+                </div>
+                <button type="button" id="add-medicine-btn" class="btn btn-outline-primary mt-2"><i class="bi bi-plus-lg"></i> Add Medicine</button>
+                <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i>Save</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+<script>
+$(document).ready(function() {
+    let medicineCount = 1;
+    const bookingId = $("#booking_id").val();
+
+    function loadMedicines(selectElementId) {
+        $.ajax({
+            url: `/doctor/medicine-prescription/${bookingId}/`,
+            type: "GET",
+            success: function(data) {
+                const selectElement = $(selectElementId);
+                selectElement.empty().append('<option value="">Select Medicine</option>');
+                $.each(data.medicines, function(index, med) {
+                    selectElement.append(`<option value="${med.id}">${med.medicine_name}</option>`);
+                });
+            },
+            error: function() { alert("Failed to load medicines."); }
+        });
+    }
+
+    function addMedicineItem() {
+        const newItemHtml = `
+            <div class="medicine-item p-3 mb-3 border rounded bg-white shadow-sm" id="medicine-item-${medicineCount}">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Medicine</label>
+                        <select id="medicine_name_${medicineCount}" class="form-select" name="medicine_${medicineCount}">
+                            <option value="">Select Medicine</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Days</label>
+                        <input type="number" id="dosage_days_${medicineCount}" class="form-control"  name="dosage_days_${medicineCount}" min="1">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label d-block">Medicine Times</label>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Morning" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Morning</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Afternoon" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Afternoon</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Evening" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Evening</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Night" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Night</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger remove-medicine" data-id="${medicineCount}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <label class="form-label">Meal Time</label>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Before Meal" name="meal_time_${medicineCount}">
+                            <label class="form-check-label">Before Meal</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="After Meal" name="meal_time_${medicineCount}">
+                            <label class="form-check-label">After Meal</label>
+                        </div>
+                    </div>
+                   </div>
+            </div>
+        `;
+
+        $('#medicine-items-container').append(newItemHtml);
+        loadMedicines(`#medicine_name_${medicineCount}`);
+
+        $('.remove-medicine').on('click', function() {
+            const itemId = $(this).data('id');
+            $(`#medicine-item-${itemId}`).remove();
+        });
+
+        medicineCount++;
+    }
+
+    $('#add-medicine-btn').on('click', addMedicineItem);
+    addMedicineItem();
+
+    $('#medicine-form').on('submit', function(e) {
+        e.preventDefault();
+        let medicines = [];
+        let isValid = true;
+
+        if (!bookingId) {
+            alert("Booking ID is required!");
+            return;
+        }
+
+        $('.medicine-item').each(function() {
+            const itemId = $(this).attr('id').split('-').pop();
+            const medicineId = $(`#medicine_name_${itemId}`).val();
+            const dosageDays = $(`#dosage_days_${itemId}`).val();
+            let medicineTimes = [];
+            let mealTimes = [];
+
+            $(`input[name="medicine_time_${itemId}"]:checked`).each(function() {
+                medicineTimes.push($(this).val());
+            });
+            $(`input[name="meal_time_${itemId}"]:checked`).each(function() {
+                mealTimes.push($(this).val());
+            });
+
+            if (!medicineId || !dosageDays || medicineTimes.length === 0 || mealTimes.length === 0) {
+                alert('Please fill all fields correctly.');
+                isValid = false;
+                return false;
+            }
+
+            medicines.push({
+                medicine: parseInt(medicineId),
+                dosage_days: parseInt(dosageDays),
+                medicine_times: medicineTimes,
+                meal_times: mealTimes
+            });
+        });
+
+        if (!isValid) return;
+
+        $.ajax({
+            url: `/doctor/medicine-prescription/${bookingId}/`,
+            type: 'POST',
+            data: JSON.stringify({ booking_id: parseInt(bookingId), medicines: medicines }),
+            contentType: 'application/json',
+            headers: { 'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() },
+            success: function(response) {
+                alert('Medicine saved successfully!');
+                $('#medicine-items-container').empty();
+                addMedicineItem();
+                window.location.href = `/doctor/treatment-bill/${bookingId}/`
+            },
+            error: function(xhr) { console.error('Error:', xhr.responseText); }
+        });
+    });
+});
+</script>
+
+</body>
+</html>

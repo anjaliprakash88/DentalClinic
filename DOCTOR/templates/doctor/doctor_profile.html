@@ -1,23 +1,193 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Arif's Dental Clinic | Doctor Profile</title>
+    <link rel="icon" type="image/x-icon" sizes="1008x1008" href="{% static 'images/favicon.png' %}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
 
-<style>
-    /* General Styling */
-    body {
-        font-family: 'Arial', sans-serif;
-        background: #f8f9fa;
-        margin: 0;
-        padding: 0;
-    }
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-    .main-container {
-        margin-top: 20px; /* Reduced margin */
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh; /* Ensures vertical centering */
-    }
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
-    .profile-card {
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #d2e3e9;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background:#1c3342;
+            padding-top: 20px;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .sidebar .sidebar-logo {
+            text-align: center;
+        }
+
+        .sidebar .sidebar-logo img {
+            width: 70px;
+            height: auto;
+            margin-bottom: 12px;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .sidebar .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Adds space between menu items */
+            padding: 0 10px;
+        }
+        
+        .sidebar .menu-item {
+            padding: 10px 15px;
+            color: black;
+            background: #d2e3e9;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Alternative if not using gap */
+        .sidebar .menu-item:not(:last-child) {
+            margin-bottom: 10px;
+        }
+        
+
+        .menu-item.active {
+            background: var(--hover-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--white);
+        }
+
+        .menu-item a {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .menu-item i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .menu-item:hover {
+            background: #d2e3e9;
+            color: clack;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Navbar */
+        .top-navbar {
+            height: 60px;
+            width: calc(100% - 260px);
+            position: fixed;
+            top: 0;
+            left: 260px;
+            background: #d2e3e9;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+            color: black;
+            z-index: 1000;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .top-navbar .dashboard-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+
+        .top-navbar .nav-icons a {
+            color: white;
+            font-size: 20px;
+            margin-left: 15px;
+            transition: 0.3s;
+        }
+
+        .top-navbar .nav-icons a:hover {
+            color: #f1c40f;
+        }
+
+        /* Content Area */
+        .content {
+            margin-left: 100px;
+            margin-top: 50px;
+            padding: 20px;
+
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: black;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+        .btn-primary{
+            border:none;
+            background:#1c3342;
+
+        }
+        .profile-card {
         width: 100%;
         max-width: 600px;
         padding: 20px;
@@ -127,69 +297,110 @@
             width: 90%;
         }
     }
-</style>
+        .btn-dark
+        {
+        border:none;
+            background:#1c3342;
 
-<div class="main-container">
-    <div class="profile-card">
-        <h2><u>DOCTOR PROFILE</u></h2>
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+    <div class="sidebar-logo">
+        <img src="{% static 'images/logo (2).png' %}" alt="Dr. Arif's Dental Clinic Logo">
+    </div>
+    <div class="sidebar-menu">
+        <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
+<!--        <div class="menu-item"><a href="#"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i>Today Appointment</a></div>-->
+        <div class="menu-item">
+            <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
+               <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="/doctor/profile/"><i class="fa-solid fa-user" style="color: #000000;"></i>Profile</a>
+        </div>
+        <div class="menu-item">
+            <a href="javascript:void(0)" class="logout-btn"><i class="fa-solid fa-power-off" style="color: #000000;"></i>Logout</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Top Navbar -->
+<div class="top-navbar d-flex justify-content-between align-items-center">
+    <h1 class="dashboard-title ms-center">DOCTOR PROFILE</h1>
+</div>
+
+<!-- Content -->
+<div class="content d-flex justify-content-center align-items-center">
+    <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%;">
+
         {% if doctors %}
-            <table class="profile-table">
-                <tr>
-                    <th>USERNAME</th>
-                    <td>{{ doctors.user.username }}</td>
-                </tr>
-                <tr>
-                    <th>FIRST NAME</th>
-                    <td>{{ doctors.user.first_name }}</td>
-                </tr>
-                <tr>
-                    <th>LAST NAME</th>
-                    <td>{{ doctors.user.last_name }}</td>
-                </tr>
-                <tr>
-                    <th>EMAIL</th>
-                    <td>{{ doctors.user.email }}</td>
-                </tr>
-                <tr>
-                    <th>EXPERIENCE</th>
-                    <td>{{ doctors.experience_years }}</td>
-                </tr>
-                <tr>
-                    <th>QUALIFICATION</th>
-                    <td>{{ doctors.qualification }}</td>
-                </tr>
-                <tr>
-                    <th>PHONE</th>
-                    <td>{{ doctors.phone_number }}</td>
-                </tr>
-                <tr>
-                    <th>BRANCH</th>
-                    <td>{{ doctors.branch.name }}</td>
-                </tr>
-                <tr>
-                    <th>ADDRESS</th>
-                    <td>{{ doctors.address }}</td>
-                </tr>
-                <tr>
-                    <th>SPECIALIZATION</th>
-                    <td>{{ doctors.specialization}}</td>
-                </tr>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th class="bg-light">USERNAME</th>
+                        <td>{{ doctors.user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">FIRST NAME</th>
+                        <td>{{ doctors.user.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">LAST NAME</th>
+                        <td>{{ doctors.user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">EMAIL</th>
+                        <td>{{ doctors.user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">EXPERIENCE</th>
+                        <td>{{ doctors.experience_years }} Years</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">QUALIFICATION</th>
+                        <td>{{ doctors.qualification }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">PHONE</th>
+                        <td>{{ doctors.phone_number }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">BRANCH</th>
+                        <td>{{ doctors.branch.name }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">ADDRESS</th>
+                        <td>{{ doctors.address }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">SPECIALIZATION</th>
+                        <td>{{ doctors.specialization }}</td>
+                    </tr>
+                </tbody>
             </table>
 
             <!-- Edit Button -->
-            <div class="edit-btn-container">
-                <a href="#" class="edit-btn" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit</a>
+            <div class="text-center mt-3">
+                <a href="#" class="btn btn-dark px-4" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    Edit Profile
+                </a>
             </div>
 
         {% else %}
-            <p class="not-found">Pharmacist profile not found.</p>
+            <p class="text-danger text-center mt-3">Doctor profile not found.</p>
         {% endif %}
     </div>
 </div>
 
 
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
@@ -201,59 +412,52 @@
                     <input type="hidden" id="doctor_id" value="{{ doctors.id }}">
 
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">USERNAME</label>
                             <input type="text" class="form-control" id="edit_username" value="{{ doctors.user.username }}">
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">EMAIL</label>
                             <input type="email" class="form-control" id="edit_email" value="{{ doctors.user.email }}">
                         </div>
                     </div>
 
+
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">FIRST NAME</label>
                             <input type="text" class="form-control" id="edit_first_name" value="{{ doctors.user.first_name }}">
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">LAST NAME</label>
                             <input type="text" class="form-control" id="edit_last_name" value="{{ doctors.user.last_name }}">
                         </div>
                     </div>
 
 
-
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">MOBILE</label>
                             <input type="text" class="form-control" id="edit_phone_number" value="{{ doctors.phone_number }}">
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">ADDRESS</label>
                             <textarea class="form-control" id="edit_address" rows="3">{{ doctors.address }}</textarea>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">QUALIFICATION</label>
                             <input type="text" class="form-control" id="edit_qualification" value="{{ doctors.qualification }}">
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">EXPERIENCE(yr.)</label>
                             <input type="number" class="form-control" id="edit_experience_years" value="{{ doctors.experience_years }}">
                         </div>
+                    </div>
+                    <div class="row">
+
                     </div>
 
                     <div class="row">
@@ -262,9 +466,11 @@
                             <select class="form-control" id="edit_specialization">
                                 <option value="{{ doctors.specialization }}"></option>
                                 <option value="General Dentist" {% if doctors.specialization == "General Dentist" %}selected{% endif %}>General Dentist</option>
+                                <option value="General Dentist" {% if doctors.specialization == "Pediatric Dentist" %}selected{% endif %}>Pediatric Dentist</option>
                                 <option value="Orthodontist" {% if doctors.specialization == "Orthodontist" %}selected{% endif %}>Orthodontist</option>
                                 <option value="Periodontist" {% if doctors.specialization == "Periodontist" %}selected{% endif %}>Periodontist</option>
                                 <option value="Endodontist" {% if doctors.specialization == "Endodontist" %}selected{% endif %}>Endodontist</option>
+                                <option value="Endodontist" {% if doctors.specialization == "Oral Pathologist" %}selected{% endif %}>Oral Pathologist</option>
                                 <option value="Prosthodontist" {% if doctors.specialization == "Prosthodontist" %}selected{% endif %}>Prosthodontist</option>
                             </select>
                         </div>
@@ -294,10 +500,14 @@
     </div>
 </div>
 
-
+<!-- jQuery, Bootstrap JS, DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-    $('#editProfileForm').submit(function (e) {
+   $('#editProfileForm').submit(function (e) {
          e.preventDefault();
          var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
          var formData = new FormData();
@@ -320,7 +530,7 @@
          formData.append("medical_license", medicalLicense);
          }
          $.ajax({
-         url: "/doctor/update-profile/", // Ensure this matches Django's URL pattern
+         url: "/doctor/update-profile/",
          method: "POST",
          processData: false,
          contentType: false,
@@ -337,6 +547,31 @@
      });
 
 
+<!---------------LOGOUT-------------------->
+$(document).ready(function() {
+    $('.toggle-btn').on('click', function() {
+        $('.sidebar').toggleClass('active');
+    });
+
+    $('.logout-btn').on('click', function() {
+        const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        $.ajax({
+            url: '/doctor/logout/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            success: function(response) {
+                alert(response.message);
+                window.location.href = '/doctor/login';
+            },
+            error: function(xhr) {
+                let errorMessage = xhr.responseJSON?.error || xhr.statusText || 'Unknown error';
+                alert(`Logout failed: ${errorMessage}`);
+            }
+        });
+    });
+});
 </script>
 
-
+</body>
+</html>
