@@ -95,7 +95,7 @@ class DoctorProfileView(APIView):
 # ------------------------------------------------
 class DoctorPatientListView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    template_name = 'doctor/doctor_patient_list.html'
+    template_name = 'doctor/patient_list.html'
 
     def get(self, request, doctor_id):
         doctor = get_object_or_404(Doctor, id=doctor_id)
