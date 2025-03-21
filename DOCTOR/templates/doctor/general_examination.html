@@ -373,6 +373,8 @@
 <script>
   $(document).ready(function () {
     var bookingId = "{{ booking_id }}";
+    console.log("Booking ID:", bookingId);  // ✅ Debugging
+
 
     function getCSRFToken() {
         let tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -383,23 +385,29 @@
 
     // Function to load previous examination data
     function loadPreviousData() {
-        $.ajax({
-            url: `/doctor/generalchart/${bookingId}/`,
-            type: "GET",
-            dataType: "json",
-            success: function (data) {
-                if (data.previous_data) {
-                    $("#prev-visit").text(data.previous_data.previous_visit || "-");
-                    $("#prev-sugar").text(data.previous_data.previous_sugar_level || "-");
-                    $("#prev-pressure").text(data.previous_data.previous_pressure_level || "-");
-                    $("#prev-notes").text(data.previous_data.previous_notes || "-");
-                }
-            },
-            error: function () {
-                alert("Failed to load previous data.");
+    $.ajax({
+        url: `/doctor/generalchart/${bookingId}/`,
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+            console.log("✅ Previous Examination Data:", data); // Debugging
+
+            if (data.previous_data) {
+                // Ensure data is correctly mapped to the HTML
+                $("#prev-visit").text(data.previous_data.previous_visit || "-");
+                $("#prev-sugar").text(data.previous_data.previous_sugar_level || "-");
+                $("#prev-pressure").text(data.previous_data.previous_pressure_level || "-");
+                $("#prev-notes").text(data.previous_data.previous_notes || "-");
+            } else {
+                console.log("❌ No Previous Exam Data Found");  // Debugging
             }
-        });
-    }
+        },
+        error: function (xhr) {
+            console.error("❌ Error fetching previous data:", xhr.responseText);
+        }
+    });
+}
+
 
     // Load previous data on page load
     loadPreviousData();

@@ -49,15 +49,16 @@ class GeneralExamination(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        # Fetch previous examination details before saving
+        # Fetch the most recent examination before this one
         last_exam = GeneralExamination.objects.filter(patient=self.patient).exclude(id=self.id).order_by(
             "-created_at").first()
 
         if last_exam:
-            self.previous_visit = last_exam.created_at.date()
-            self.previous_sugar_level = last_exam.sugar_level
-            self.previous_pressure_level = last_exam.blood_pressure
-            self.previous_notes = last_exam.notes
+            # Ensure previous details are stored only if last_exam exists
+            self.previous_visit = last_exam.created_at.date() if last_exam.created_at else None
+            self.previous_sugar_level = last_exam.sugar_level if last_exam.sugar_level else "N/A"
+            self.previous_pressure_level = last_exam.blood_pressure if last_exam.blood_pressure else "N/A"
+            self.previous_notes = last_exam.notes if last_exam.notes else "N/A"
 
         super().save(*args, **kwargs)
 

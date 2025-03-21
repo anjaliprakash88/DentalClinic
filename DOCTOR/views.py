@@ -248,6 +248,12 @@ class GeneralExaminationAPIView(APIView):
         patient = booking.patient
 
         last_exam = GeneralExamination.objects.filter(patient=patient).order_by("-created_at").first()
+        if last_exam:
+            prev_data = GeneralExaminationSerializer(last_exam).data
+            print("✅ Previous Exam Data Found:", prev_data)  # Debugging
+        else:
+            prev_data = None
+            print("❌ No Previous Exam Data Found")  # Debuggi
         prev_data = GeneralExaminationSerializer(last_exam).data if last_exam else None
 
         # Handle JSON response for AJAX
@@ -387,7 +393,7 @@ class DentalExaminationView(APIView):
 # -------------------------- DOCTOR DASHBOARD --------------------------
 class DoctorDashboard(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-    template_name = 'doctor/doctor-dashboard.html'
+    template_name = 'doctor/doctor_dashboard.html'
 
     def get(self, request, format=None):
         doctor = get_object_or_404(Doctor, user=request.user)
