@@ -232,17 +232,35 @@
                 <div id="medicine-items-container">
                     <!-- Dynamic medicine items will be added here -->
                 </div>
-                <button type="button" id="add-medicine-btn" class="btn btn-outline-primary mt-2"><i class="bi bi-plus-lg"></i> Add Medicine</button>
+                <button type="button" id="add-medicine-btn" style="background:#1c3342; color: #fff;"
+                        class="btn mt-2"><i class="bi bi-plus-lg"></i> Add Medicine
+                </button>
                 <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i>Save</button>
             </div>
         </div>
+  <div class="d-flex justify-content-end">
+    <button type="button" style="background:#1c3342; color: #fff;" class="btn mt-2"
+        data-booking-id="{{ booking.id }}" onclick="goToTreatmentSummary(this)">
+        Back to treatment note
+    </button>
+</div>
     </form>
+
 </div>
 
 <!-- jQuery, Bootstrap JS, DataTables -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 <script>
+    function goToTreatmentSummary(button) {
+        var bookingId = button.getAttribute("data-booking-id");
+        if (bookingId) {
+            window.location.href = `/doctor/treatment-summary/${bookingId}/`;
+        } else {
+            alert("Booking ID is missing!");
+        }
+    }
+<!----------------------------------------------->
    $(document).ready(function() {
     let medicineCount = 1;
     const bookingId = $("#booking_id").val();
