@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-Up Page</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <h2>Dental Examination</h2>
+
+    <form id="checkup-form">
+        <label>Chief Complaints:</label>
+        <textarea name="chief_complaints">{{ examination.chief_complaints }}</textarea><br>
+
+        <label>History of Present Illness:</label>
+        <textarea name="history_of_present_illness">{{ examination.history_of_present_illness }}</textarea><br>
+
+        <label>Medical History:</label>
+        <textarea name="medical_history">{{ examination.medical_history }}</textarea><br>
+
+        <!-- Past Dental History -->
+        <div id="past-dental-history-section">
+            <label>Past Dental History:</label>
+            <textarea name="past_dental_history">{{ examination.past_dental_history }}</textarea>
+        </div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            var pastDentalHistoryExists = {{ past_dental_history_exists|lower }}; // True or False
+
+            // Hide past dental history field if it already exists
+            if (pastDentalHistoryExists) {
+                $('#past-dental-history-section').show();
+                $('textarea[name="past_dental_history"]').prop('readonly', true); // Make it readonly
+            } else {
+                $('#past-dental-history-section').show();
+            }
+
+            // Handle form submission via AJAX
+            $("#checkup-form").submit(function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: "",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        alert("Data saved successfully!");
+                    },
+                    error: function(xhr) {
+                        alert("Error saving data.");
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

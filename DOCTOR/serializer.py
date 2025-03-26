@@ -3,14 +3,32 @@ from django.contrib.auth import authenticate
 from SUPERADMIN.models import PharmaceuticalMedicine, Doctor, Branch, User
 from RECEPTION.models import PatientBooking, Patient
 from datetime import date
+from .models import DentalExamination, MedicinePrescription
 from django.db.models.functions import TruncDate
-from .models import (DentalExamination,
-                     GeneralExamination,
-                     TreatmentNote,
-                     TreatmentBill,
-                     MedicinePrescription)
+# from .models import (DentalExamination,
+#                      GeneralExamination,
+#                      TreatmentNote,
+#                      TreatmentBill,
+#                      MedicinePrescription)
 
 
+class DentalExaminationSerializer(serializers.ModelSerializer):
+    patient_name = serializers.SerializerMethodField()
+    booking_id = serializers.IntegerField(source='booking.id', read_only=True)
+
+    class Meta:
+        model = DentalExamination
+        fields = [
+            'id', 'patient', 'patient_name', 'booking', 'booking_id',
+            'chief_complaints', 'history_of_present_illness', 'medical_history',
+            'past_dental_history', 'personal_history', 'general_examination',
+            'general_examination_intraoral', 'local_examination_extraoral',
+            'soft_tissue', 'dentition', 'periodontal_status', 'investigation',
+            'treatment_plan', 'doctor_signature', 'patient_signature', 'created_at'
+        ]
+
+    def get_patient_name(self, obj):
+        return f"{obj.patient.first_name} {obj.patient.last_name}"
 
 # ---------------DOCTOR VIEW PROFILE SERIALIZER---------------
 class UserViewProfileSerializer(serializers.ModelSerializer):
@@ -50,32 +68,32 @@ class DoctorViewProfileSerializer(serializers.ModelSerializer):
 
         return instance
 # ---------------------------------------------------------
-class TreatmentBillSerializer(serializers.ModelSerializer):
-    treatments = serializers.SerializerMethodField()  # Fetch treatments from JSONField
-    balance_amount = serializers.SerializerMethodField()  # Auto-calculate balance
-
-    class Meta:
-        model = TreatmentBill
-        fields = ['id', 'booking', 'dental_examination', 'treatments', 'total_amount', 'paid_amount', 'balance_amount',
-                  'created_at']
-
-    def get_treatments(self, obj):
-        return obj.get_treatments()
-
-    def get_balance_amount(self, obj):
-        total_amount = obj.total_amount if obj.total_amount is not None else 0
-        paid_amount = obj.paid_amount if obj.paid_amount is not None else 0
-        return total_amount - paid_amount
-
-    def update(self, instance, validated_data):
-        instance.total_amount = validated_data.get("total_amount", instance.total_amount) or 0
-        instance.paid_amount = validated_data.get("paid_amount", instance.paid_amount) or 0
-
-        # Auto-update balance amount
-        instance.balance_amount = instance.total_amount - instance.paid_amount
-
-        instance.save()
-        return instance
+# class TreatmentBillSerializer(serializers.ModelSerializer):
+#     treatments = serializers.SerializerMethodField()  # Fetch treatments from JSONField
+#     balance_amount = serializers.SerializerMethodField()  # Auto-calculate balance
+#
+#     class Meta:
+#         model = TreatmentBill
+#         fields = ['id', 'booking', 'dental_examination', 'treatments', 'total_amount', 'paid_amount', 'balance_amount',
+#                   'created_at']
+#
+#     def get_treatments(self, obj):
+#         return obj.get_treatments()
+#
+#     def get_balance_amount(self, obj):
+#         total_amount = obj.total_amount if obj.total_amount is not None else 0
+#         paid_amount = obj.paid_amount if obj.paid_amount is not None else 0
+#         return total_amount - paid_amount
+#
+#     def update(self, instance, validated_data):
+#         instance.total_amount = validated_data.get("total_amount", instance.total_amount) or 0
+#         instance.paid_amount = validated_data.get("paid_amount", instance.paid_amount) or 0
+#
+#         # Auto-update balance amount
+#         instance.balance_amount = instance.total_amount - instance.paid_amount
+#
+#         instance.save()
+#         return instance
 
 
 #--------------------------------------------------
@@ -115,41 +133,41 @@ class PrescriptionSerializer(serializers.ModelSerializer):
 
 
 # --------------------------------------------------------------
-class TreatmentNoteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TreatmentNote
-        fields = '__all__'
-
-    def create(self, validated_data):
-        booking = validated_data.pop('booking')  # Remove and store booking
-        treatment_note = TreatmentNote.objects.create(booking=booking, **validated_data)
-        return treatment_note
+# class TreatmentNoteSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = TreatmentNote
+#         fields = '__all__'
+#
+#     def create(self, validated_data):
+#         booking = validated_data.pop('booking')  # Remove and store booking
+#         treatment_note = TreatmentNote.objects.create(booking=booking, **validated_data)
+#         return treatment_note
 
 # ------------------------------------------------------------
-class GeneralExaminationSerializer(serializers.ModelSerializer):
-    patient_name = serializers.CharField(source="patient.name", read_only=True)
-    booking_id = serializers.IntegerField(source="booking.id", read_only=True)
-
-    class Meta:
-        model = GeneralExamination
-        fields = [
-            "id", "patient", "patient_name", "booking", "booking_id", "previous_visit",
-            "previous_sugar_level", "previous_pressure_level", "previous_notes",
-            "sugar_level", "blood_pressure", "notes", "created_at", "updated_at"
-        ]
-        read_only_fields = ["patient", "booking", "previous_visit", "previous_sugar_level", "previous_pressure_level", "previous_notes"]
+# class GeneralExaminationSerializer(serializers.ModelSerializer):
+#     patient_name = serializers.CharField(source="patient.name", read_only=True)
+#     booking_id = serializers.IntegerField(source="booking.id", read_only=True)
+#
+#     class Meta:
+#         model = GeneralExamination
+#         fields = [
+#             "id", "patient", "patient_name", "booking", "booking_id", "previous_visit",
+#             "previous_sugar_level", "previous_pressure_level", "previous_notes",
+#             "sugar_level", "blood_pressure", "notes", "created_at", "updated_at"
+#         ]
+#         read_only_fields = ["patient", "booking", "previous_visit", "previous_sugar_level", "previous_pressure_level", "previous_notes"]
 
 # --------------DENTAL EXAMINATION--------------
-class DentalExaminationSerializer(serializers.ModelSerializer):
-    patient_name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = DentalExamination
-        fields = '__all__'
-        extra_fields = ['patient_name']
-
-    def get_patient_name(self, obj):
-        return f"{obj.booking.patient.first_name} {obj.booking.patient.last_name}" if obj.booking.patient else None
+# class DentalExaminationSerializer(serializers.ModelSerializer):
+#     patient_name = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = DentalExamination
+#         fields = '__all__'
+#         extra_fields = ['patient_name']
+#
+#     def get_patient_name(self, obj):
+#         return f"{obj.booking.patient.first_name} {obj.booking.patient.last_name}" if obj.booking.patient else None
 
 # ---------------DOCTOR LOGIN SERIALIZER---------------
 class DoctorLoginSerializer(serializers.Serializer):
@@ -167,68 +185,68 @@ class DoctorLoginSerializer(serializers.Serializer):
         return {'user': user}
 
 # ---------------------------------------------------
-class PreviousPrescriptionSerializer(serializers.ModelSerializer):
-    medicine_name = serializers.CharField(source='medicine.medicine_name', read_only=True)
+# class PreviousPrescriptionSerializer(serializers.ModelSerializer):
+#     medicine_name = serializers.CharField(source='medicine.medicine_name', read_only=True)
+#
+#     class Meta:
+#         model = MedicinePrescription
+#         fields = ['id', 'medicine_name', 'dosage_days', 'medicine_times', 'meal_times']
 
-    class Meta:
-        model = MedicinePrescription
-        fields = ['id', 'medicine_name', 'dosage_days', 'medicine_times', 'meal_times']
-
-class PreviousTreatmentSerializer(serializers.ModelSerializer):
-    patient_name = serializers.SerializerMethodField()
-    last_appointment_date = serializers.SerializerMethodField()
-
-    # Fetch previous appointment's records
-    dental_examinations = serializers.SerializerMethodField()
-    treatment_bills = serializers.SerializerMethodField()
-    prescriptions = serializers.SerializerMethodField()
-    treatment_notes = serializers.SerializerMethodField()
-
-    class Meta:
-        model = PatientBooking
-        fields = ['id', 'patient_name', 'appointment_date', 'last_appointment_date',
-                  'dental_examinations', 'treatment_bills', 'prescriptions', 'treatment_notes']
-
-    def get_patient_name(self, obj):
-        return f"{obj.patient.first_name} {obj.patient.last_name}" if obj.patient else None
-
-    def get_last_appointment_date(self, obj):
-        """ Fetch the last appointment date of this patient (excluding today) """
-        last_booking = PatientBooking.objects.filter(
-            patient=obj.patient
-        ).exclude(id=obj.id).exclude(appointment_date=date.today()).order_by('-appointment_date').first()
-
-        return last_booking.appointment_date if last_booking else None
-
-    def get_last_booking(self, obj):
-        """ Helper function to fetch the last previous appointment """
-        return PatientBooking.objects.filter(
-            patient=obj.patient
-        ).exclude(id=obj.id).order_by('-appointment_date').first()
-
-    def get_dental_examinations(self, obj):
-        last_booking = self.get_last_booking(obj)
-        if last_booking:
-            return DentalExaminationSerializer(last_booking.dental_examinations.all(), many=True).data
-        return []
-
-    def get_treatment_bills(self, obj):
-        last_booking = self.get_last_booking(obj)
-        if last_booking:
-            return TreatmentBillSerializer(last_booking.treatment_bills.all(), many=True).data
-        return []
-
-    def get_prescriptions(self, obj):
-        last_booking = self.get_last_booking(obj)
-        if last_booking:
-            return PreviousPrescriptionSerializer(last_booking.prescriptions.all(), many=True).data
-        return []
-
-    def get_treatment_notes(self, obj):
-        last_booking = self.get_last_booking(obj)
-        if last_booking:
-            return TreatmentNoteSerializer(last_booking.treatment_notes.all(), many=True).data
-        return []
+# class PreviousTreatmentSerializer(serializers.ModelSerializer):
+#     patient_name = serializers.SerializerMethodField()
+#     last_appointment_date = serializers.SerializerMethodField()
+#
+#     # Fetch previous appointment's records
+#     dental_examinations = serializers.SerializerMethodField()
+#     treatment_bills = serializers.SerializerMethodField()
+#     prescriptions = serializers.SerializerMethodField()
+#     treatment_notes = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = PatientBooking
+#         fields = ['id', 'patient_name', 'appointment_date', 'last_appointment_date',
+#                   'dental_examinations', 'treatment_bills', 'prescriptions', 'treatment_notes']
+#
+#     def get_patient_name(self, obj):
+#         return f"{obj.patient.first_name} {obj.patient.last_name}" if obj.patient else None
+#
+#     def get_last_appointment_date(self, obj):
+#         """ Fetch the last appointment date of this patient (excluding today) """
+#         last_booking = PatientBooking.objects.filter(
+#             patient=obj.patient
+#         ).exclude(id=obj.id).exclude(appointment_date=date.today()).order_by('-appointment_date').first()
+#
+#         return last_booking.appointment_date if last_booking else None
+#
+#     def get_last_booking(self, obj):
+#         """ Helper function to fetch the last previous appointment """
+#         return PatientBooking.objects.filter(
+#             patient=obj.patient
+#         ).exclude(id=obj.id).order_by('-appointment_date').first()
+#
+#     def get_dental_examinations(self, obj):
+#         last_booking = self.get_last_booking(obj)
+#         if last_booking:
+#             return DentalExaminationSerializer(last_booking.dental_examinations.all(), many=True).data
+#         return []
+#
+#     def get_treatment_bills(self, obj):
+#         last_booking = self.get_last_booking(obj)
+#         if last_booking:
+#             return TreatmentBillSerializer(last_booking.treatment_bills.all(), many=True).data
+#         return []
+#
+#     def get_prescriptions(self, obj):
+#         last_booking = self.get_last_booking(obj)
+#         if last_booking:
+#             return PreviousPrescriptionSerializer(last_booking.prescriptions.all(), many=True).data
+#         return []
+#
+#     def get_treatment_notes(self, obj):
+#         last_booking = self.get_last_booking(obj)
+#         if last_booking:
+#             return TreatmentNoteSerializer(last_booking.treatment_notes.all(), many=True).data
+#         return []
 
 
 
