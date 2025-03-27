@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from SUPERADMIN.models import PharmaceuticalMedicine, Doctor, Branch, User
 from RECEPTION.models import PatientBooking, Patient
 from datetime import date
-from .models import DentalExamination, MedicinePrescription
+from .models import DentalExamination, MedicinePrescription, TreatmentBill
 from django.db.models.functions import TruncDate
 # from .models import (DentalExamination,
 #                      GeneralExamination,
@@ -68,32 +68,31 @@ class DoctorViewProfileSerializer(serializers.ModelSerializer):
 
         return instance
 # ---------------------------------------------------------
-# class TreatmentBillSerializer(serializers.ModelSerializer):
-#     treatments = serializers.SerializerMethodField()  # Fetch treatments from JSONField
-#     balance_amount = serializers.SerializerMethodField()  # Auto-calculate balance
-#
-#     class Meta:
-#         model = TreatmentBill
-#         fields = ['id', 'booking', 'dental_examination', 'treatments', 'total_amount', 'paid_amount', 'balance_amount',
-#                   'created_at']
-#
-#     def get_treatments(self, obj):
-#         return obj.get_treatments()
-#
-#     def get_balance_amount(self, obj):
-#         total_amount = obj.total_amount if obj.total_amount is not None else 0
-#         paid_amount = obj.paid_amount if obj.paid_amount is not None else 0
-#         return total_amount - paid_amount
-#
-#     def update(self, instance, validated_data):
-#         instance.total_amount = validated_data.get("total_amount", instance.total_amount) or 0
-#         instance.paid_amount = validated_data.get("paid_amount", instance.paid_amount) or 0
-#
-#         # Auto-update balance amount
-#         instance.balance_amount = instance.total_amount - instance.paid_amount
-#
-#         instance.save()
-#         return instance
+class TreatmentBillSerializer(serializers.ModelSerializer):
+    treatment_plan = serializers.SerializerMethodField()  
+    balance_amount = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TreatmentBill
+        fields = [
+            'id', 'patient', 'booking', 'dental_examination', 'treatment_plan',
+            'total_amount', 'paid_amount', 'balance_amount', 'payment_status',
+            'payment_method', 'created_at'
+        ]
+
+    def get_treatment_plan(self, obj):
+        return obj.get_treatment_plan()  # ✅ Fetch from DentalExamination
+
+    def get_balance_amount(self, obj):
+        return obj.calculated_balance_amount
+
+    def update(self, instance, validated_data):
+        instance.total_amount = validated_data.get("total_amount", instance.total_amount)
+        instance.paid_amount = validated_data.get("paid_amount", instance.paid_amount)
+        instance.payment_status = validated_data.get("payment_status", instance.payment_status)
+        instance.payment_method = validated_data.get("payment_method", instance.payment_method)
+        instance.save()
+        return instance
 
 
 #--------------------------------------------------

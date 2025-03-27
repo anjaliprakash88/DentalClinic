@@ -330,7 +330,8 @@
         <hr class="w-100 mb-5 mt-5 mx-auto">
 
 
-        <h4 class="mt-5 text-center fw-bold">Dentition</h4>
+        
+        <h3 class="text-start fw-bold">Dentition</h3>
         <div class="dental-chart">
            
             <div class="quadrant">
@@ -554,7 +555,7 @@
 
     <hr class="w-100 mx-auto mt-5 mb-5">
 
-    <h1 class="text-start">Prescription</h1>
+    <h3 class="text-start fw-bold">Prescription</h3>
     <form id="medicine-form" class="bg-light p-4 rounded shadow">
         {% csrf_token %}
         <input type="hidden" id="booking_id" value="{{ booking.id|default:'' }}">
@@ -571,6 +572,33 @@
             </div>
         </div>
     </form>
+    <hr class="w-100 mx-auto mt-5 mb-5">
+
+    <h3 class="text-start fw-bold">Treatment Bill</h3>
+
+    <div class="card w-100">
+        <div class="card-body">
+            <form id="treatment-form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="total-amount-input" class="form-label fw-bold">Total Amount:</label>
+                    <input type="number" id="total-amount-input" class="form-control" step="0.01" 
+                        value="{{ treatment_bill.total_amount }}">
+                </div>
+            
+                <div class="mb-3">
+                    <label for="balance-amount" class="form-label fw-bold">Balance Amount:</label>
+                    <input type="number" id="balance-amount" class="form-control" step="0.01" 
+                        value="{{ treatment_bill.balance_amount }}" readonly>
+                </div>
+                <div class="text-start">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    
 
 </div>
 
@@ -581,6 +609,48 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+    $(document).ready(function() {
+        const bookingId = $("#booking_id").val();
+        function updateBalanceAmount() {
+            let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
+            let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
+            let balanceAmount = totalAmount - paidAmount;
+            $("#balance-amount").val(balanceAmount.toFixed(2));
+        }
+    
+        // Auto-update balance when total or paid amount changes
+        $("#total-amount-input, #paid-amount-input").on("input", updateBalanceAmount);
+    
+        // Handle form submission
+        $("#treatment-form").on("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+    
+            let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
+            let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
+            let balanceAmount = parseFloat($("#balance-amount").val()) || 0;
+    
+            $.ajax({
+                type: "POST",
+                url: `/doctor/checkup/${bookingId}/`,  
+                data: {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    total_amount: totalAmount,
+                    paid_amount: paidAmount,
+                    balance_amount: balanceAmount
+                },
+                success: function(response) {
+                    alert("Data saved successfully!");
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert("Error saving data.");
+                }
+            });
+        });
+    });
+
+
+
     $(document).ready(function(){
         $('#checkupForm').submit(function(event){
             event.preventDefault();
@@ -805,6 +875,10 @@ $(document).ready(function() {
         });
     });
 });
+
+
+
+
 </script>
 
 </body>

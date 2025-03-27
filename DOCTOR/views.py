@@ -10,9 +10,10 @@ from .serializer import (DoctorLoginSerializer,
                          DentalExaminationSerializer,
                          DoctorViewProfileSerializer,
                          MedicineSerializer,
-                         PrescriptionSerializer)
+                         PrescriptionSerializer, 
+                         TreatmentBillSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
-from .models import DentalExamination
+from .models import DentalExamination, TreatmentBill
 
 from SUPERADMIN.models import Doctor, PharmaceuticalMedicine
 from RECEPTION.models import PatientBooking, Patient
@@ -44,10 +45,16 @@ class Checkup_Page(APIView):
 
         if examination is None:
             examination = DentalExamination.objects.create(patient=patient, booking=booking)
-
+              
+        treatment_bill, created = TreatmentBill.objects.get_or_create(
+            booking=booking,
+            dental_examination=examination,
+            defaults={'patient': patient,'total_amount': 0.00, 'paid_amount': 0.00}
+        )
+        
         # Serialize data without 'past_dental_history'
         examination_serializer = DentalExaminationSerializer(examination)
-
+        treatment_bill_serializer = TreatmentBillSerializer(treatment_bill)
         # Fetch all available medicines
         medicines = PharmaceuticalMedicine.objects.all()
         medicine_serializer = MedicineSerializer(medicines, many=True)
@@ -55,11 +62,13 @@ class Checkup_Page(APIView):
         if format == 'json':
             return Response({
                 "examination": examination_serializer.data,
+                "treatment_bill": treatment_bill_serializer.data,
                  "medicines": medicine_serializer.data
             }, status=status.HTTP_200_OK)
 
         return render(request, self.template_name, {
              "examination": examination_serializer.data,
+             "treatment_bill": treatment_bill_serializer.data,
              "medicines": medicine_serializer.data,
              "booking": booking
         })
@@ -100,8 +109,26 @@ class Checkup_Page(APIView):
 
         # Save selected teeth data
         dentition_data = request.data.get("dentition", "[]")
-        examination.dentition = dentition_data  # Assuming `dentition` is a JSONField or TextField
+        examination.dentition = dentition_data 
+        examination.save() # Assuming `dentition` is a JSONField or TextField
 
+        treatment_bill, created = TreatmentBill.objects.get_or_create(
+            booking=booking,
+            dental_examination=examination,
+            defaults={
+                'patient': patient,  # ✅ Ensure patient is explicitly assigned
+                'total_amount': 0.00,
+                'paid_amount': 0.00,
+            }
+        )
+
+        # ✅ If `get_or_create` didn't assign `patient`, update it manually
+        if not created and not treatment_bill.patient:
+            print(f"Fixing missing patient for TreatmentBill {treatment_bill.id}")
+            treatment_bill.patient = patient
+            treatment_bill.save()
+
+        
         medicines_data = request.data.get('medicines', [])
         created_prescriptions = []
         errors = []
@@ -137,6 +164,7 @@ class Checkup_Page(APIView):
         return Response({
             "message": "Checkup details and medicine prescriptions saved successfully!",
             "examination": DentalExaminationSerializer(examination).data,
+            "treatment_bill": TreatmentBillSerializer(treatment_bill).data,
             "created_prescriptions": created_prescriptions
         }, status=status.HTTP_200_OK)
 

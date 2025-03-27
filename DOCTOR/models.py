@@ -42,6 +42,34 @@ class MedicinePrescription(models.Model):
     def __str__(self):
         return self.medicine.medicine_name
 
+
+class TreatmentBill(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_bills")
+    dental_examination = models.ForeignKey(DentalExamination, on_delete=models.CASCADE, related_name="ttreatment_bills")
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    balance_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    payment_status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('partial', 'Partially Paid'),
+        ('paid', 'Paid')
+    ], default='pending')
+    payment_method = models.CharField(max_length=20, blank=True)
+
+    def get_treatment_plan(self):
+        return self.dental_examination.treatment_plan  # ✅ Return treatment_plan
+
+    @property
+    def calculated_balance_amount(self):
+        """Calculate balance amount dynamically"""
+        return self.total_amount - self.paid_amount if self.total_amount and self.paid_amount else 0.00
+
+    def __str__(self):
+        return f"Bill for {self.booking.patient.first_name} {self.booking.patient.last_name} - ${self.total_amount}"
+
+
 # -------------------- Treatment Note Model --------------------
 # class TreatmentNote(models.Model):
 #     booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_notes")
@@ -101,23 +129,4 @@ class MedicinePrescription(models.Model):
 #         return f"Treatment for {self.booking.patient.first_name} {self.booking.patient.last_name} on {self.booking.appointment_date}"
 
 
-# class TreatmentBill(models.Model):
-#     booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_bills")
-#     dental_examination = models.ForeignKey(DentalExamination, on_delete=models.CASCADE, related_name="ttreatment_bills")
-#     total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-#     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-#     balance_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     def get_treatments(self):
-#         if isinstance(self.dental_examination.treatments, str):
-#             try:
-#                 import json
-#                 return json.loads(self.dental_examination.treatments)  # Convert string to JSON
-#             except json.JSONDecodeError:
-#                 return {"error": "Invalid JSON format"}
-#         return self.dental_examination.treatments  # If already a dictionary/list
-#
-#     def __str__(self):
-#         return f"Bill for {self.booking.patient.first_name} {self.booking.patient.last_name} - ${self.total_amount}"
 
