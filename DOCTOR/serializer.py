@@ -184,68 +184,63 @@ class DoctorLoginSerializer(serializers.Serializer):
         return {'user': user}
 
 # ---------------------------------------------------
-# class PreviousPrescriptionSerializer(serializers.ModelSerializer):
-#     medicine_name = serializers.CharField(source='medicine.medicine_name', read_only=True)
-#
-#     class Meta:
-#         model = MedicinePrescription
-#         fields = ['id', 'medicine_name', 'dosage_days', 'medicine_times', 'meal_times']
+class PreviousTreatmentSerializer(serializers.ModelSerializer):
+    patient_name = serializers.SerializerMethodField()
+    last_appointment_date = serializers.SerializerMethodField()
 
-# class PreviousTreatmentSerializer(serializers.ModelSerializer):
-#     patient_name = serializers.SerializerMethodField()
-#     last_appointment_date = serializers.SerializerMethodField()
-#
-#     # Fetch previous appointment's records
-#     dental_examinations = serializers.SerializerMethodField()
-#     treatment_bills = serializers.SerializerMethodField()
-#     prescriptions = serializers.SerializerMethodField()
-#     treatment_notes = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         model = PatientBooking
-#         fields = ['id', 'patient_name', 'appointment_date', 'last_appointment_date',
-#                   'dental_examinations', 'treatment_bills', 'prescriptions', 'treatment_notes']
-#
-#     def get_patient_name(self, obj):
-#         return f"{obj.patient.first_name} {obj.patient.last_name}" if obj.patient else None
-#
-#     def get_last_appointment_date(self, obj):
-#         """ Fetch the last appointment date of this patient (excluding today) """
-#         last_booking = PatientBooking.objects.filter(
-#             patient=obj.patient
-#         ).exclude(id=obj.id).exclude(appointment_date=date.today()).order_by('-appointment_date').first()
-#
-#         return last_booking.appointment_date if last_booking else None
-#
-#     def get_last_booking(self, obj):
-#         """ Helper function to fetch the last previous appointment """
-#         return PatientBooking.objects.filter(
-#             patient=obj.patient
-#         ).exclude(id=obj.id).order_by('-appointment_date').first()
-#
-#     def get_dental_examinations(self, obj):
-#         last_booking = self.get_last_booking(obj)
-#         if last_booking:
-#             return DentalExaminationSerializer(last_booking.dental_examinations.all(), many=True).data
-#         return []
-#
-#     def get_treatment_bills(self, obj):
-#         last_booking = self.get_last_booking(obj)
-#         if last_booking:
-#             return TreatmentBillSerializer(last_booking.treatment_bills.all(), many=True).data
-#         return []
-#
-#     def get_prescriptions(self, obj):
-#         last_booking = self.get_last_booking(obj)
-#         if last_booking:
-#             return PreviousPrescriptionSerializer(last_booking.prescriptions.all(), many=True).data
-#         return []
-#
-#     def get_treatment_notes(self, obj):
-#         last_booking = self.get_last_booking(obj)
-#         if last_booking:
-#             return TreatmentNoteSerializer(last_booking.treatment_notes.all(), many=True).data
-#         return []
+    # Fetch previous appointment's records
+    dental_examinations = serializers.SerializerMethodField()
+    treatment_bills = serializers.SerializerMethodField()
+    prescriptions = serializers.SerializerMethodField()
+
+
+    class Meta:
+        model = PatientBooking
+        fields = ['id', 'patient_name', 'appointment_date', 'last_appointment_date',
+                  'dental_examinations', 'treatment_bills', 'prescriptions']
+
+    def get_patient_name(self, obj):
+        """Return full patient name."""
+        return f"{obj.patient.first_name} {obj.patient.last_name}" if obj.patient else None
+
+    def get_last_appointment_date(self, obj):
+        """Fetch the last appointment date of this patient (excluding today)."""
+        last_booking = PatientBooking.objects.filter(
+            patient=obj.patient
+        ).exclude(id=obj.id).exclude(appointment_date=date.today()).order_by('-appointment_date').first()
+
+        return last_booking.appointment_date if last_booking else None
+
+    def get_last_booking(self, obj):
+        """Helper function to fetch the last previous appointment."""
+        return PatientBooking.objects.filter(
+            patient=obj.patient
+        ).exclude(id=obj.id).order_by('-appointment_date').first()
+
+    def get_dental_examinations(self, obj):
+        """Fetch previous dental examinations."""
+        last_booking = self.get_last_booking(obj)
+        if last_booking:
+            examinations = DentalExamination.objects.filter(booking=last_booking)
+            return DentalExaminationSerializer(examinations, many=True).data
+        return []
+
+    def get_treatment_bills(self, obj):
+        """Fetch previous treatment bills."""
+        last_booking = self.get_last_booking(obj)
+        if last_booking:
+            bills = TreatmentBill.objects.filter(booking=last_booking)
+            return TreatmentBillSerializer(bills, many=True).data
+        return []
+
+    def get_prescriptions(self, obj):
+        """Fetch previous prescriptions."""
+        last_booking = self.get_last_booking(obj)
+        if last_booking:
+            prescriptions = MedicinePrescription.objects.filter(booking=last_booking)
+            return PrescriptionSerializer(prescriptions, many=True).data
+        return []
+
 
 
 

@@ -11,7 +11,8 @@ from .serializer import (DoctorLoginSerializer,
                          DoctorViewProfileSerializer,
                          MedicineSerializer,
                          PrescriptionSerializer, 
-                         TreatmentBillSerializer)
+                         TreatmentBillSerializer,
+                         PreviousTreatmentSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
 from .models import DentalExamination, TreatmentBill
 
@@ -255,20 +256,20 @@ class DoctorProfileView(APIView):
 #         return Response({"doctor": serializer.data, "previous_treatments": previous_treatments})
 
 #     # ------------------------------------------
-# class PreviousTreatmentView(APIView):
-#     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-#     template_name = 'doctor/previous_treatment.html'
-#
-#     def get(self, request, id, format=None):
-#         booking = get_object_or_404(PatientBooking, id=id)
-#         serializer = PreviousTreatmentSerializer(booking)
-#
-#         if request.accepted_renderer.format == 'html':
-#             return Response({"data": serializer.data}, template_name=self.template_name)
-#
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#
+class PreviousTreatmentView(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'doctor/previous_treatment.html'
+
+    def get(self, request, id, format=None):
+        booking = get_object_or_404(PatientBooking, id=id)
+        serializer = PreviousTreatmentSerializer(booking)
+
+        if request.accepted_renderer.format == 'html':
+            return Response({"data": serializer.data}, template_name=self.template_name)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # # ------------------------------
 # class TreatmentBillView(APIView):
 #     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
