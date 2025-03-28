@@ -11,5 +11,9 @@ from django.contrib import admin
 # admin.site.register(MedicinePrescription)
 # admin.site.register(TreatmentBill)
 
-from .models import (DentalExamination)
+from .models import (DentalExamination,
+                     MedicinePrescription,
+                     TreatmentBill)
 admin.site.register(DentalExamination)
+admin.site.register(MedicinePrescription)
+admin.site.register(TreatmentBill)

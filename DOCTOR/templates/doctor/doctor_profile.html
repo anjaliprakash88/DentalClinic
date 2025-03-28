@@ -1,3 +1,4 @@
+
 {% load static %}
 <html lang="en">
 <head>
@@ -530,7 +531,7 @@
          formData.append("medical_license", medicalLicense);
          }
          $.ajax({
-         url: "/doctor/update-profile/",
+         url: "/doctor/profile/",
          method: "POST",
          processData: false,
          contentType: false,

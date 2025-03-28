@@ -12,7 +12,9 @@ from .serializer import (DoctorLoginSerializer,
                          MedicineSerializer,
                          PrescriptionSerializer, 
                          TreatmentBillSerializer,
-                         PreviousTreatmentSerializer)
+                         PreviousTreatmentSerializer,
+                         ChangeDoctorPasswordSerializer,
+                         DoctorPatientSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
 from .models import DentalExamination, TreatmentBill
 
@@ -24,6 +26,25 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import HttpResponse
 
 
+#---------------CHANGE DOCTOR PASSWORD---------------
+class ChangeDoctorPassword(APIView):
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'doctor/doctor_dashboard.html'
+
+    def get(self, request):
+        serializer = DoctorLoginSerializer()
+        return Response({'serializer': serializer})
+
+    def post(self, request):
+        serializer =ChangeDoctorPasswordSerializer(data=request.data, context={"request": request})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# ---------------------------------------------------------
 class Checkup_Page(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = "doctor/checkup_page.html"
@@ -232,28 +253,28 @@ class DoctorProfileView(APIView):
         return Response({"message": "Doctor profile updated successfully"}, status=status.HTTP_200_OK)
 
 
-# # ------------------------------------------------
-# class DoctorPatientListView(APIView):
-#     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
-#     template_name = 'doctor/patient_list.html'
-#
-#     def get(self, request, doctor_id):
-#         doctor = get_object_or_404(Doctor, id=doctor_id)
-#
-#         # Get all bookings for this doctor
-#         bookings = PatientBooking.objects.filter(doctor=doctor).order_by('-appointment_date')
-#         previous_treatments = PreviousTreatmentSerializer(bookings, many=True).data  # Serialize multiple bookings
-#
-#         serializer = DoctorPatientSerializer(doctor)
-#
-#         if request.accepted_renderer.format == 'html':  # Render HTML if requested
-#             return render(request, self.template_name, {
-#                 "doctor": doctor,
-#                 "patients": serializer.data['patients'],
-#                 "previous_treatments": previous_treatments  # Pass previous treatments
-#             })
-#
-#         return Response({"doctor": serializer.data, "previous_treatments": previous_treatments})
+# ------------------------------------------------
+class DoctorPatientListView(APIView):
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'doctor/patient_list.html'
+
+    def get(self, request, doctor_id):
+        doctor = get_object_or_404(Doctor, id=doctor_id)
+
+        # Get all bookings for this doctor
+        bookings = PatientBooking.objects.filter(doctor=doctor).order_by('-appointment_date')
+        previous_treatments = PreviousTreatmentSerializer(bookings, many=True).data  # Serialize multiple bookings
+
+        serializer = DoctorPatientSerializer(doctor)
+
+        if request.accepted_renderer.format == 'html':  # Render HTML if requested
+            return render(request, self.template_name, {
+                "doctor": doctor,
+                "patients": serializer.data['patients'],
+                "previous_treatments": previous_treatments  # Pass previous treatments
+            })
+
+        return Response({"doctor": serializer.data, "previous_treatments": previous_treatments})
 
 #     # ------------------------------------------
 class PreviousTreatmentView(APIView):

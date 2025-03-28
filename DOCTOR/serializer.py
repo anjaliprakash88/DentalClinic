@@ -12,6 +12,31 @@ from django.db.models.functions import TruncDate
 #                      MedicinePrescription)
 
 
+
+#-----------------------------------Doctor Change Password SERIALIZER--------------------------------------
+class ChangeDoctorPasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Old password is incorrect")
+        return value
+
+    def validate(self, data):
+        if data["new_password"] != data["confirm_password"]:
+            raise serializers.ValidationError({"confirm_password": "New passwords do not match"})
+        return data
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        user.set_password(self.validated_data["new_password"])
+        user.save()
+        return user
+    
+# --------------------------------------------
 class DentalExaminationSerializer(serializers.ModelSerializer):
     patient_name = serializers.SerializerMethodField()
     booking_id = serializers.IntegerField(source='booking.id', read_only=True)

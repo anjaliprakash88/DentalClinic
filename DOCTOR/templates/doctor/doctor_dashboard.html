@@ -121,7 +121,7 @@
             position: fixed;
             top: 0;
             left: 260px;
-            background: #d2e3e9;
+            background: #1c3342;
             display: flex;
             align-items: center;
             padding: 0 20px;
@@ -205,7 +205,6 @@
     </div>
     <div class="sidebar-menu">
         <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
-<!--        <div class="menu-item"><a href="#"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i>Today Appointment</a></div>-->
         <div class="menu-item">
             <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
                <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
@@ -223,6 +222,26 @@
 <!-- Top Navbar -->
 <div class="top-navbar d-flex justify-content-between align-items-center">
     <h1 class="dashboard-title ms-center">Today Appointment</h1>
+    <div class="dropdown">
+        <button class="btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fa-solid fa-circle-user fa-2x" style="color: #ffffff;"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          <li><a class="dropdown-item" href="/doctor/profile/"><i class="fa-solid fa-user" style="color: #000000;"></i> Doctor Profile</a></li>
+           <li>
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                    <i class="fa-solid fa-lock" style="color: #000000;"></i> Change Password
+                </a>
+           </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <div class="menu-item">
+                <a href="javascript:void(0)" class="logout-btn dropdown-item"><i class="fa-solid fa-power-off" style="color: #000000;"></i>Logout</a>
+            </div>
+           </li>
+        </ul>
+      </div>
+
 </div>
 
 <!-- Content -->
@@ -244,6 +263,38 @@
         </table>
     </div>
 </div>
+
+
+{% comment %} CHANGE PASSWORD {% endcomment %}
+ <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-white" style="background: #1c3342; color:white;" >
+                <h5 class="modal-title" id="changePasswordModalLabel">CHANGE PASSWORD</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="doctorchangepasswordForm" action="/doctor/change-password/" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Old Password</label>
+                        <input type="password" class="form-control" id="model-oldpassword" name="oldpassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="model-newpassword" name="newpassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="model-confirmpassword" name="confirmpassword" required>
+                    </div>
+                    <button type="submit" class="btn w-100 " style="background: #1c3342; color:white;">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- jQuery, Bootstrap JS, DataTables -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -419,6 +470,37 @@ $(document).ready(function() {
 });
 
 
+<!---------------CHANGE PASSWORD---------------------->
+$(document).ready(function () {
+    var csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+
+    $('#doctorchangepasswordForm').submit(function (e) {
+        e.preventDefault();
+
+        var formData = {
+            old_password: $("#model-oldpassword").val(),
+            new_password: $("#model-newpassword").val(),
+            confirm_password: $("#model-confirmpassword").val()
+        };
+
+        $.ajax({
+            url: '/doctor/change-password/',
+            method: 'POST',
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+            success: function(response) {
+                $('#changePasswordModal').modal('hide');
+                window.location.href = '/doctor/login/';
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+            }
+        });
+    });
+});
 
 </script>
 

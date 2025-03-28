@@ -13,10 +13,11 @@ urlpatterns = [
     path('previous-treatment/<int:id>/', views.PreviousTreatmentView.as_view(), name='previous-treatment'),
     # path('generalchart/<int:booking_id>/', views.GeneralExaminationAPIView.as_view(), name="generalchart"),
 
-    # path("patients/<int:doctor_id>/", views.DoctorPatientListView.as_view(), name="doctor-patients"),
+    path("patients/<int:doctor_id>/", views.DoctorPatientListView.as_view(), name="doctor-patients"),
 
     path('profile/', views.DoctorProfileView.as_view(), name='doctor-profile'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('change-password/', views.ChangeDoctorPassword.as_view(), name='change_password'),
 
     path('checkup/<int:booking_id>/', views.Checkup_Page.as_view(), name='checkup_page'),
 
