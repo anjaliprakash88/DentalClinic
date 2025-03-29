@@ -1,0 +1,890 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Arif's Dental Clinic | Paediatric Dental Examination</title>
+    <link rel="icon" type="image/x-icon" sizes="1008x1008" href="{% static 'images/favicon.png' %}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #d2e3e9;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background:#1c3342;
+            padding-top: 20px;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .sidebar .sidebar-logo {
+            text-align: center;
+        }
+
+        .sidebar .sidebar-logo img {
+            width: 70px;
+            height: auto;
+            margin-bottom: 12px;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .sidebar .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Adds space between menu items */
+            padding: 0 10px;
+        }
+        
+        .sidebar .menu-item {
+            padding: 10px 15px;
+            color: black;
+            background: #d2e3e9;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Alternative if not using gap */
+        .sidebar .menu-item:not(:last-child) {
+            margin-bottom: 10px;
+        }
+        
+
+        .menu-item.active {
+            background: var(--hover-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--white);
+        }
+
+        .menu-item a {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .menu-item i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .menu-item:hover {
+            background: #d2e3e9;
+            color: clack;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Navbar */
+        .top-navbar {
+            height: 60px;
+            width: calc(100% - 260px);
+            position: fixed;
+            top: 0;
+            left: 260px;
+            background: #d2e3e9;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+            color: black;
+            z-index: 1000;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .top-navbar .dashboard-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+
+        .top-navbar .nav-icons a {
+            color: white;
+            font-size: 20px;
+            margin-left: 15px;
+            transition: 0.3s;
+        }
+
+        .top-navbar .nav-icons a:hover {
+            color: #f1c40f;
+        }
+
+        /* Content Area */
+        .content {
+            margin-left: 260px;
+            margin-top: 60px;
+            padding: 20px;
+        }
+
+        /* Table Styling */
+        .table-container {
+            background:  rgb(253, 253, 253);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: black;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+        .btn-primary{
+            border:none;
+            background:#1c3342;
+
+        }
+        .dental-chart {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .quadrant {
+            width: 45%;
+            min-width: 300px;
+            margin-bottom: 20px;
+        }
+        .quadrant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e0e5ea;
+        }
+        .quadrant-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2a6496;
+        }
+        .quadrant-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            background-color: #2a6496;
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .teeth-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 2px;
+
+        }
+        .tooth {
+            width: 40px;
+            height: 60px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: #fff;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .tooth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .tooth.selected {
+            background-color: #b3d9ff;
+            border-color: #2a6496;
+            box-shadow: 0 0 0 2px rgba(42,100,150,0.3);
+            transform: translateY(-2px);
+        }
+        .tooth.healthy {
+            background-color: #d4edda;
+        }
+        .tooth.carious {
+            background-color: #f8d7da;
+        }
+        .tooth.filled {
+            background-color: #d1ecf1;
+        }
+        .tooth.missing {
+            background-color: #f2f2f2;
+            text-decoration: line-through;
+        }
+        .tooth.needs-cleaning {
+            border: 2px dashed #ffc107;
+        }
+        .tooth-number {
+            font-size: 12px;
+            margin-bottom: 3px;
+            font-weight: bold;
+            color: #555;
+        }
+        .tooth-image {
+            width: 30px;
+            height: 30px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 25px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .controls h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e5ea;
+        }
+        .controls h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .status-controls, .treatment-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .color-indicator {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            vertical-align: middle;
+        }
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2a6496;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #1c4c74;
+        }
+        .status-btn, .treatment-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .treatment-checkbox label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f5f7fa;
+            transition: background-color 0.2s;
+        }
+        .treatment-checkbox label:hover {
+            background-color: #e0e5ea;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .action-buttons button {
+            flex: 1;
+            padding: 10px;
+        }
+
+
+        .selected-info {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f0f4f8;
+            border-left: 4px solid #2a6496;
+        }
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .legend h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e5ea;
+        }
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #f5f7fa;
+            border: 1px solid #ddd;
+        }
+        @media (max-width: 768px) {
+            .quadrant {
+                width: 100%;
+            }
+        }
+        .separator {
+    width: 3px;
+    background-color: black;
+    height: 100%;
+    margin: 0 20px;
+}
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+    <div class="sidebar-logo">
+        <img src="{% static 'images/logo (2).png' %}" alt="Dr. Arif's Dental Clinic Logo">
+    </div>
+    <div class="sidebar-menu">
+        <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
+<!--        <div class="menu-item"><a href="#"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i>Today Appointment</a></div>-->
+        <div class="menu-item">
+            <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
+               <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="/doctor/profile/"><i class="fa-solid fa-user" style="color: #000000;"></i>Profile</a>
+        </div>
+        <div class="menu-item">
+            <a href="javascript:void(0)" class="logout-btn"><i class="fa-solid fa-power-off" style="color: #000000;"></i>Logout</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Top Navbar -->
+<div class="top-navbar d-flex justify-content-between align-items-center">
+    <h1 class="dashboard-title ms-center">Dental Examination - Paediatric</h1>
+</div>
+
+<!-- Content -->
+<div class="content">
+   <div>
+          <button class="btn btn-primary" id="adult-btn">Adult</button>
+          <button class="btn btn-primary" id="paediatric-btn">Paediatric</button>
+      </div>
+    <br>
+      <div class="dental-chart">
+          <div class="quadrant">
+              <div class="quadrant-header">
+                <span class="quadrant-title">Upper Right</span>
+                <span class="quadrant-number">1</span>
+              </div>
+              <div class="teeth-row">
+                  <div class="tooth" id="tooth-14" data-tooth="14" data-status="healthy">
+                      <div class="tooth-number">55</div>
+                      <i class="fa-solid fa-tooth fs-2"></i>
+                  </div>
+        <div class="tooth" id="tooth-15" data-tooth="15" data-status="healthy">
+            <div class="tooth-number">54</div>
+             <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-16" data-tooth="16" data-status="healthy">
+            <div class="tooth-number">53</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-17" data-tooth="17" data-status="healthy">
+            <div class="tooth-number">52</div>
+            <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-18" data-tooth="18" data-status="healthy">
+            <div class="tooth-number">51</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+    </div>
+</div>
+<div class="separator"></div>
+<div class="quadrant">
+    <div class="quadrant-header">
+        <span class="quadrant-title">Upper Left</span>
+        <span class="quadrant-number">2</span>
+    </div>
+    <div class="teeth-row">
+        <div class="tooth" id="tooth-21" data-tooth="21" data-status="healthy">
+            <div class="tooth-number">61</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-22" data-tooth="22" data-status="healthy">
+            <div class="tooth-number">62</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-23" data-tooth="23" data-status="healthy">
+            <div class="tooth-number">63</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-24" data-tooth="24" data-status="healthy">
+            <div class="tooth-number">64</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-25" data-tooth="25" data-status="healthy">
+            <div class="tooth-number">65</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+    </div>
+</div>
+
+        <div class="quadrant">
+    <div class="quadrant-header">
+        <span class="quadrant-title">Lower Left</span>
+        <span class="quadrant-number">3</span>
+    </div>
+    <div class="teeth-row">
+        <div class="tooth" id="tooth-41" data-tooth="41" data-status="healthy">
+            <div class="tooth-number">85</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-42" data-tooth="42" data-status="healthy">
+            <div class="tooth-number">84</div>
+            <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-43" data-tooth="43" data-status="healthy">
+            <div class="tooth-number">83</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-44" data-tooth="44" data-status="healthy">
+            <div class="tooth-number">82</div>
+          <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-45" data-tooth="45" data-status="healthy">
+            <div class="tooth-number">81</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+
+
+
+    </div>
+</div>
+<div class="separator"></div>
+<div class="quadrant">
+    <div class="quadrant-header">
+        <span class="quadrant-title">Lower Right</span>
+        <span class="quadrant-number">4</span>
+    </div>
+    <div class="teeth-row">
+        <div class="tooth" id="tooth-31" data-tooth="31" data-status="healthy">
+            <div class="tooth-number">71</div>
+          <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+       <div class="tooth" id="tooth-32" data-tooth="32" data-status="healthy">
+            <div class="tooth-number">72</div>
+            <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-33" data-tooth="33" data-status="healthy">
+            <div class="tooth-number">73</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-34" data-tooth="34" data-status="healthy">
+            <div class="tooth-number">74</div>
+           <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+        <div class="tooth" id="tooth-35" data-tooth="35" data-status="healthy">
+            <div class="tooth-number">75</div>
+          <i class="fa-solid fa-tooth fs-2"></i>
+        </div>
+    </div>
+
+
+
+    </div>
+          <button id="select-all" class="btn btn-primary">Select All Teeth</button>
+
+
+
+
+
+        </div>
+    <br>
+
+        <div class="controls">
+           <div class="d-flex justify-content-between align-items-center">
+                <h2>Treatment Controls</h2>
+                <i class="fa-solid fa-circle-info" style="font-size:20px; cursor:pointer;" title="More Info" data-bs-toggle="modal" data-bs-target="#infoModal"></i>
+            </div>
+            <div class="selected-info">
+                <div id="selected-teeth">No teeth selected</div>
+            </div>
+
+
+
+<h3>Treatment Plan</h3>
+<div class="treatment-controls">
+    <div class="treatment-checkbox">
+        <input type="hidden" id="patientId" value="{{ patient_id }}">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+
+        <label style="background-color: #069494; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="filling">
+            Filling
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #7DF9FF; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="root-canal">
+            Root Canal
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #C2CCC5; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="missing">
+            Missing
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #FFD700; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="extraction">
+            Extraction
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #ffe79b; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="crown">
+            Crown
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #FFC1CC ; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="teeth-cleaning">
+            Teeth Cleaning
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #228B22; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="implant">
+            Implant
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #FF6961; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="teeth-whitening">
+            Teeth Whitening
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color:  #CCCCFF; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="veneers">
+             Veneers
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #7851A9; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="braces">
+            Braces
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color:#9ACD32; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="bonding">
+             Bonding
+        </label>
+    </div>
+    <div class="treatment-checkbox">
+        <label style="background-color: #A7967E; padding: 5px; border-radius: 5px;">
+            <input type="checkbox" value="dentures">
+             Dentures
+        </label>
+    </div>
+</div>
+        </div>
+
+<div class="action-buttons">
+    <button class="btn btn-primary">
+    <a href="/doctor/dashboard/" class="text-white text-decoration-none d-block w-100 h-100">Back</a>
+</button>
+
+     <button id="save-changes" class="btn btn-primary">Save & proceed</button>
+</div>
+  </div>
+
+<!-----------------MODEL POP UP---------------->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoModalLabel">Quadrant and Tooth Numbering Guide & Tooth Status Legend</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="quadrant-number">1</span>
+                            <span>Upper Right (Teeth 11-18)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="quadrant-number">2</span>
+                            <span>Upper Left (Teeth 21-28)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="quadrant-number">3</span>
+                            <span>Lower Left (Teeth 41-48)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="quadrant-number">4</span>
+                            <span>Lower Right (Teeth 1-8)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<!-- jQuery, Bootstrap JS, DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+ document.getElementById("adult-btn").addEventListener("click", function () {
+    let bookingId = "{{ booking_id }}";
+    window.location.href = `/doctor/dentalchart/${bookingId}/`;
+});
+
+ document.getElementById("paediatric-btn").addEventListener("click", function () {
+    let bookingId = "{{ booking_id }}";  // Django will replace this with the actual value
+    window.location.href = `/doctor/paediatric_dentalchart/${bookingId}/`;
+});
+
+
+<!------------------------------------------------------------->
+$(document).ready(function () {
+$(".tooth").css("background-color", "#00FF00");
+    var bookingId = "{{ booking_id|default:'' }}";
+    var patientId = $("#patientId").val();  //
+
+
+    let selectedTeeth = [];
+
+    $(".tooth").click(function () {
+        let toothNumber = $(this).attr("data-tooth");
+
+        if (selectedTeeth.includes(toothNumber)) {
+            selectedTeeth = selectedTeeth.filter(t => t !== toothNumber);
+             $(this).css("background-color", "#00FF00");
+            $(this).removeClass("selected");
+        } else {
+            selectedTeeth.push(toothNumber);
+            $(this).css("background-color", "#FFFF00");
+            $(this).addClass("selected");
+        }
+
+         updateSelectedTeethText();
+    });
+     let allSelected = false;
+    $("#select-all").click(function () {
+        if (allSelected) {
+            selectedTeeth = [];
+            $(".tooth").css("background-color", "#00FF00").removeClass("selected");
+            $("#select-all").text("Select All");
+        } else {
+            selectedTeeth = $(".tooth").map(function () { return $(this).attr("data-tooth"); }).get();
+            $(".tooth").css("background-color", "#FFFF00").addClass("selected");
+            $("#select-all").text("Deselect All");
+        }
+
+        allSelected = !allSelected;
+        updateSelectedTeethText();
+    });
+
+    $("#clear-selection").click(function () {
+        selectedTeeth = [];
+        $(".tooth").css("background-color", "#00FF00").removeClass("selected");
+        $("#select-all").text("Select All");
+        allSelected = false;
+        updateSelectedTeethText();
+    });
+
+    function updateSelectedTeethText() {
+        $("#selected-teeth").text(selectedTeeth.length > 0 ? selectedTeeth.join(", ") : "No teeth selected");
+    }
+
+
+    function getCSRFToken() {
+        return document.querySelector("[name=csrfmiddlewaretoken]")?.value;
+    }
+
+    const csrftoken = getCSRFToken();
+
+    $("#save-changes").click(function () {
+        let selectedTreatments = $("input[type='checkbox']:checked").map(function () {
+            return $(this).val();
+        }).get();
+
+        let selectedTreatment = $("input[type='checkbox']:checked").val(); // Get selected treatment
+        let toothColorMap = {
+            "filling": "#069494",
+            "root-canal": "#7DF9FF",
+            "missing": "#C2CCC5",
+            "extraction": "#FFD700",
+            "crown": "#ffe79b",
+            "teeth-cleaning": "#FFC1CC",
+            "implant": "#228B22",
+            "teeth-whitening": "#FF6961",
+            "veneers": "#CCCCFF",
+            "braces": "#7851A9",
+            "bonding": "#9ACD32",
+            "dentures": "#A7967E"
+        };
+
+        if (!patientId) {
+            alert("Patient ID is missing!");
+            return;
+        }
+
+        $.ajax({
+            url: `/doctor/dentalchart/${bookingId}/`,
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                patient_id: patientId,
+                selected_teeth: selectedTeeth,
+                treatments: selectedTreatments
+            }),
+            headers: {
+                "X-CSRFToken": csrftoken // ✅ Correct way to set CSRF Token
+            },
+            success: function (response) {
+                alert("DentalExamination saved successfully!");
+                console.log(response);
+
+                selectedTeeth.forEach(tooth => {
+                    if (selectedTreatment && toothColorMap[selectedTreatment]) {
+                        $(`.tooth[data-tooth='${tooth}']`).css("background-color", toothColorMap[selectedTreatment]);
+                    }
+                });
+
+                selectedTeeth = [];
+                $("input[type='checkbox']").prop("checked", false);
+                updateSelectedTeethText();
+                window.location.href = `/doctor/treatment-summary/${bookingId}/`;
+            },
+            error: function (xhr) {
+                alert("Error saving treatment: " + xhr.responseText);
+            }
+        });
+    });
+});
+
+
+
+
+<!---------------LOGOUT-------------------->
+
+$(document).ready(function() {
+    $('.toggle-btn').on('click', function() {
+        $('.sidebar').toggleClass('active');
+    });
+
+    $('.logout-btn').on('click', function() {
+        const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        $.ajax({
+            url: '/doctor/logout/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            success: function(response) {
+                alert(response.message);
+                window.location.href = '/doctor/login';
+            },
+            error: function(xhr) {
+                let errorMessage = xhr.responseJSON?.error || xhr.statusText || 'Unknown error';
+                alert(`Logout failed: ${errorMessage}`);
+            }
+        });
+    });
+});
+
+
+
+</script>
+
+</body>
+</html>

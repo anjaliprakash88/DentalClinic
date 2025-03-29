@@ -1,0 +1,465 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Arif's Dental Clinic | Doctor Home</title>
+    <link rel="icon" type="image/x-icon" sizes="1008x1008" href="{% static 'images/favicon.png' %}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #d2e3e9;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background:#1c3342;
+            padding-top: 20px;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .sidebar .sidebar-logo {
+            text-align: center;
+        }
+
+        .sidebar .sidebar-logo img {
+            width: 70px;
+            height: auto;
+            margin-bottom: 12px;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .sidebar .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Adds space between menu items */
+            padding: 0 10px;
+        }
+
+        .sidebar .menu-item {
+            padding: 10px 15px;
+            color: black;
+            background: #d2e3e9;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Alternative if not using gap */
+        .sidebar .menu-item:not(:last-child) {
+            margin-bottom: 10px;
+        }
+
+
+        .menu-item.active {
+            background: var(--hover-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--white);
+        }
+
+        .menu-item a {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .menu-item i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .menu-item:hover {
+            background: #d2e3e9;
+            color: clack;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Navbar */
+        .top-navbar {
+            height: 60px;
+            width: calc(100% - 260px);
+            position: fixed;
+            top: 0;
+            left: 260px;
+            background: #d2e3e9;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+            color: black;
+            z-index: 1000;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .top-navbar .dashboard-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+
+        .top-navbar .nav-icons a {
+            color: white;
+            font-size: 20px;
+            margin-left: 15px;
+            transition: 0.3s;
+        }
+
+        .top-navbar .nav-icons a:hover {
+            color: #f1c40f;
+        }
+
+        /* Content Area */
+        .content {
+            margin-left: 260px;
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        /* Table Styling */
+        .table-container {
+            background:  rgb(253, 253, 253);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: black;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+        .btn-primary{
+            border:none;
+            background:#1c3342;
+
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+    <div class="sidebar-logo">
+        <img src="{% static 'images/logo (2).png' %}" alt="Dr. Arif's Dental Clinic Logo">
+    </div>
+    <div class="sidebar-menu">
+      <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
+      <div class="menu-item"><a href="#"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i>Today Appointment</a></div>
+        <div class="menu-item">
+            <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
+               <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
+            </a>
+        </div>
+    <div class="menu-item">
+            <a href="/doctor/profile/"><i class="fa-solid fa-user" style="color: #000000;"></i>Profile</a>
+      </div>
+       <div class="menu-item">
+           <a href="javascript:void(0)" class="logout-btn"><i class="fa-solid fa-power-off" style="color: #000000;"></i>Logout</a>
+      </div>
+    </div>
+</nav>
+
+<!-- Top Navbar -->
+<div class="top-navbar d-flex justify-content-between align-items-center">
+    <h1 class="dashboard-title ms-center">Treatment History</h1>
+</div>
+
+<!-- Content -->
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Dental Examination</h5>
+
+                    {% if data.dental_examinations %}
+                        {% for exam in data.dental_examinations %}
+                            <table class="table table-striped table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">Selected Teeth</th>
+                                        <td>{{ exam.dentition|join:", " }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Chief Complaints</th>
+                                        <td>{{ exam.chief_complaints }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">History of Present Illness</th>
+                                        <td>{{ exam.history_of_present_illness }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Medical History</th>
+                                        <td>{{ exam.medical_history }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Past Dental History</th>
+                                        <td>{{ exam.past_dental_history }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Personal History</th>
+                                        <td>{{ exam.personal_history }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">General Examination</th>
+                                        <td>{{ exam.general_examination }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Intraoral Examination</th>
+                                        <td>{{ exam.general_examination_intraoral }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Extraoral Examination</th>
+                                        <td>{{ exam.local_examination_extraoral }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Soft Tissue</th>
+                                        <td>{{ exam.soft_tissue }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Periodontal Status</th>
+                                        <td>{{ exam.periodontal_status }}</td>
+                                    </tr>
+                                    {% comment %} <tr>
+                                        <th scope="row">Investigation</th>
+                                        <td>
+                                            {% if exam.investigation %}
+                                                <p>{{ exam.investigation.url }}</p>  <!-- Debugging: Print the image URL -->
+                                                <img src="{{ exam.investigation.url }}" alt="Investigation Image" width="100">
+                                            {% else %}
+                                                No Image
+                                            {% endif %}
+                                        </td>
+                                    </tr> {% endcomment %}
+                                    
+                                    <tr>
+                                        <th scope="row">Treatment Plan</th>
+                                        <td>{{ exam.treatment_plan }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center">No dental examinations available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h3 class="card-title fw-bold">Prescriptions</h3>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Medicine</th>
+                                <th scope="col">Dosage Days</th>
+                                <th scope="col">Times</th>
+                                <th scope="col">Meal Timing</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data.prescriptions %}
+                                {% for prescription in data.prescriptions %}
+                                <tr>
+                                    <td>{{ prescription.medicine_name }}</td>
+                                    <td>{{ prescription.dosage_days }}</td>
+                                    <td>{{ prescription.medicine_times|join:", " }}</td>
+                                    <td>{{ prescription.meal_times|join:", " }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="4" class="text-center">No prescriptions available.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Treatment Bills</h5>
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Total Amount</th>
+                                <th scope="col">Paid Amount</th>
+                                <th scope="col">Balance Amount</th>
+                                <th scope="col">Payment Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data.treatment_bills %}
+                                {% for bill in data.treatment_bills %}
+                                <tr>
+                                    <td>Rs.{{ bill.total_amount }}</td>
+                                    <td>Rs.{{ bill.paid_amount }}</td>
+                                    <td>Rs.{{ bill.calculated_balance_amount }}</td>
+                                    <td>{{ bill.payment_status }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="4" class="text-center">No treatment bills available.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!-- jQuery, Bootstrap JS, DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+    var table = $('#bookingsTable').DataTable({
+        responsive: true,
+        columns: [
+            { data: 'patient_name' },
+            { data: 'gender' },
+            { data: 'age' },
+            { data: 'appointment_time' },
+            { data: 'actions', orderable: false }
+        ]
+    });
+
+    function fetchBookings() {
+        $.ajax({
+            url: `/doctor/dashboard/`,
+            type: "GET",
+            dataType: "json",
+            success: function(response) {
+                table.clear();
+                if (response.appointments.length > 0) {
+                    $.each(response.appointments, function(index, booking) {
+                        let rowClass = booking.status === "Completed" ? "bg-secondary text-success" : "";
+                        let rowNode = table.row.add({
+                            patient_name: booking.patient_name,
+                            gender: booking.gender,
+                            appointment_time: booking.appointment_time,
+                            age: booking.age,
+                            actions: `
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary previous_treatment-btn" data-id="${booking.id}">Pre.Treatment</button>
+                                <button class="btn btn-primary dental-btn" data-id="${booking.id}">Dental</button>
+                                <button class="btn btn-primary general-btn" data-id="${booking.id}">General</button>
+                            </div>`
+                        }).draw().node();
+                        $(rowNode).addClass(rowClass);
+                    });
+                } else {
+                    table.row.add({
+                        patient_name: "No bookings today",
+                        gender: "",
+                        age: "",
+                        appointment_time: "",
+                        actions: ""
+                    }).draw();
+                }
+            },
+            error: function() {
+                alert("Failed to load bookings. Please try again.");
+            }
+        });
+    }
+
+    if ($("#bookingsTable").length) {
+        fetchBookings();
+    }
+
+    $(document).on("click", ".previous_treatment-btn", function() {
+        var bookingId = $(this).data("id");
+        if (!bookingId) {
+            alert("Invalid booking ID!");
+            return;
+        }
+        window.location.href = `/doctor/previous-treatment/${bookingId}/`;
+    });
+});
+</script>
+
+</body>
+</html>

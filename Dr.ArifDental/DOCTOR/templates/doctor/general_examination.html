@@ -1,0 +1,490 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Arif's Dental Clinic | Doctor Home</title>
+    <link rel="icon" type="image/x-icon" sizes="1008x1008" href="{% static 'images/favicon.png' %}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #d2e3e9;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background:#1c3342;
+            padding-top: 20px;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .sidebar .sidebar-logo {
+            text-align: center;
+        }
+
+        .sidebar .sidebar-logo img {
+            width: 70px;
+            height: auto;
+            margin-bottom: 12px;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .sidebar .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Adds space between menu items */
+            padding: 0 10px;
+        }
+
+        .sidebar .menu-item {
+            padding: 10px 15px;
+            color: black;
+            background: #d2e3e9;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Alternative if not using gap */
+        .sidebar .menu-item:not(:last-child) {
+            margin-bottom: 10px;
+        }
+
+
+        .menu-item.active {
+            background: var(--hover-color);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: var(--white);
+        }
+
+        .menu-item a {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .menu-item i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .menu-item:hover {
+            background: #d2e3e9;
+            color: clack;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Navbar */
+        .top-navbar {
+            height: 60px;
+            width: calc(100% - 260px);
+            position: fixed;
+            top: 0;
+            left: 260px;
+            background: #d2e3e9;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+            color: black;
+            z-index: 1000;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .top-navbar .dashboard-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+
+        .top-navbar .nav-icons a {
+            color: white;
+            font-size: 20px;
+            margin-left: 15px;
+            transition: 0.3s;
+        }
+
+        .top-navbar .nav-icons a:hover {
+            color: #f1c40f;
+        }
+
+        /* Content Area */
+        .content {
+            margin-left: 260px;
+            margin-top: 70px;
+            padding: 20px;
+        }
+
+        /* Table Styling */
+        .table-container {
+            background:  rgb(253, 253, 253);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: black;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+
+        [data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+        .btn-primary{
+            border:none;
+            background:#1c3342;
+
+        }
+        .table {
+            width: 100%;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Header Row */
+        .table thead {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+
+        /* Table Borders */
+        .table-bordered td, .table-bordered th {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 10px;
+        }
+
+        /* Center text inside table */
+        .text-center {
+            text-align: center;
+        }
+         .exam-form {
+                width: 100%;
+            }
+
+            /* Labels */
+            .form-group label {
+                font-weight: bold;
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            /* Input & Textarea */
+            .form-control {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border-radius: 8px;
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                background: rgba(255, 255, 255, 0.5);
+                backdrop-filter: blur(5px);
+                font-size: 16px;
+            }
+
+            /* Placeholder Styling */
+            .form-control::placeholder {
+                color: rgba(0, 0, 0, 0.5);
+            }
+
+            /* Button Styling */
+            .btn-primary {
+                width: 100%;
+                padding: 10px;
+                font-size: 18px;
+                border-radius: 10px;
+                background: linear-gradient(135deg, #007bff, #0056b3);
+                color: white;
+                border: none;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .btn-primary:hover {
+                background: linear-gradient(135deg, #0056b3, #003f7f);
+                transform: scale(1.05);
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .container {
+                    width: 90%;
+                }
+            }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+    <div class="sidebar-logo">
+        <img src="{% static 'images/logo (2).png' %}" alt="Dr. Arif's Dental Clinic Logo">
+    </div>
+    <div class="sidebar-menu">
+        <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
+<!--        <div class="menu-item"><a href="#"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i>Today Appointment</a></div>-->
+        <div class="menu-item">
+            <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
+               <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="/doctor/profile/"><i class="fa-solid fa-user" style="color: #000000;"></i>Profile</a>
+        </div>
+        <div class="menu-item">
+            <a href="javascript:void(0)" class="logout-btn"><i class="fa-solid fa-power-off" style="color: #000000;"></i>Logout</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Top Navbar -->
+<div class="top-navbar d-flex justify-content-between align-items-center">
+    <h1 class="dashboard-title ms-center">General Examination</h1>
+</div>
+
+<!-- Content -->
+<div class="content">
+    <h3 class="text-start fw-bold text-decoration-underline pb-2">Previous History</h3>
+    <table class="table table-bordered text-center">
+        <thead style="background:#1c3342;">
+            <tr>
+                <th>Visit</th>
+                <th>Sugar Level</th>
+                <th>Blood Pressure</th>
+                <th>Treatment Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="prev-visit">-</td>
+                <td id="prev-sugar">-</td>
+                <td id="prev-pressure">-</td>
+                <td id="prev-notes">-</td>
+            </tr>
+        </tbody>
+    </table>
+<br>
+        <h3 class="text-start fw-bold text-decoration-underline pb-2">New General Examination</h3>
+    <form id="general-exam-form" class="exam-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="sugar-level">Sugar Level:</label>
+            <input type="text" id="sugar-level" class="form-control" placeholder="Enter sugar level" required>
+        </div>
+
+        <div class="form-group">
+            <label for="blood-pressure">Blood Pressure:</label>
+            <input type="text" id="blood-pressure" class="form-control" placeholder="Enter blood pressure" required>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Notes:</label>
+            <textarea id="notes" class="form-control" placeholder="Enter notes" rows="4"></textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+             <button type="button" class="btn btn-primary" style="background:#1c3342;" data-booking-id="{{ booking_id }}" onclick="redirectToDentalChart(this)">
+                 Dental Checkup
+             </button>
+             <button type="submit" style="background:#1c3342;" class="btn btn-primary">Save</button>
+        </div>
+
+    </form>
+</div>
+
+<!-- jQuery, Bootstrap JS, DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+
+    function redirectToDentalChart(button) {
+        var bookingId = button.getAttribute("data-booking-id");
+        if (bookingId) {
+            window.location.href = `/doctor/dentalchart/${bookingId}/`;
+        } else {
+            alert("Booking ID is missing!");
+        }
+    }
+<!-------------------------------------->
+ $(document).ready(function () {
+    var bookingId = "{{ booking_id }}";
+    console.log("Booking ID:", bookingId);  // ✅ Debugging
+
+
+    function getCSRFToken() {
+        let tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        return tokenElement ? tokenElement.value : null;
+    }
+
+    const csrftoken = getCSRFToken();
+
+    // Function to load previous examination data
+    function loadPreviousData() {
+    $.ajax({
+        url: `/doctor/generalchart/${bookingId}/`,
+        type: "GET",
+        dataType: "json",
+        success: function (data) {
+            console.log("✅ Previous Examination Data:", data); // Debugging
+
+            if (data.previous_data) {
+                // Ensure data is correctly mapped to the HTML
+                $("#prev-visit").text(data.previous_data.previous_visit || "-");
+                $("#prev-sugar").text(data.previous_data.previous_sugar_level || "-");
+                $("#prev-pressure").text(data.previous_data.previous_pressure_level || "-");
+                $("#prev-notes").text(data.previous_data.previous_notes || "-");
+            } else {
+                console.log("❌ No Previous Exam Data Found");  // Debugging
+            }
+        },
+        error: function (xhr) {
+            console.error("❌ Error fetching previous data:", xhr.responseText);
+        }
+    });
+}
+
+
+    // Load previous data on page load
+    loadPreviousData();
+
+    // Handle form submission
+    $("#general-exam-form").submit(function (e) {
+        e.preventDefault();
+
+        var sugarLevel = $("#sugar-level").val();
+        var bloodPressure = $("#blood-pressure").val();
+        var notes = $("#notes").val();
+
+        var formData = {
+            sugar_level: sugarLevel,
+            blood_pressure: bloodPressure,
+            notes: notes
+        };
+
+        $.ajax({
+            url: `/doctor/generalchart/${bookingId}/`,
+            type: "POST",
+            data: JSON.stringify(formData),
+            contentType: "application/json",
+            dataType: "json",
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                alert("Data saved successfully!");
+
+                // Move current values to "previous data" before displaying new data
+                $("#prev-visit").text(new Date().toISOString().split("T")[0]); // Set today's date
+                $("#prev-sugar").text(sugarLevel);
+                $("#prev-pressure").text(bloodPressure);
+                $("#prev-notes").text(notes);
+
+                // Clear input fields after successful save
+                $("#sugar-level").val("");
+                $("#blood-pressure").val("");
+                $("#notes").val("");
+                window.location.href = `/doctor/dashboard/`;
+            },
+            error: function (xhr) {
+                alert("Error: " + JSON.stringify(xhr.responseJSON));
+            }
+        });
+    });
+});
+
+<!---------------LOGOUT-------------------->
+
+$(document).ready(function() {
+    $('.toggle-btn').on('click', function() {
+        $('.sidebar').toggleClass('active');
+    });
+
+    $('.logout-btn').on('click', function() {
+        const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        $.ajax({
+            url: '/doctor/logout/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            success: function(response) {
+                alert(response.message);
+                window.location.href = '/doctor/login';
+            },
+            error: function(xhr) {
+                let errorMessage = xhr.responseJSON?.error || xhr.statusText || 'Unknown error';
+                alert(`Logout failed: ${errorMessage}`);
+            }
+        });
+    });
+});
+
+
+
+</script>
+
+</body>
+</html>
