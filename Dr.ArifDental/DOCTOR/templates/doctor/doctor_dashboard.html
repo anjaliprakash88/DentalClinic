@@ -352,7 +352,7 @@ $(document).ready(function() {
         });
     }
 
-    fetchBookings(); // ✅ Make sure this is inside $(document).ready()
+    fetchBookings();
 
     // Handle click events for buttons
     $(document).on("click", ".treatment-summary", function() {
@@ -361,7 +361,6 @@ $(document).ready(function() {
             alert("Invalid booking ID!");
             return;
         }
-        // Add your logic for handling the "Summary" button click
     });
 
     $(document).on("click", ".previous-note", function() {
@@ -373,7 +372,7 @@ $(document).ready(function() {
         // Add your logic for handling the "Previous Notes" button click
     });
 
-}); // ✅ Corrected closing of $(document).ready()
+});
 
 <!------------------------PREVIOUS TREATMENT BUTTON------------------------->
  $(document).on("click", ".previous_treatment-btn", function (e) {
@@ -388,33 +387,6 @@ $(document).ready(function() {
     window.location.href = `/doctor/previous-treatment/${bookingId}/`;
 });
 
-<!------------------------DENTAL BUTTON------------------------->
- $(document).on("click", ".dental-btn", function (e) {
-    e.preventDefault();
-
-    var bookingId = $(this).data("id");
-    console.log("Booking ID Clicked:", bookingId);
-
-    if (!bookingId) {
-        alert("Invalid booking ID!");
-        return;
-    }
-    window.location.href = `/doctor/dentalchart/${bookingId}/`;
-});
-
-
-<!------------------------GENERAL BUTTON------------------------->
-    $(document).on("click", "#general-btn", function (e) {
-    e.preventDefault();
-
-    var bookingId = $(this).data("id");
-
-    if (!bookingId) {
-        alert("Invalid booking ID!");
-        return;
-    }
-    window.location.href = `/doctor/generalchart/${bookingId}/`;
-});
 
 <!--------------------ALL PATIENT VIEW--------------->
 $(document).on("click", ".view-patients", function (e) {

@@ -21,7 +21,7 @@ class PatientSerializer(serializers.ModelSerializer):
              'patient_name', 'patient_code','full_name','age','gender','phone','email','address', 'last_visit','todays_appointment',
             'branch', 'branch_code', 'occupation', 'medical_notes', 'created_at', 'is_active'
         ]
-        extra_kwargs = {'patient_code': {'read_only': True}}  # Do not allow to update patient_code
+        extra_kwargs = {'patient_code': {'read_only': True}}
 
     def get_patient_name(self, obj):
         return f"{obj.full_name} - [{obj.patient_code}]"

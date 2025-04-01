@@ -2,14 +2,12 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from SUPER_ADMIN.models import PharmaceuticalMedicine, Doctor, Branch, User
 from RECEPTION.models import PatientBooking, Patient
-from datetime import date
-from .models import DentalExamination, MedicinePrescription, TreatmentBill
-from django.db.models.functions import TruncDate
-# from .models import (DentalExamination,
-#                      GeneralExamination,
-#                      TreatmentNote,
-#                      TreatmentBill,
-#                      MedicinePrescription)
+from .models import (DentalExamination,
+                     MedicinePrescription,
+                     TreatmentBill,
+                     Investigation,
+                     DentitionTreatment,
+                     Dentition)
 
 
 
@@ -36,24 +34,79 @@ class ChangeDoctorPasswordSerializer(serializers.Serializer):
         user.save()
         return user
     
-# --------------------------------------------
+# --------------DENTAL EXAMINATION--------------
+class PatientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Patient
+        fields = ['id', 'full_name', 'email', 'phone', 'age', 'gender', 'address']
+
+class PatientBookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PatientBooking
+        fields = ['id', 'appointment_date', 'appointment_time', 'reason', 'status']
+
+class InvestigationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Investigation
+        fields = ['id', 'image', 'uploaded_at']
+
 class DentalExaminationSerializer(serializers.ModelSerializer):
-    patient_name = serializers.SerializerMethodField()
-    booking_id = serializers.IntegerField(source='booking.id', read_only=True)
+    patient = PatientSerializer(read_only=True)
+    booking = PatientBookingSerializer(read_only=True)
+    investigations = InvestigationSerializer(many=True, read_only=True)
 
     class Meta:
         model = DentalExamination
         fields = [
-            'id', 'patient', 'patient_name', 'booking', 'booking_id',
-            'chief_complaints', 'history_of_present_illness', 'medical_history',
-            'past_dental_history', 'personal_history', 'general_examination',
-            'general_examination_intraoral', 'local_examination_extraoral',
-            'soft_tissue', 'dentition', 'periodontal_status', 'investigation',
-            'treatment_plan', 'doctor_signature', 'patient_signature', 'created_at'
+            'id', 'patient', 'booking', 'chief_complaints', 'history_of_present_illness',
+            'medical_history', 'personal_history', 'general_examination', 'general_examination_intraoral',
+            'local_examination_extraoral', 'soft_tissue', 'periodontal_status', 'treatment_plan',
+            'created_at', 'updated_at', 'investigations'
         ]
 
-    def get_patient_name(self, obj):
-        return f"{obj.patient.full_name}"
+# ----------------DENTITION-------------
+class DentitionTreatmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DentitionTreatment
+        fields = ['id', 'name', 'color_code']
+
+
+class DentitionSerializer(serializers.ModelSerializer):
+    patient = PatientSerializer(read_only=True)
+    booking = PatientBookingSerializer(read_only=True)
+    treatment = DentitionTreatmentSerializer(read_only=True)
+
+    class Meta:
+        model = Dentition
+        fields = ['id', 'patient', 'booking', 'selected_teeth', 'treatment', 'color_code', 'note', 'created_at']
+
+    def create(self, validated_data):
+        # Create DentitionTreatment first if it doesn't exist and then save Dentition
+        treatment_data = validated_data.pop('treatment', None)
+
+        # Handle treatment if provided, otherwise leave it as null
+        if treatment_data:
+            treatment_instance = DentitionTreatment.objects.create(**treatment_data)
+            validated_data['treatment'] = treatment_instance
+
+        dentition_instance = Dentition.objects.create(**validated_data)
+        return dentition_instance
+
+    def update(self, instance, validated_data):
+        # Update DentitionTreatment if treatment data is provided
+        treatment_data = validated_data.pop('treatment', None)
+        if treatment_data:
+            instance.treatment.name = treatment_data.get('name', instance.treatment.name)
+            instance.treatment.color_code = treatment_data.get('color_code', instance.treatment.color_code)
+            instance.treatment.save()
+
+        instance.selected_teeth = validated_data.get('selected_teeth', instance.selected_teeth)
+        instance.note = validated_data.get('note', instance.note)
+        instance.save()
+
+        return instance
+
+
 
 # ---------------DOCTOR VIEW PROFILE SERIALIZER---------------
 class UserViewProfileSerializer(serializers.ModelSerializer):
@@ -195,64 +248,55 @@ class DoctorLoginSerializer(serializers.Serializer):
 # ---------------------------------------------------
 class PreviousTreatmentSerializer(serializers.ModelSerializer):
     patient_name = serializers.SerializerMethodField()
-    last_appointment_date = serializers.SerializerMethodField()
-
-    # Fetch previous appointment's records
     dental_examinations = serializers.SerializerMethodField()
     treatment_bills = serializers.SerializerMethodField()
     prescriptions = serializers.SerializerMethodField()
 
-
     class Meta:
         model = PatientBooking
-        fields = ['id', 'patient_name', 'appointment_date', 'last_appointment_date',
+        fields = ['id', 'patient_name', 'appointment_date', 'appointment_time',
                   'dental_examinations', 'treatment_bills', 'prescriptions']
 
     def get_patient_name(self, obj):
         """Return full patient name."""
         return f"{obj.patient.full_name}" if obj.patient else None
 
-    def get_last_appointment_date(self, obj):
-        """Fetch the last appointment date of this patient (excluding today)."""
-        last_booking = PatientBooking.objects.filter(
-            patient=obj.patient
-        ).exclude(id=obj.id).exclude(appointment_date=date.today()).order_by('-appointment_date').first()
-
-        return last_booking.appointment_date if last_booking else None
-
-    def get_last_booking(self, obj):
-        """Helper function to fetch the last previous appointment."""
-        return PatientBooking.objects.filter(
-            patient=obj.patient
-        ).exclude(id=obj.id).order_by('-appointment_date').first()
-
     def get_dental_examinations(self, obj):
-        """Fetch previous dental examinations."""
-        last_booking = self.get_last_booking(obj)
-        if last_booking:
-            examinations = DentalExamination.objects.filter(booking=last_booking)
-            return DentalExaminationSerializer(examinations, many=True).data
+        """Fetch latest dental examination for this patient."""
+        latest_exam = DentalExamination.objects.filter(
+            booking__patient=obj.patient
+        ).order_by('-id').first()
+
+        if latest_exam:
+            return [DentalExaminationSerializer(latest_exam).data]
         return []
 
     def get_treatment_bills(self, obj):
-        """Fetch previous treatment bills."""
-        last_booking = self.get_last_booking(obj)
-        if last_booking:
-            bills = TreatmentBill.objects.filter(booking=last_booking)
-            return TreatmentBillSerializer(bills, many=True).data
+        """Fetch latest treatment bill for this patient."""
+        latest_bill = TreatmentBill.objects.filter(
+            booking__patient=obj.patient
+        ).order_by('-id').first()
+
+        if latest_bill:
+            return [TreatmentBillSerializer(latest_bill).data]
         return []
 
     def get_prescriptions(self, obj):
-        """Fetch previous prescriptions."""
-        last_booking = self.get_last_booking(obj)
-        if last_booking:
-            prescriptions = MedicinePrescription.objects.filter(booking=last_booking)
-            return PrescriptionSerializer(prescriptions, many=True).data
+        """Fetch latest prescriptions for this patient."""
+        latest_prescription = MedicinePrescription.objects.filter(
+            booking__patient=obj.patient
+        ).order_by('-id').first()
+
+        if latest_prescription:
+            # Instead of using the default serializer directly,
+            # create a dictionary with the medicine name explicitly included
+            prescription_data = PrescriptionSerializer(latest_prescription).data
+
+            # Add medicine name to ensure it's included
+            prescription_data['medicine_name'] = latest_prescription.medicine.medicine_name
+
+            return [prescription_data]
         return []
-
-
-
-
 
 # ---------------------------------------------
 class PatientSerializer(serializers.ModelSerializer):

@@ -211,13 +211,8 @@
                <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
             </a>
         </div>
-        <div class="menu-item">
-            <a href="/doctor/profile/"><i class="fa-solid fa-user" style="color: #000000;"></i>Profile</a>
-        </div>
-        <div class="menu-item">
-            <a href="javascript:void(0)" class="logout-btn"><i class="fa-solid fa-power-off" style="color: #000000;"></i>Logout</a>
-        </div>
     </div>
+
 </nav>
 
 <!-- Top Navbar -->
@@ -239,32 +234,31 @@
             </tr>
         </thead>
         <tbody>
-    {% for patient in patients %}
-    <tr>
-        <td>{{ patient.first_name }} {{ patient.last_name }}</td>
-        <td>{{ patient.age }}</td>
-        <td>{{ patient.gender }}</td>
-        <td>{{ patient.phone }}</td>
-        <td>
-            {% with previous_treatments|dictsortreversed:"appointment_date"|first as last_treatment %}
-                {% if last_treatment %}
-                    <button class="btn btn-primary previous_treatment-btn" data-id="{{ last_treatment.id }}">Pre.Treatment</button>
-                {% else %}
-                    <button class="btn btn-secondary" disabled>No Previous Treatment</button>
-                {% endif %}
-            {% endwith %}
-        </td>
-    </tr>
-    {% empty %}
-    <tr>
-        <td colspan="5">No patients found</td>
-    </tr>
-    {% endfor %}
-</tbody>
+            {% for item in patients_with_treatments %}
+            <tr>
+                <td>{{ item.patient.full_name }}</td>
+                <td>{{ item.patient.age }}</td>
+                <td>{{ item.patient.gender }}</td>
+                <td>{{ item.patient.phone }}</td>
+                <td>
+                    {% if item.last_treatment %}
+                        <button class="btn btn-primary previous_treatment-btn" data-id="{{ item.last_treatment.id }}">Pre.Treatment</button>
+                    {% else %}
+                        <button class="btn btn-secondary" disabled>No Previous Treatment</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No patients found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
 
 </table>
 </div>
 </div>
+
 
 
 
@@ -277,6 +271,12 @@
 
 <script>
    $(document).ready(function() {
+       if ($("#bookingsTable").length) {
+           $("#bookingsTable").DataTable(); // Initialize DataTable
+       }
+   });
+
+    $(document).ready(function() {
        if ($("#bookingsTable").length) {
            $("#bookingsTable").DataTable(); // Initialize DataTable
        }

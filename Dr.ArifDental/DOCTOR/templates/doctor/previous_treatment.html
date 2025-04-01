@@ -205,24 +205,22 @@
     </div>
     <div class="sidebar-menu">
       <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
-      <div class="menu-item"><a href="#"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i>Today Appointment</a></div>
+
         <div class="menu-item">
             <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
                <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
             </a>
         </div>
-    <div class="menu-item">
-            <a href="/doctor/profile/"><i class="fa-solid fa-user" style="color: #000000;"></i>Profile</a>
-      </div>
-       <div class="menu-item">
-           <a href="javascript:void(0)" class="logout-btn"><i class="fa-solid fa-power-off" style="color: #000000;"></i>Logout</a>
-      </div>
     </div>
 </nav>
 
 <!-- Top Navbar -->
 <div class="top-navbar d-flex justify-content-between align-items-center">
     <h1 class="dashboard-title ms-center">Treatment History</h1>
+       <div class="d-flex justify-content-end">
+
+            <button type="button" class="btn-close mb-2 " data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
 </div>
 
 <!-- Content -->
@@ -231,7 +229,9 @@
         <div class="col-md-12">
             <div class="card" style="width: 100%;">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Dental Examination</h5>
+                     <h5 class="card-title fw-bold">Dental Examination</h5>
+
+
 
                     {% if data.dental_examinations %}
                         {% for exam in data.dental_examinations %}
@@ -394,6 +394,15 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+    $(document).ready(function() {
+        $(".btn-close").on("click", function() {
+            window.location.href = "/doctor/dashboard/";
+        });
+    });
+
+
+
+
     $(document).ready(function() {
     var table = $('#bookingsTable').DataTable({
         responsive: true,
