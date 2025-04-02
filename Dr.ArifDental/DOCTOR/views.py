@@ -70,11 +70,12 @@ class DentalExaminationCheckup(APIView):
         booking = get_object_or_404(PatientBooking, id=booking_id)
         patient = booking.patient
 
+        # Fetch or create the examination entry
         examination = DentalExamination.objects.filter(patient=patient, booking=booking).order_by('-created_at').first()
-
         if not examination:
             examination = DentalExamination.objects.create(patient=patient, booking=booking)
 
+        # Update examination fields
         examination.chief_complaints = request.data.get("chief_complaints", "")
         examination.history_of_present_illness = request.data.get("history_of_present_illness", "")
         examination.medical_history = request.data.get("medical_history", "")
@@ -86,16 +87,42 @@ class DentalExaminationCheckup(APIView):
         examination.periodontal_status = request.data.get("periodontal_status", "")
         examination.treatment_plan = request.data.get("treatment_plan", "")
 
+        # Handle file uploads
         if 'investigation[]' in request.FILES:
             for file in request.FILES.getlist('investigation[]'):
                 Investigation.objects.create(
                     dental_examination=examination,
                     image=file
                 )
+
         examination.save()
 
+        # ✅ FIX: Get dentitions from request data
+        dentitions = request.data.get("dentitions", [])  # Ensure it's a list
+
+        created_dentitions = []
+        for dentition_data in dentitions:
+            selected_teeth = dentition_data.get("selected_teeth")
+            treatment_name = dentition_data.get("treatment")
+
+            # Fetch or create the treatment
+            treatment, created = DentitionTreatment.objects.get_or_create(
+                name=treatment_name,
+                defaults={"color_code": request.data.get("color_code", "#000000")}
+            )
+
+            # Create Dentition instance
+            dentition = Dentition.objects.create(
+                patient=patient,
+                booking=booking,
+                selected_teeth=selected_teeth,
+                treatment=treatment,
+                note=dentition_data.get("note", "")
+            )
+            created_dentitions.append(dentition)
+
         return Response({
-            "message": "Checkup details and medicine prescriptions saved successfully!",
+            "message": "Checkup details and dentition data saved successfully!",
             "examination": DentalExaminationSerializer(examination).data,
         }, status=status.HTTP_200_OK)
 

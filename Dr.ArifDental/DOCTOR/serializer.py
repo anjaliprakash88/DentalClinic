@@ -78,7 +78,7 @@ class DentitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dentition
-        fields = ['id', 'patient', 'booking', 'selected_teeth', 'treatment', 'color_code', 'note', 'created_at']
+        fields = ['id', 'patient', 'booking', 'selected_teeth', 'treatment', 'note', 'created_at']
 
     def create(self, validated_data):
         # Create DentitionTreatment first if it doesn't exist and then save Dentition

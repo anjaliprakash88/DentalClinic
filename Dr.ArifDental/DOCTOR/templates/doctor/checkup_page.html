@@ -233,7 +233,7 @@
             font-size: 12px;
             margin-bottom: 3px;
             font-weight: bold;
-            color: #000000;
+            color: #FFFFFF;
         }
         .tooth-image {
             width: 30px;
@@ -243,26 +243,20 @@
     </style>
 </head>
 <body>
-
 <!-- Sidebar -->
 <nav class="sidebar">
     <div class="sidebar-logo">
         <img src="{% static 'images/logo (2).png' %}" alt="Dr. Arif's Dental Clinic Logo">
     </div>
     <div class="sidebar-menu">
-        <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
-<!--        <div class="menu-item"><a href="#"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i>Today Appointment</a></div>-->
+        <div class="menu-item">
+            <a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a>
+        </div>
         <div class="menu-item">
             <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
                <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
             </a>
         </div>
-<!--        <div class="menu-item">-->
-<!--            <a href="/doctor/profile/"><i class="fa-solid fa-user" style="color: #000000;"></i>Profile</a>-->
-<!--        </div>-->
-<!--        <div class="menu-item">-->
-<!--            <a href="javascript:void(0)" class="logout-btn"><i class="fa-solid fa-power-off" style="color: #000000;"></i>Logout</a>-->
-<!--        </div>-->
     </div>
 </nav>
 
@@ -279,7 +273,6 @@
     <form id="checkupForm" method="post" enctype="multipart/form-data">
         <input type="hidden" name="booking_id" id="booking_id" value="{{ booking.id }}">
         {% csrf_token %}
-
         <table class="table table-bordered table-striped">
             <tbody>
                 <tr>
@@ -329,62 +322,55 @@
                 </tr>
             </tbody>
         </table>
-
         <div class="d-flex justify-content-start">
            <button type="submit" class="btn btn-primary w-25 mt-4">Save</button>
         </div>
     </form>
 <!---------------------------------------------------------------------------------->
-
-
     <hr class="w-100 mb-5 mt-5 mx-auto">
-
-        <h3 class="text-start fw-bold">Dentition</h3>
-        <div class="dental-chart">
-
-            <div class="quadrant">
-                <div class="quadrant-header">
-                  <span class="quadrant-title">Upper Right</span>
-                  <span class="quadrant-number">1</span>
+    <h3 class="text-start fw-bold">Dentition</h3>
+    <div class="dental-chart">
+        <div class="quadrant">
+            <div class="quadrant-header">
+                <span class="quadrant-title">Upper Right</span>
+                <span class="quadrant-number">1</span>
+            </div>
+            <div class="teeth-row">
+                <div class="tooth" id="tooth-11" data-tooth="11" data-status="healthy">
+                    <div class="tooth-number">11</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="teeth-row">
-                    <div class="tooth" id="tooth-11" data-tooth="11" data-status="healthy">
-                        <div class="tooth-number">11</div>
-                       <i class="fa-solid fa-tooth fs-2 healthy"></i>
-                    </div>
-                    <div class="tooth" id="tooth-12" data-tooth="12" data-status="healthy">
-                        <div class="tooth-number">12</div>
-                        <i class="fa-solid fa-tooth fs-2 healthy"></i>
-                    </div>
-                    <div class="tooth" id="tooth-13" data-tooth="13" data-status="healthy">
-                        <div class="tooth-number">13</div>
-                        <i class="fa-solid fa-tooth fs-2 healthy"></i>
-                    </div>
-                    <div class="tooth" id="tooth-14" data-tooth="14" data-status="healthy">
-                        <div class="tooth-number">14</div>
-                        <i class="fa-solid fa-tooth fs-2 healthy"></i>
-                    </div>
-                    <div class="tooth" id="tooth-15" data-tooth="15" data-status="healthy">
-                        <div class="tooth-number">15</div>
-                        <i class="fa-solid fa-tooth fs-2 healthy"></i>
-                    </div>
-                    <div class="tooth" id="tooth-16" data-tooth="16" data-status="healthy">
-                        <div class="tooth-number">16</div>
-                        <i class="fa-solid fa-tooth fs-2 healthy"></i>
-                    </div>
-                    <div class="tooth" id="tooth-17" data-tooth="17" data-status="healthy">
-                        <div class="tooth-number">17</div>
-                        <i class="fa-solid fa-tooth fs-2 healthy"></i>
-                    </div>
-                    <div class="tooth" id="tooth-18" data-tooth="18" data-status="healthy">
-                        <div class="tooth-number">18</div>
-                        <i class="fa-solid fa-tooth fs-2 healthy"></i>
-                    </div>
+                <div class="tooth" id="tooth-12" data-tooth="12" data-status="healthy">
+                    <div class="tooth-number">12</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                </div>
+                <div class="tooth" id="tooth-13" data-tooth="13" data-status="healthy">
+                    <div class="tooth-number">13</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                </div>
+                <div class="tooth" id="tooth-14" data-tooth="14" data-status="healthy">
+                    <div class="tooth-number">14</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                </div>
+                <div class="tooth" id="tooth-15" data-tooth="15" data-status="healthy">
+                    <div class="tooth-number">15</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                </div>
+                <div class="tooth" id="tooth-16" data-tooth="16" data-status="healthy">
+                    <div class="tooth-number">16</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                </div>
+                <div class="tooth" id="tooth-17" data-tooth="17" data-status="healthy">
+                    <div class="tooth-number">17</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                </div>
+                <div class="tooth" id="tooth-18" data-tooth="18" data-status="healthy">
+                    <div class="tooth-number">18</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
             </div>
-
-     <div class="separator"></div>
-
+        </div>
+        <div class="separator"></div>
         <div class="quadrant">
             <div class="quadrant-header">
                 <span class="quadrant-title">Upper Left</span>
@@ -393,150 +379,158 @@
             <div class="teeth-row">
                 <div class="tooth" id="tooth-21" data-tooth="21" data-status="healthy">
                     <div class="tooth-number">21</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
                 <div class="tooth" id="tooth-22" data-tooth="22" data-status="healthy">
                     <div class="tooth-number">22</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
                 <div class="tooth" id="tooth-23" data-tooth="23" data-status="healthy">
                     <div class="tooth-number">23</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
                 <div class="tooth" id="tooth-24" data-tooth="24" data-status="healthy">
                     <div class="tooth-number">24</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
                 <div class="tooth" id="tooth-25" data-tooth="25" data-status="healthy">
                     <div class="tooth-number">25</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
                 <div class="tooth" id="tooth-26" data-tooth="26" data-status="healthy">
                     <div class="tooth-number">26</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
                 <div class="tooth" id="tooth-27" data-tooth="27" data-status="healthy">
                     <div class="tooth-number">27</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
                 <div class="tooth" id="tooth-28" data-tooth="28" data-status="healthy">
                     <div class="tooth-number">28</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
             </div>
         </div>
-
         <div class="quadrant">
             <div class="quadrant-header">
                 <span class="quadrant-title">Lower Left</span>
                 <span class="quadrant-number">3</span>
             </div>
             <div class="teeth-row">
-                <div class="tooth" id="tooth-41" data-tooth="41" data-status="healthy">
-                    <div class="tooth-number">41</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-31" data-tooth="31" data-status="healthy">
+                    <div class="tooth-number">31</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-42" data-tooth="42" data-status="healthy">
-                    <div class="tooth-number">42</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-32" data-tooth="32" data-status="healthy">
+                    <div class="tooth-number">32</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-43" data-tooth="43" data-status="healthy">
-                    <div class="tooth-number">43</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-33" data-tooth="33" data-status="healthy">
+                    <div class="tooth-number">33</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-44" data-tooth="44" data-status="healthy">
-                    <div class="tooth-number">44</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-34" data-tooth="34" data-status="healthy">
+                    <div class="tooth-number">34</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-45" data-tooth="45" data-status="healthy">
-                    <div class="tooth-number">45</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-35" data-tooth="35" data-status="healthy">
+                    <div class="tooth-number">35</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-46" data-tooth="46" data-status="healthy">
-                    <div class="tooth-number">46</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-36" data-tooth="36" data-status="healthy">
+                    <div class="tooth-number">36</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-47" data-tooth="47" data-status="healthy">
-                    <div class="tooth-number">47</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-37" data-tooth="37" data-status="healthy">
+                    <div class="tooth-number">37</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-48" data-tooth="48" data-status="healthy">
-                    <div class="tooth-number">48</div>
-                    <i class="fa-solid fa-tooth fs-2"></i>
+                <div class="tooth" id="tooth-38" data-tooth="38" data-status="healthy">
+                    <div class="tooth-number">38</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
             </div>
         </div>
-   <div class="separator"></div>
+        <div class="separator"></div>
         <div class="quadrant">
             <div class="quadrant-header">
                 <span class="quadrant-title">Lower Right</span>
                 <span class="quadrant-number">4</span>
             </div>
             <div class="teeth-row">
-                <div class="tooth" id="tooth-31" data-tooth="31" data-status="healthy">
-                    <div class="tooth-number">31</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-41" data-tooth="41" data-status="healthy">
+                    <div class="tooth-number">41</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-32" data-tooth="32" data-status="healthy">
-                    <div class="tooth-number">32</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-42" data-tooth="42" data-status="healthy">
+                    <div class="tooth-number">42</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-33" data-tooth="33" data-status="healthy">
-                    <div class="tooth-number">33</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-43" data-tooth="43" data-status="healthy">
+                    <div class="tooth-number">43</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-34" data-tooth="34" data-status="healthy">
-                    <div class="tooth-number">34</div>
-                    <i class="fa-solid fa-tooth fs-2"></i>
+                <div class="tooth" id="tooth-44" data-tooth="44" data-status="healthy">
+                    <div class="tooth-number">44</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-35" data-tooth="35" data-status="healthy">
-                    <div class="tooth-number">35</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-45" data-tooth="45" data-status="healthy">
+                    <div class="tooth-number">45</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-36" data-tooth="36" data-status="healthy">
-                    <div class="tooth-number">36</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-46" data-tooth="46" data-status="healthy">
+                    <div class="tooth-number">46</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-37" data-tooth="37" data-status="healthy">
-                    <div class="tooth-number">37</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-47" data-tooth="47" data-status="healthy">
+                    <div class="tooth-number">47</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
-                <div class="tooth" id="tooth-38" data-tooth="38" data-status="healthy">
-                    <div class="tooth-number">38</div>
-                    <i class="fa-solid fa-tooth fs-2 healthy"></i>
+                <div class="tooth" id="tooth-48" data-tooth="48" data-status="healthy">
+                    <div class="tooth-number">48</div>
+                    <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                 </div>
             </div>
         </div>
-
-              <div class="treatments-list">
-    {% for treatment in treatments %}
-        <button class="treatment-item" style="background-color: {{ treatment.color_code }}; padding: 10px 20px; margin-bottom: 10px; border-radius: 5px; color: white; border: none; cursor: pointer;">
-            <strong>{{ treatment.name }}</strong>
-        </button>
-    {% empty %}
-        <p>No treatments available.</p>
-    {% endfor %}
-        <div class="d-flex flex-column align-items-center mt-3">
-            <button id="teeth-select-all" class="btn btn-primary mb-3">Select All Teeth</button>
-            <div class="selected-info text-center w-100">
-                <div id="selected-teeth" class="border border-3 p-3 text-center">No teeth selected</div>
+        
+        <!-- Treatment Selection -->
+        <div class="col-md-12">
+            <div class="treatments-list text-center d-flex flex-wrap justify-content-center">
+                {% for treatment in treatments %}
+                <button class="treatment-item my-2 mx-2 py-2 px-3 border-0 text-white d-inline-block" 
+                    style="background-color: {{ treatment.color_code }}; border-radius: 5px;">
+                    <strong>{{ treatment.name }}</strong>
+                </button>
+                {% empty %}
+                <p>No treatments available.</p>
+                {% endfor %}
             </div>
-            <input type="hidden" name="dentition" id="dentition-data">
+            <form id="dentition-container" class="bg-light p-4 rounded shadow">
+                {% csrf_token %}
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header">
+                        <div id="dentition-items-container">
+                            <!-- Dynamic dentition entries will be added here -->
+                        </div>
+                
+                        <!-- Hidden Inputs to Store Selection -->
+                        <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
+                            <div class="flex-grow-1">
+                                <input type="text" id="selectedTeeth" class="form-control mt-2" placeholder="Selected Teeth" readonly>
+                            </div>
+                            <div class="flex-grow-1">
+                                <input type="text" id="selectedTreatment" class="form-control mt-2" placeholder="Selected Treatment" readonly>
+                            </div>
+                            <button type="button" id="add-medicine-btn" style="background:#1c3342; color: #fff;"
+                                class="btn mt-2"><i class="bi bi-plus-lg"></i> Add</button>
+                            <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-
-</div>
     </div>
-
-
-
-
-
-
 </div>
-
-
-
-
 
 
 
@@ -549,6 +543,149 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+    $(document).ready(function() {
+        let selectedTeeth = [];
+        let selectedTreatment = "";
+        let selectedTreatmentColor = "";
+    
+        // ✅ Clear previous event handlers
+        $(".tooth").off("click");
+        $(".treatment-item").off("click");
+        $("#add-medicine-btn").off("click");
+        $(document).off("click", ".remove-entry");
+    
+        // ✅ Initialize teeth status to "healthy"
+        $(".tooth").each(function() {
+            $(this).attr("data-status", "healthy"); // Set default status
+            $(this).css("background-color", "#229954"); // Set default color (healthy)
+        });
+    
+        // ✅ Tooth selection handling
+        $(".tooth").on("click", function() {
+            const toothNumber = $(this).data("tooth");
+    
+            if (selectedTeeth.includes(toothNumber)) {
+                selectedTeeth = selectedTeeth.filter(num => num !== toothNumber);
+                $(this).removeClass("selected");
+            } else {
+                selectedTeeth.push(toothNumber);
+                $(this).addClass("selected");
+            }
+    
+            $("#selectedTeeth").val(selectedTeeth.join(", "));
+        });
+    
+        // ✅ Treatment selection handling
+        $(".treatment-item").on("click", function() {
+            selectedTreatment = $(this).text().trim();
+            selectedTreatmentColor = $(this).css("background-color");
+    
+            $("#selectedTreatment")
+                .val(selectedTreatment)
+                .css({
+                    "background-color": selectedTreatmentColor,
+                    "color": "#fff",
+                    "padding": "10px",
+                    "border-radius": "5px",
+                    "border": "none"
+                });
+        });
+    
+        // ✅ Apply selected treatment and color to selected teeth
+        $("#add-medicine-btn").on("click", function() {
+            if (selectedTeeth.length === 0 || !selectedTreatment) {
+                alert("Please select both teeth and a treatment before adding.");
+                return;
+            }
+    
+            selectedTeeth.forEach(toothNumber => {
+                let toothElement = $(`.tooth[data-tooth='${toothNumber}']`);
+                toothElement.attr("data-status", selectedTreatment); // ✅ Update data-status
+                toothElement.css("background-color", selectedTreatmentColor); // ✅ Change color
+            });
+    
+            const teethStr = selectedTeeth.join(", ");
+    
+            const newEntry = `
+                <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
+                    <div class="flex-grow-1">
+                        <input type="text" name="selected_teeth[]" class="form-control" value="${teethStr}" readonly>
+                    </div>
+                    <div class="flex-grow-1">
+                        <input type="text" name="selected_treatment[]" class="form-control" value="${selectedTreatment}" 
+                            style="background-color: ${selectedTreatmentColor}; color: white; padding: 10px; border-radius: 5px; border: none;" readonly>
+                    </div>
+                    <button type="button" class="btn btn-danger remove-entry">-</button>
+                </div>
+            `;
+    
+            $("#dentition-items-container").append(newEntry);
+    
+            // ✅ Reset selections
+            selectedTeeth = [];
+            $(".tooth").removeClass("selected");
+            selectedTreatment = "";
+            $("#selectedTeeth").val("");
+            $("#selectedTreatment").val("").css({
+                "background-color": "",
+                "color": "",
+                "padding": "",
+                "border-radius": "",
+                "border": ""
+            });
+        });
+    
+        // ✅ Remove dentition entry
+        $(document).on("click", ".remove-entry", function() {
+            $(this).closest(".dentition-entry").remove();
+        });
+    
+        // ✅ Form submission
+
+    });
+    $("#dentition-container").submit(function(event) {
+    event.preventDefault();
+    var bookingId = $('#booking_id').val();
+
+    const dentitionData = [];
+    $(".dentition-entry").each(function() {
+        let teeth = $(this).find("input[name='selected_teeth[]']").val();
+        let treatment = $(this).find("input[name='selected_treatment[]']").val();
+    
+        if (teeth && treatment) {
+            dentitionData.push({
+                selected_teeth: teeth,
+                treatment: treatment
+            });
+        }
+    });
+    
+
+    if (dentitionData.length === 0) {
+        alert("Please add at least one dentition entry.");
+        return;
+    }
+
+    $.ajax({
+        url: `/doctor/checkup/${bookingId}/`,
+        type: "POST",
+        headers: {
+            "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
+        },
+        contentType: "application/json",
+        data: JSON.stringify({ dentitions: dentitionData }),
+        success: function(response) {
+            alert("Dentition data saved successfully!");
+            $("#dentition-items-container").empty();
+        },
+        error: function(xhr) {
+            alert("Error saving data: " + xhr.responseText);
+        }
+    });
+});
+
+    
+
 
 
 document.querySelectorAll('.tooth').forEach(function(tooth) {
