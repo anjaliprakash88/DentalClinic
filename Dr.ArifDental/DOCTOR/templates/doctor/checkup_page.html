@@ -648,17 +648,21 @@
     var bookingId = $('#booking_id').val();
 
     const dentitionData = [];
+
     $(".dentition-entry").each(function() {
         let teeth = $(this).find("input[name='selected_teeth[]']").val();
         let treatment = $(this).find("input[name='selected_treatment[]']").val();
-    
+
         if (teeth && treatment) {
             dentitionData.push({
-                selected_teeth: teeth,
+                selected_teeth: teeth.split(", "), // ✅ Ensure array format
                 treatment: treatment
             });
         }
     });
+
+    console.log("Collected Dentition Data:", dentitionData);  // ✅ Debugging Line
+
     
 
     if (dentitionData.length === 0) {
