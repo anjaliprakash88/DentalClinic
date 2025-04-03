@@ -81,10 +81,10 @@ class MedicinePrescription(models.Model):
 class TreatmentBill(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_bills")
-    dental_examination = models.ForeignKey(DentalExamination, on_delete=models.CASCADE, related_name="ttreatment_bills")
+    dental_examination = models.ForeignKey(DentalExamination, on_delete=models.CASCADE, related_name="treatment_bills")
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    balance_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    balance_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # ✅ Now a database field
     created_at = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(max_length=20, choices=[
         ('pending', 'Pending'),
@@ -93,20 +93,10 @@ class TreatmentBill(models.Model):
     ], default='pending')
     payment_method = models.CharField(max_length=20, blank=True)
 
-    def get_treatments(self):
-        if isinstance(self.dental_examination.treatments, str):
-            try:
-                import json
-                return json.loads(self.dental_examination.treatments)  # Convert string to JSON
-            except json.JSONDecodeError:
-                return {"error": "Invalid JSON format"}
-        return self.dental_examination.treatments  # If already a dictionary/list
-
-    @property
-    def balance_amount(self):
-        total = self.total_amount if self.total_amount is not None else Decimal(0)
-        paid = self.paid_amount if self.paid_amount is not None else Decimal(0)
-        return total - paid
+    def save(self, *args, **kwargs):
+        """ Automatically calculate balance_amount before saving """
+        self.balance_amount = (self.total_amount or Decimal(0)) - (self.paid_amount or Decimal(0))  # ✅ Auto-calculate balance
+        super().save(*args, **kwargs)
 
     def _str_(self):
         return f"Bill for {self.booking.patient.full_name} - ${self.total_amount}"

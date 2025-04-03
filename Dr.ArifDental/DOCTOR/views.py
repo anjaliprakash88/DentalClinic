@@ -24,10 +24,13 @@ from RECEPTION.models import PatientBooking, Patient
 from .models import (DentalExamination,
                      Investigation,
                      Dentition,
-                     DentitionTreatment)
+                     DentitionTreatment,
+                     TreatmentBill)
 from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import localdate
 from rest_framework.permissions import IsAuthenticated
+from decimal import Decimal
+
 
 
 class DentalExaminationCheckup(APIView):
@@ -44,17 +47,23 @@ class DentalExaminationCheckup(APIView):
 
         dentition = Dentition.objects.filter(patient=patient, booking=booking).first()
         if dentition:
-
             dentition_serializer = DentitionSerializer(dentition)
         else:
             dentition_serializer = None
-
         treatments = DentitionTreatment.objects.all()
+
+        treatment_bill, created = TreatmentBill.objects.get_or_create(
+            booking=booking,
+            dental_examination=examination,
+            defaults={'patient': patient, 'total_amount': 0.00, 'paid_amount': 0.00}
+        )
+        treatment_bill_serializer = TreatmentBillSerializer(treatment_bill)
 
         if format == 'json':
             return Response({
                 "dentition": dentition_serializer.data if dentition_serializer else {},
                 "examination": examination_serializer.data,
+                "treatment_bill": treatment_bill_serializer.data,
                 "treatments": DentitionTreatmentSerializer(treatments, many=True).data
             }, status=status.HTTP_200_OK)
 
@@ -63,7 +72,8 @@ class DentalExaminationCheckup(APIView):
             "examination": examination_serializer.data,
             "booking": booking,
             "patient_name": patient_name,
-            "treatments": treatments
+            "treatments": treatments,
+            "treatment_bill": treatment_bill_serializer.data
         })
 
     def post(self, request, booking_id, format=None):
@@ -153,9 +163,23 @@ class DentalExaminationCheckup(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        treatment_bill, created = TreatmentBill.objects.get_or_create(
+            booking=booking,
+            dental_examination=examination,
+            defaults={'patient': patient, 'total_amount': 0.00, 'paid_amount': 0.00, 'balance_amount': 0.00}
+        )
+
+        # Debug: Check if patient is correctly assigned
+        treatment_bill.total_amount = Decimal(request.data.get("total_amount", 0.00))
+        treatment_bill.paid_amount = Decimal(request.data.get("paid_amount", 0.00))
+        treatment_bill.balance_amount = treatment_bill.total_amount - treatment_bill.paid_amount
+        treatment_bill.save()
+
         return Response({
             "message": "Checkup details and dentition data saved successfully!",
             "examination": DentalExaminationSerializer(examination).data,
+            "treatment_bill": TreatmentBillSerializer(treatment_bill).data,
+            "created_prescriptions": created_prescriptions
         }, status=status.HTTP_200_OK)
 
 
