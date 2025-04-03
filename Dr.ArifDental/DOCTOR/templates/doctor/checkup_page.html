@@ -530,6 +530,28 @@
             </form>
         </div>
     </div>
+
+
+
+
+     <hr class="w-100 mx-auto mt-5 mb-5">
+
+    <h3 class="text-start fw-bold">Prescription</h3>
+    <form id="medicine-form" class="bg-light p-4 rounded shadow">
+        {% csrf_token %}
+
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header">
+                <div id="medicine-items-container">
+                    <!-- Dynamic medicine items will be added here -->
+                </div>
+                <button type="button" id="add-medicine-btnn" style="background:#1c3342; color: #fff;"
+                        class="btn mt-2"><i class="bi bi-plus-lg"></i> Add Medicine
+                </button>
+                <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & proceed</button>
+            </div>
+        </div>
+    </form>
 </div>
 
 
@@ -543,6 +565,175 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+   $(document).ready(function () {
+    let medicineCount = 1;
+    const bookingId = $("#booking_id").val();
+
+    function loadMedicines(selectElementId) {
+        console.log("Fetching medicines for booking:", bookingId);
+        $.ajax({
+            url: `/doctor/medicine-prescription/${bookingId}/`,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                console.log("Debug: Full API Response:", data);
+                if (!data || !data.medicines) {
+                    console.error("Error: Medicines key not found in response.");
+                    return;
+                }
+
+                console.log("Debug: Medicine List:", data.medicines);
+                let selectElement = $(selectElementId);
+                selectElement.empty().append('<option value="">Select Medicine</option>');
+
+                $.each(data.medicines, function (index, med) {
+                    selectElement.append(`<option value="${med.id}">${med.medicine_name}</option>`);
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error("Medicine Fetch Error:", error);
+                alert("Failed to load medicines.");
+            }
+        });
+    }
+
+    function addMedicineItem() {
+        const newItemHtml = `
+            <div class="medicine-item p-3 mb-3 border rounded bg-white shadow-sm" id="medicine-item-${medicineCount}">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Medicine</label>
+                        <select id="medicine_name_${medicineCount}" class="form-select" name="medicine_${medicineCount}">
+                            <option value="">Select Medicine</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Days</label>
+                        <input type="number" id="dosage_days_${medicineCount}" class="form-control" name="dosage_days_${medicineCount}" min="1">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label d-block">Medicine Times</label>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Morning" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Morning</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Afternoon" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Afternoon</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Evening" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Evening</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Night" name="medicine_time_${medicineCount}">
+                            <label class="form-check-label">Night</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger remove-medicine" data-id="${medicineCount}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <label class="form-label">Meal Time</label>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="Before Meal" name="meal_time_${medicineCount}">
+                            <label class="form-check-label">Before Meal</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" class="form-check-input" value="After Meal" name="meal_time_${medicineCount}">
+                            <label class="form-check-label">After Meal</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('#medicine-items-container').append(newItemHtml);
+        loadMedicines(`#medicine_name_${medicineCount}`);
+
+        $('.remove-medicine').on('click', function () {
+            const itemId = $(this).data('id');
+            $(`#medicine-item-${itemId}`).remove();
+        });
+
+        medicineCount++;
+    }
+
+    $('#add-medicine-btnn').on('click', addMedicineItem);
+    addMedicineItem();
+
+    $('#medicine-form').on('submit', function (e) {
+        e.preventDefault();
+        let medicines = [];
+        let isValid = true;
+
+        if (!bookingId) {
+            alert("Booking ID is required!");
+            return;
+        }
+
+        $('.medicine-item').each(function () {
+            const itemId = $(this).attr('id').split('-').pop();
+            const medicineId = $(`#medicine_name_${itemId}`).val();
+            const dosageDays = $(`#dosage_days_${itemId}`).val();
+            let medicineTimes = [];
+            let mealTimes = [];
+
+            $(`input[name="medicine_time_${itemId}"]:checked`).each(function () {
+                medicineTimes.push($(this).val());
+            });
+            $(`input[name="meal_time_${itemId}"]:checked`).each(function () {
+                mealTimes.push($(this).val());
+            });
+
+            if (!medicineId || !dosageDays || medicineTimes.length === 0 || mealTimes.length === 0) {
+                alert('Please fill all fields correctly.');
+                isValid = false;
+                return false;
+            }
+
+            medicines.push({
+                medicine: parseInt(medicineId),
+                dosage_days: parseInt(dosageDays),
+                medicine_times: medicineTimes,
+                meal_times: mealTimes
+            });
+        });
+
+        if (!isValid) return;
+
+        $.ajax({
+            url: `/doctor/checkup/${bookingId}/`,
+            type: 'POST',
+            data: JSON.stringify({ booking_id: parseInt(bookingId), medicines: medicines }),
+            contentType: 'application/json',
+            headers: { 'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() },
+            success: function (response) {
+                alert('Medicine saved successfully!');
+                $('#medicine-items-container').empty();
+                addMedicineItem();
+            },
+            error: function (xhr) {
+                console.error('Error:', xhr.responseText);
+            }
+        });
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
     $(document).ready(function() {
         let selectedTeeth = [];
         let selectedTreatment = "";

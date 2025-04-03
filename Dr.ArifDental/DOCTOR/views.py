@@ -121,6 +121,38 @@ class DentalExaminationCheckup(APIView):
             )
             created_dentitions.append(dentition)
 
+        medicines_data = request.data.get('medicines', [])
+        created_prescriptions = []
+        errors = []
+
+        for med in medicines_data:
+            try:
+                medicine_id = med.get('medicine')
+                medicine = get_object_or_404(PharmaceuticalMedicine, id=medicine_id)
+
+                prescription_data = {
+                    'booking': booking.id,  # Pass actual booking instance
+                    'medicine': medicine.id,
+                    'dosage_days': med.get('dosage_days', 1),
+                    'medicine_times': med.get('medicine_times', []),  # Now expects a JSON list
+                    'meal_times': med.get('meal_times', [])  # Now expects a JSON list
+                }
+
+                serializer = PrescriptionSerializer(data=prescription_data)
+                if serializer.is_valid():
+                    prescription = serializer.save()
+                    created_prescriptions.append(PrescriptionSerializer(prescription).data)
+                else:
+                    errors.append(serializer.errors)
+            except Exception as e:
+                errors.append(str(e))
+
+        if errors:
+            return Response(
+                {"error": "Some medicines could not be saved", "details": errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         return Response({
             "message": "Checkup details and dentition data saved successfully!",
             "examination": DentalExaminationSerializer(examination).data,
