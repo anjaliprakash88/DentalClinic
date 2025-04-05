@@ -61,6 +61,7 @@ class Dentition(models.Model):
     def __str__(self):
         return f"Dentition for {self.patient.full_name} - Booking {self.booking.id}"
 
+
 # -------------------- Medicine Prescription Model --------------------
 class MedicinePrescription(models.Model):
     booking = models.ForeignKey(
@@ -94,7 +95,6 @@ class TreatmentBill(models.Model):
     payment_method = models.CharField(max_length=20, blank=True)
 
     def save(self, *args, **kwargs):
-        """ Automatically calculate balance_amount before saving """
         self.balance_amount = (self.total_amount or Decimal(0)) - (self.paid_amount or Decimal(0))  # ✅ Auto-calculate balance
         super().save(*args, **kwargs)
 

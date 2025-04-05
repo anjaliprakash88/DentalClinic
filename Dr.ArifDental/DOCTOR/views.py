@@ -17,6 +17,7 @@ from .serializer import (DoctorLoginSerializer,
                          DoctorPatientSerializer,
                          PatientSerializer,
                          DentitionSerializer,
+                         TodayPreviewSerializer,
                          DentitionTreatmentSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
 from SUPER_ADMIN.models import Doctor, PharmaceuticalMedicine
@@ -24,15 +25,54 @@ from RECEPTION.models import PatientBooking, Patient
 from .models import (DentalExamination,
                      Investigation,
                      Dentition,
-                     DentitionTreatment,
-                     TreatmentBill)
+                     TreatmentBill,
+                     DentitionTreatment)
 from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import localdate
 from rest_framework.permissions import IsAuthenticated
 from decimal import Decimal
+import json
 
+class TodayPreview(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = "doctor/today_preview.html"
 
+    def get(self, request, booking_id, format=None):
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+        patient = booking.patient
+        serializer = TodayPreviewSerializer(booking)
+        print("data:", serializer.data)
 
+        # 🔽 Add this: Query your dentition data
+        dentitions = Dentition.objects.filter(booking_id=booking.id)
+        dentition_data = []
+
+        for d in dentitions:
+            for tooth_id in d.selected_teeth:
+                dentition_data.append({
+                    "tooth_id": tooth_id,
+                    "treatment": d.treatment.name if d.treatment else "Healthy",
+                    "color_code": d.treatment.color_code if d.treatment else "#229954",  # default green
+                    "note": d.note or "",
+                })
+
+        dentition_data_json = json.dumps(dentition_data)
+
+        if format == 'json' or request.headers.get('Accept') == 'application/json':
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return render(request, self.template_name, {
+            "data": serializer.data,
+            "booking": booking,
+            "patient_name": patient.full_name,
+            "appointment_date": booking.appointment_date,
+            "appointment_time": booking.appointment_time,
+            "patient_email": patient.email,
+            "patient_age": patient.age,
+            "dentition_data_json": dentition_data_json  # ✅ Add to context
+        })
+
+# ----------------------------------
 class DentalExaminationCheckup(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = "doctor/checkup_page.html"
@@ -181,6 +221,8 @@ class DentalExaminationCheckup(APIView):
             "treatment_bill": TreatmentBillSerializer(treatment_bill).data,
             "created_prescriptions": created_prescriptions
         }, status=status.HTTP_200_OK)
+
+
 
 
 #---------------CHANGE DOCTOR PASSWORD---------------

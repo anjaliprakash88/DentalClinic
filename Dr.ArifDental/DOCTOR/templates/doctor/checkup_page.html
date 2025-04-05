@@ -263,13 +263,14 @@
 <!-- Top Navbar -->
 <div class="top-navbar d-flex justify-content-between align-items-center">
     <h1 class="dashboard-title ms-center">Dental Examination - {{ patient_name }}</h1>
+    <button class="btn btn-primary preview" style="background: #1c3342;" data-id="{{ booking.id }}">Preview</button>
 </div>
 
 
 <!-- Content -->
 <div class="content">
-    <button class="btn btn-primary checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Adult</button>
-    <button class="btn btn-primary paediatric-checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Paediatric</button>
+<!--    <button class="btn btn-primary checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Adult</button>-->
+<!--    <button class="btn btn-primary paediatric-checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Paediatric</button>-->
     <form id="checkupForm" method="post" enctype="multipart/form-data">
         <input type="hidden" name="booking_id" id="booking_id" value="{{ booking.id }}">
         {% csrf_token %}
@@ -327,7 +328,9 @@
         </div>
     </form>
 <!---------------------------------------------------------------------------------->
-    <hr class="w-100 mb-5 mt-5 mx-auto">
+
+
+   <hr class="w-100 mb-5 mt-5 mx-auto">
     <h3 class="text-start fw-bold">Dentition</h3>
     <div class="dental-chart">
         <div class="quadrant">
@@ -492,12 +495,12 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Treatment Selection -->
         <div class="col-md-12">
             <div class="treatments-list text-center d-flex flex-wrap justify-content-center">
                 {% for treatment in treatments %}
-                <button class="treatment-item my-2 mx-2 py-2 px-3 border-0 text-white d-inline-block" 
+                <button class="treatment-item my-2 mx-2 py-2 px-3 border-0 text-white d-inline-block"
                     style="background-color: {{ treatment.color_code }}; border-radius: 5px;">
                     <strong>{{ treatment.name }}</strong>
                 </button>
@@ -512,7 +515,7 @@
                         <div id="dentition-items-container">
                             <!-- Dynamic dentition entries will be added here -->
                         </div>
-                
+
                         <!-- Hidden Inputs to Store Selection -->
                         <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
                             <div class="flex-grow-1">
@@ -580,8 +583,10 @@
             </form>
         </div>
     </div>
-    
+
 </div>
+
+
 
 
 
@@ -594,6 +599,21 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+    $(document).on("click", ".preview", function () {
+    let bookingId = $(this).data("id");
+
+    if (bookingId) {
+        window.location.href = `/doctor/today_preview/${bookingId}/`;
+    } else {
+        alert("Booking ID is missing!");
+    }
+});
+
+
+
+
+
+
     $(document).ready(function() {
         const bookingId = $("#booking_id").val();
         function updateBalanceAmount() {
@@ -808,31 +828,27 @@
 
 
 
-
-
-
-
-    $(document).ready(function() {
+$(document).ready(function() {
         let selectedTeeth = [];
         let selectedTreatment = "";
         let selectedTreatmentColor = "";
-    
+
         // ✅ Clear previous event handlers
         $(".tooth").off("click");
         $(".treatment-item").off("click");
         $("#add-medicine-btn").off("click");
         $(document).off("click", ".remove-entry");
-    
+
         // ✅ Initialize teeth status to "healthy"
         $(".tooth").each(function() {
             $(this).attr("data-status", "healthy"); // Set default status
             $(this).css("background-color", "#229954"); // Set default color (healthy)
         });
-    
+
         // ✅ Tooth selection handling
         $(".tooth").on("click", function() {
             const toothNumber = $(this).data("tooth");
-    
+
             if (selectedTeeth.includes(toothNumber)) {
                 selectedTeeth = selectedTeeth.filter(num => num !== toothNumber);
                 $(this).removeClass("selected");
@@ -840,15 +856,15 @@
                 selectedTeeth.push(toothNumber);
                 $(this).addClass("selected");
             }
-    
+
             $("#selectedTeeth").val(selectedTeeth.join(", "));
         });
-    
+
         // ✅ Treatment selection handling
         $(".treatment-item").on("click", function() {
             selectedTreatment = $(this).text().trim();
             selectedTreatmentColor = $(this).css("background-color");
-    
+
             $("#selectedTreatment")
                 .val(selectedTreatment)
                 .css({
@@ -859,37 +875,37 @@
                     "border": "none"
                 });
         });
-    
+
         // ✅ Apply selected treatment and color to selected teeth
         $("#add-medicine-btn").on("click", function() {
             if (selectedTeeth.length === 0 || !selectedTreatment) {
                 alert("Please select both teeth and a treatment before adding.");
                 return;
             }
-    
+
             selectedTeeth.forEach(toothNumber => {
                 let toothElement = $(`.tooth[data-tooth='${toothNumber}']`);
                 toothElement.attr("data-status", selectedTreatment); // ✅ Update data-status
                 toothElement.css("background-color", selectedTreatmentColor); // ✅ Change color
             });
-    
+
             const teethStr = selectedTeeth.join(", ");
-    
+
             const newEntry = `
                 <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
                     <div class="flex-grow-1">
                         <input type="text" name="selected_teeth[]" class="form-control" value="${teethStr}" readonly>
                     </div>
                     <div class="flex-grow-1">
-                        <input type="text" name="selected_treatment[]" class="form-control" value="${selectedTreatment}" 
+                        <input type="text" name="selected_treatment[]" class="form-control" value="${selectedTreatment}"
                             style="background-color: ${selectedTreatmentColor}; color: white; padding: 10px; border-radius: 5px; border: none;" readonly>
                     </div>
                     <button type="button" class="btn btn-danger remove-entry">-</button>
                 </div>
             `;
-    
+
             $("#dentition-items-container").append(newEntry);
-    
+
             // ✅ Reset selections
             selectedTeeth = [];
             $(".tooth").removeClass("selected");
@@ -903,12 +919,12 @@
                 "border": ""
             });
         });
-    
+
         // ✅ Remove dentition entry
         $(document).on("click", ".remove-entry", function() {
             $(this).closest(".dentition-entry").remove();
         });
-    
+
         // ✅ Form submission
 
     });
@@ -932,7 +948,7 @@
 
     console.log("Collected Dentition Data:", dentitionData);  // ✅ Debugging Line
 
-    
+
 
     if (dentitionData.length === 0) {
         alert("Please add at least one dentition entry.");
@@ -957,7 +973,7 @@
     });
 });
 
-    
+
 
 
 
@@ -968,6 +984,9 @@ document.querySelectorAll('.tooth').forEach(function(tooth) {
         tooth.style.backgroundColor = "#229954";
     }
 });
+
+
+
 
 
 <!----------------DENTAL EXAMINATION------------>
