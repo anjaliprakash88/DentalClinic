@@ -212,7 +212,6 @@
                 <p><strong>Appointment Time:</strong> {{ booking.appointment_time }}</p>
             </div>
             <div class="col-md-6">
-                <p><strong>Contact:</strong> {{ booking.patient.contact_number }}</p>
                 <p><strong>Email:</strong> {{ booking.patient.email }}</p>
                 <p><strong>Patient ID:</strong> {{ booking.patient.id }}</p>
             </div>
@@ -485,6 +484,8 @@
                 <p>No treatments available.</p>
                 {% endfor %}
             </div>
+
+
             <form id="dentition-container" class="bg-light p-4 rounded shadow">
                 {% csrf_token %}
                 <div class="card mb-4 border-0 shadow-sm">

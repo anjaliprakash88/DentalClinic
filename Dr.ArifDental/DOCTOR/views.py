@@ -57,6 +57,7 @@ class TodayPreview(APIView):
                 })
 
         dentition_data_json = json.dumps(dentition_data)
+        treatments = DentitionTreatment.objects.all()
 
         if format == 'json' or request.headers.get('Accept') == 'application/json':
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -69,7 +70,8 @@ class TodayPreview(APIView):
             "appointment_time": booking.appointment_time,
             "patient_email": patient.email,
             "patient_age": patient.age,
-            "dentition_data_json": dentition_data_json  # ✅ Add to context
+            "dentition_data_json": dentition_data_json,
+            "treatments": DentitionTreatmentSerializer(treatments, many=True).data
         })
 
 # ----------------------------------
