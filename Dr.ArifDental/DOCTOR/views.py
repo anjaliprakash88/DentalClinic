@@ -26,7 +26,8 @@ from .models import (DentalExamination,
                      Investigation,
                      Dentition,
                      TreatmentBill,
-                     DentitionTreatment)
+                     DentitionTreatment,
+                     MedicinePrescription)
 from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import localdate
 from rest_framework.permissions import IsAuthenticated
@@ -59,6 +60,23 @@ class TodayPreview(APIView):
         dentition_data_json = json.dumps(dentition_data)
         treatments = DentitionTreatment.objects.all()
 
+        prescriptions = MedicinePrescription.objects.filter(booking_id=booking.id)
+        prescription_data = []
+
+        for p in prescriptions:
+            prescription_data.append({
+                "medicine": {
+                    "id": p.medicine.id,
+                    "name": p.medicine.medicine_name
+                },
+                "medicine_name": p.medicine.medicine_name,
+                "dosage_days": p.dosage_days,
+                "medicine_times": p.medicine_times,
+                "meal_times": p.meal_times,
+            })
+
+        prescription_data_json = json.dumps(prescription_data)
+
         if format == 'json' or request.headers.get('Accept') == 'application/json':
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -71,7 +89,8 @@ class TodayPreview(APIView):
             "patient_email": patient.email,
             "patient_age": patient.age,
             "dentition_data_json": dentition_data_json,
-            "treatments": DentitionTreatmentSerializer(treatments, many=True).data
+            "treatments": DentitionTreatmentSerializer(treatments, many=True).data,
+            "prescription_data_json": prescription_data_json
         })
 
 # ----------------------------------

@@ -28,7 +28,8 @@
 <!-- Bootstrap JS (Make sure this is before your custom scripts) -->
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
    <script>
-    window.existingDentitionData = {{ dentition_data_json|safe }};
+        window.existingDentitionData = {{ dentition_data_json|safe }};
+       window.existingPrescriptionData = {{ prescription_data_json|safe }};
 </script>
 
 
@@ -821,39 +822,69 @@ $(document).ready(function() {
     // --------------------- PRESCRIPTION MANAGEMENT ---------------------
     function initializePrescriptionManagement() {
         let medicineCount = 1;
+        console.log("Prescription management initialized.");
 
         // Load existing prescriptions
         function loadExistingPrescriptions() {
+            console.log("Loading existing prescriptions...");
             try {
+                console.log("Checking for existing prescriptions...");
+                console.log("window.existingPrescriptionData =", window.existingPrescriptionData);
+
                 if (window.existingPrescriptionData && window.existingPrescriptionData.length > 0) {
+                    console.log("Found existing prescriptions:", window.existingPrescriptionData);
+
                     $('#medicine-items-container').empty();
 
                     window.existingPrescriptionData.forEach((prescription, index) => {
-                        const medicineTimes = Array.isArray(prescription.medicine_times)
-                            ? prescription.medicine_times
-                            : JSON.parse(prescription.medicine_times);
+                        console.log(`Prescription ${index}:`, prescription);
 
-                        const mealTimes = Array.isArray(prescription.meal_times)
-                            ? prescription.meal_times
-                            : JSON.parse(prescription.meal_times);
+                        let medicineTimes, mealTimes;
+
+                        try {
+                            medicineTimes = Array.isArray(prescription.medicine_times)
+                                ? prescription.medicine_times
+                                : JSON.parse(prescription.medicine_times);
+
+                            mealTimes = Array.isArray(prescription.meal_times)
+                                ? prescription.meal_times
+                                : JSON.parse(prescription.meal_times);
+                        } catch (parseError) {
+                            console.error("JSON parse error in medicine_times or meal_times", parseError);
+                            medicineTimes = [];
+                            mealTimes = [];
+                        }
+
+                        console.log("Medicine Times:", medicineTimes);
+                        console.log("Meal Times:", mealTimes);
 
                         const itemId = `existing-${index + 1}`;
+                        const medicineId = prescription.medicine?.id || prescription.medicine;
+                        const medicineName = prescription.medicine_name || "";
+
+                        console.log("Item ID:", itemId, "Medicine ID:", medicineId, "Name:", medicineName);
+
                         const newItemHtml = createMedicineItemHtml(
                             itemId,
-                            prescription.medicine.id || prescription.medicine,
-                            prescription.medicine_name || "",
+                            medicineId,
+                            medicineName,
                             prescription.dosage_days,
                             medicineTimes,
                             mealTimes
                         );
 
                         $('#medicine-items-container').append(newItemHtml);
+                        loadMedicines(`#medicine_name_${itemId}`, medicineId);
+
                     });
+                } else {
+                    console.log("No existing prescriptions found.");
                 }
             } catch (error) {
                 console.error("Error loading prescription data:", error);
             }
-        }
+            }
+
 
         function createMedicineItemHtml(itemId, medicineId, medicineName, dosageDays, medicineTimes, mealTimes) {
             // Helper function to create checkbox with checked state
@@ -913,7 +944,7 @@ $(document).ready(function() {
         }
 
         // Load medicines into select dropdown
-        function loadMedicines(selectElementId) {
+        function loadMedicines(selectElementId, selectedMedicineId = null) {
             console.log("Fetching medicines for booking:", bookingId);
             $.ajax({
                 url: `/doctor/medicine-prescription/${bookingId}/`,
@@ -931,7 +962,8 @@ $(document).ready(function() {
                     selectElement.empty().append('<option value="">Select Medicine</option>');
 
                     $.each(data.medicines, function (index, med) {
-                        selectElement.append(`<option value="${med.id}">${med.medicine_name}</option>`);
+                        const selected = selectedMedicineId && parseInt(med.id) === parseInt(selectedMedicineId) ? 'selected' : '';
+                        selectElement.append(`<option value="${med.id}" ${selected}>${med.medicine_name}</option>`);
                     });
                 },
                 error: function (xhr, status, error) {
@@ -940,6 +972,7 @@ $(document).ready(function() {
                 }
             });
         }
+
 
         function addMedicineItem() {
             const newItemHtml = createMedicineItemHtml(medicineCount, "", "", "", [], []);
@@ -977,7 +1010,7 @@ $(document).ready(function() {
             }
 
             $('.medicine-item').each(function () {
-                const itemId = $(this).attr('id').split('-').pop();
+                const itemId = $(this).attr('id').split('medicine-item-')[1];
                 const medicineId = $(`#medicine_name_${itemId}`).val();
                 const dosageDays = $(`#dosage_days_${itemId}`).val();
                 let medicineTimes = [];
@@ -989,6 +1022,12 @@ $(document).ready(function() {
                 $(`input[name="meal_time_${itemId}"]:checked`).each(function () {
                     mealTimes.push($(this).val());
                 });
+
+                console.log(`== Checking item ${itemId} ==`);
+                console.log("Medicine ID:", medicineId);
+                console.log("Dosage Days:", dosageDays);
+                console.log("Medicine Times:", medicineTimes);
+                console.log("Meal Times:", mealTimes);
 
                 if (!medicineId || !dosageDays || medicineTimes.length === 0 || mealTimes.length === 0) {
                     alert('Please fill all fields correctly.');
@@ -1003,6 +1042,7 @@ $(document).ready(function() {
                     meal_times: mealTimes
                 });
             });
+
 
             if (!isValid) return;
 
@@ -1026,11 +1066,17 @@ $(document).ready(function() {
 
     // --------------------- TREATMENT BILL MANAGEMENT ---------------------
     function initializeBillingSection() {
+        console.log("Initializing billing section...");
         // Update balance amount calculation
         function updateBalanceAmount() {
             let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
             let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
             let balanceAmount = totalAmount - paidAmount;
+
+            console.log("Total Amount:", totalAmount);
+            console.log("Paid Amount:", paidAmount);
+            console.log("Calculated Balance:", balanceAmount);
+
             $("#balance-amount").val(balanceAmount.toFixed(2));
         }
 
