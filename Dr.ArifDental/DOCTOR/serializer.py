@@ -267,45 +267,58 @@ class DoctorLoginSerializer(serializers.Serializer):
         return {'user': user}
 
 # ---------------------------------------------------
-class PreviousTreatmentSerializer(serializers.ModelSerializer):
-    patient_name = serializers.SerializerMethodField()
-    dental_examinations = serializers.SerializerMethodField()
-    treatment_bills = serializers.SerializerMethodField()
-    prescriptions = serializers.SerializerMethodField()
+class LastAppointmentPreviewSerializer(serializers.Serializer):
+    patient = PatientSerializer(read_only=True)
+    booking = PatientBookingSerializer(read_only=True)
+    dental_examination = serializers.SerializerMethodField()
+    dentition = serializers.SerializerMethodField()
+    medicine_prescription = serializers.SerializerMethodField()
+    treatment_bill = serializers.SerializerMethodField()
+    investigations = serializers.SerializerMethodField()
 
-    class Meta:
-        model = PatientBooking
-        fields = ['id', 'patient_name', 'appointment_date', 'appointment_time',
-                  'dental_examinations', 'treatment_bills', 'prescriptions']
+    def get_dental_examination(self, obj):
+        today = date.today()
+        examination = DentalExamination.objects.filter(
+            patient=obj.patient,
+            created_at__date__lt=today
+        ).order_by('-created_at').first()
+        return DentalExaminationSerializer(examination).data if examination else None
 
-    def get_patient_name(self, obj):
-        """Return full patient name."""
-        return f"{obj.patient.full_name}" if obj.patient else None
+    def get_dentition(self, obj):
+        today = date.today()
+        dentition = Dentition.objects.filter(
+            patient=obj.patient,
+            created_at__date__lt=today
+        ).order_by('-created_at').first()
+        return DentitionSerializer(dentition).data if dentition else None
 
-    def get_dental_examinations(self, obj):
-        """Fetch latest dental examination for this patient."""
-        latest_exam = DentalExamination.objects.filter(
-            booking__patient=obj.patient
-        ).order_by('-id').first()
+    def get_medicine_prescription(self, obj):
+        today = date.today()
+        prescription = MedicinePrescription.objects.filter(
+            booking=obj,
+            created_at__date__lt=today
+        ).order_by('-created_at').first()
+        return PrescriptionSerializer(prescription).data if prescription else None
 
-        return [DentalExaminationSerializer(latest_exam).data] if latest_exam else []
+    def get_treatment_bill(self, obj):
+        today = date.today()
+        bill = TreatmentBill.objects.filter(
+            booking=obj,
+            created_at__date__lt=today
+        ).order_by('-created_at').first()
+        return TreatmentBillSerializer(bill).data if bill else None
 
-    def get_treatment_bills(self, obj):
-        """Fetch latest treatment bill for this patient."""
-        latest_bill = TreatmentBill.objects.filter(
-            booking__patient=obj.patient
-        ).order_by('-id').first()
+    def get_investigations(self, obj):
+        today = date.today()
+        examination = DentalExamination.objects.filter(
+            patient=obj.patient,
+            created_at__date__lt=today
+        ).order_by('-created_at').first()
 
-        return [TreatmentBillSerializer(latest_bill).data] if latest_bill else []
-
-    def get_prescriptions(self, obj):
-        """Fetch latest prescriptions for this patient."""
-        latest_prescription = MedicinePrescription.objects.filter(
-            booking__patient=obj.patient
-        ).order_by('-id').first()
-
-        return [PrescriptionSerializer(latest_prescription).data] if latest_prescription else []
-
+        if examination:
+            investigations = Investigation.objects.filter(dental_examination=examination)
+            return InvestigationSerializer(investigations, many=True).data
+        return []
 # ---------------------------------------------
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:

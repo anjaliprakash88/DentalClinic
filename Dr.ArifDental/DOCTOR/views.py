@@ -12,7 +12,7 @@ from .serializer import (DoctorLoginSerializer,
                          MedicineSerializer,
                          PrescriptionSerializer, 
                          TreatmentBillSerializer,
-                         PreviousTreatmentSerializer,
+                         LastAppointmentPreviewSerializer,
                          ChangeDoctorPasswordSerializer,
                          DoctorPatientSerializer,
                          PatientSerializer,
@@ -33,6 +33,83 @@ from django.utils.timezone import localdate
 from rest_framework.permissions import IsAuthenticated
 from decimal import Decimal
 import json
+from datetime import date
+
+
+
+class LastAppointmentPreview(APIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'doctor/last_appointment_preview.html'
+
+    def get(self, request, booking_id, format=None):
+        booking = get_object_or_404(PatientBooking, id=booking_id)
+        patient = booking.patient
+
+        serializer = LastAppointmentPreviewSerializer(booking)
+        print("Last appointment data:", serializer.data)
+
+        # 🔽 Get the last dentition before today
+        dentitions = Dentition.objects.filter(
+            patient=patient,
+            created_at__date__lt=date.today()
+        ).order_by('-created_at')
+
+        dentition_data = []
+        for d in dentitions:
+            for tooth_id in d.selected_teeth:
+                dentition_data.append({
+                    "tooth_id": tooth_id,
+                    "treatment": d.treatment.name if d.treatment else "Healthy",
+                    "color_code": d.treatment.color_code if d.treatment else "#229954",
+                    "note": d.note or "",
+                })
+
+        dentition_data_json = json.dumps(dentition_data)
+
+
+        last_booking = PatientBooking.objects.filter(
+            patient=patient,
+            appointment_date__lt=date.today()
+        ).order_by('-appointment_date').first()
+
+        prescriptions = []
+        if last_booking:
+            prescriptions = MedicinePrescription.objects.filter(booking_id=last_booking.id)
+
+        prescription_data = []
+        for p in prescriptions:
+            prescription_data.append({
+                "medicine": {
+                    "id": p.medicine.id,
+                    "name": p.medicine.medicine_name
+                },
+                "medicine_name": p.medicine.medicine_name,
+                "dosage_days": p.dosage_days,
+                "medicine_times": p.medicine_times,
+                "meal_times": p.meal_times,
+            })
+
+        prescription_data_json = json.dumps(prescription_data)
+
+        treatments = DentitionTreatment.objects.all()
+
+        if format == 'json' or request.headers.get('Accept') == 'application/json':
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return render(request, self.template_name, {
+            "data": serializer.data,
+            "booking": last_booking,
+            "patient_name": patient.full_name,
+            "appointment_date": last_booking.appointment_date if last_booking else "",
+            "appointment_time": last_booking.appointment_time if last_booking else "",
+            "patient_email": patient.email,
+            "patient_age": patient.age,
+            "dentition_data_json": dentition_data_json,
+            "treatments": DentitionTreatmentSerializer(treatments, many=True).data,
+            "prescription_data_json": prescription_data_json
+        })
+
+
 
 class TodayPreview(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
@@ -358,7 +435,7 @@ class DoctorPatientListView(APIView):
         for patient_data in patients_data.values():
             patients_with_treatments.append({
                 'patient': PatientSerializer(patient_data['patient']).data,
-                'last_treatment': PreviousTreatmentSerializer(patient_data['last_treatment']).data if patient_data[
+                'last_treatment': LastAppointmentPreviewSerializer(patient_data['last_treatment']).data if patient_data[
                     'last_treatment'] else None
             })
 

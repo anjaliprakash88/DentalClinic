@@ -321,9 +321,13 @@ $(document).ready(function() {
                 data: null,
                 orderable: false,
                 render: function(data, type, row) {
-                    return `<button class="btn btn-primary checkup" data-id="${row.id}">Check-Up</button>`;
+                    if (row.appointment_time) {
+                        return `<button class="btn btn-primary checkup" data-id="${row.id}">CheckUp</button>`;
+                    } else {
+                        return `<button class="btn btn-secondary" disabled>No CheckUp</button>`;
+                    }
                 }
-            }
+                }
         ]
     });
 
@@ -338,7 +342,7 @@ $(document).ready(function() {
                     table.rows.add(response.appointments).draw();
                 } else {
                     table.row.add({
-                        patient_name: "No bookings today",
+                        patient_name: "",
                         gender: "",
                         age: "",
                         appointment_time: "",

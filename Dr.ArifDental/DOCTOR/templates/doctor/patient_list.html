@@ -241,12 +241,13 @@
                 <td>{{ item.patient.gender }}</td>
                 <td>{{ item.patient.phone }}</td>
                 <td>
-                    {% if item.last_treatment %}
-                        <button class="btn btn-primary previous_treatment-btn" data-id="{{ item.last_treatment.id }}">Pre.Treatment</button>
+                    {% if last_booking_id %}
+                        <button class="btn btn-primary previous_treatment-btn" data-id="{{ last_booking_id }}">Pre.Treatment</button>
                     {% else %}
                         <button class="btn btn-secondary" disabled>No Previous Treatment</button>
                     {% endif %}
                 </td>
+
             </tr>
             {% empty %}
             <tr>

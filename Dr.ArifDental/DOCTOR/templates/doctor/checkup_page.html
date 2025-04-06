@@ -264,11 +264,26 @@
 <div class="top-navbar d-flex justify-content-between align-items-center">
     <h1 class="dashboard-title ms-center">Dental Examination - {{ patient_name }}</h1>
     <button class="btn btn-primary preview" style="background: #1c3342;" data-id="{{ booking.id }}">Preview</button>
+
+
+<!--------------LAST BOOKING ------------->
+   {% if last_booking_id %}
+    <button class="btn btn-primary last" style="background: #1c3342;" data-id="{{ last_booking_id }}">
+        <i class="fa-solid fa-info" style="color: #ffffff;"></i>
+    </button>
+    {% else %}
+    <button class="btn btn-secondary" disabled>
+        <i class="fa-solid fa-info" style="color: #ffffff;"></i>
+    </button>
+   {% endif %}
+<!--------------------------------------->
+
 </div>
 
 
 <!-- Content -->
 <div class="content">
+<!--    <i class="fa-solid fa-info"></i>-->
 <!--    <button class="btn btn-primary checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Adult</button>-->
 <!--    <button class="btn btn-primary paediatric-checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Paediatric</button>-->
     <form id="checkupForm" method="post" enctype="multipart/form-data">
@@ -497,7 +512,7 @@
         </div>
 
         <!-- Treatment Selection -->
-        <div class="col-md-12">
+          <div class="col-md-12">
             <div class="treatments-list text-center d-flex flex-wrap justify-content-center">
                 {% for treatment in treatments %}
                 <button class="treatment-item my-2 mx-2 py-2 px-3 border-0 text-white d-inline-block"
@@ -604,6 +619,16 @@
 
     if (bookingId) {
         window.location.href = `/doctor/today_preview/${bookingId}/`;
+    } else {
+        alert("Booking ID is missing!");
+    }
+});
+
+   $(document).on("click", ".last", function () {
+    let bookingId = $(this).data("id");
+
+    if (bookingId) {
+        window.location.href = `/doctor/previous-treatment/${bookingId}/`;
     } else {
         alert("Booking ID is missing!");
     }

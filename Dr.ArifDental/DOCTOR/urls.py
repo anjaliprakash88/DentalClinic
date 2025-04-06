@@ -17,6 +17,9 @@ urlpatterns = [
 
     path('medicine-prescription/<int:booking_id>/', views.MedicineAPIView.as_view(), name='medicine-prescription'),
 
+    path('previous-treatment/<int:booking_id>/', views.LastAppointmentPreview.as_view(), name='previous-treatment'),
+
+
 
 
 
