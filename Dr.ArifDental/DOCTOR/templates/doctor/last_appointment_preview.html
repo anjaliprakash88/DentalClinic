@@ -203,18 +203,16 @@
 <div class="container" style="margin-top:80px">
     <div class="card mb-4">
     <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Today's Appointment</h4>
+        <h4 class="mb-0">Last Appointment</h4>
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-6">
                 <p><strong>Patient Name:</strong> {{ booking.patient.full_name }}</p>
-                <p><strong>Appointment Date:</strong> {{ booking.appointment_date }}</p>
-                <p><strong>Appointment Time:</strong> {{ booking.appointment_time }}</p>
+                <p><strong>Last Appointment Date:</strong> {{ booking.appointment_date }}</p>
             </div>
             <div class="col-md-6">
                 <p><strong>Email:</strong> {{ booking.patient.email }}</p>
-                <p><strong>Patient ID:</strong> {{ booking.patient.id }}</p>
             </div>
         </div>
     </div>
@@ -223,90 +221,57 @@
 
 
 
+<!--------------- DENTAL EXAMINATION --------------->
+<h3 class="text-start fw-bold">Dental Examination</h3>
 
-     <h3 class="text-start fw-bold">Dental Examination</h3>
-    <form id="checkupForm" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="booking_id" id="booking_id" value="{{ booking.id }}">
-        {% csrf_token %}
-    <table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped">
     <tbody>
-    <tr>
-        <th class="w-25 text-center align-middle">Chief Complaints</th>
-        <td><textarea class="form-control" id="chief_complaints" name="chief_complaints" rows="3">
-                {{ data.dental_examination.chief_complaints }}
-            </textarea>
-        </td>
-    <tr>
-        <th class="w-25 text-center align-middle">History of Present Illness</th>
-        <td>
-            <textarea class="form-control" name="history_of_present_illness" rows="3">
-                {{ data.dental_examination.history_of_present_illness }}
-            </textarea>
-        </td>
-    </tr>
-    <tr>
-        <th class="w-25 text-center align-middle">Medical History</th>
-        <td><textarea class="form-control" name="medical_history" rows="3">
-            {{ data.dental_examination.medical_history }}
-        </textarea>
-        </td>
-    </tr>
-    <tr>
-        <th class="w-25 text-center align-middle">Personal History</th>
-        <td><textarea class="form-control" name="personal_history" rows="3">
-            {{ data.dental_examination.personal_history }}
-        </textarea></td>
-    </tr>
-    <tr>
-        <th class="w-25 text-center align-middle">General Examination</th>
-        <td><textarea class="form-control" name="general_examination" rows="3">
-            {{ data.dental_examination.general_examination }}
-        </textarea>
-        </td>
-    </tr>
-    <tr>
-        <th class="w-25 text-center align-middle">General Examination (Intraoral)</th>
-        <td><textarea class="form-control" name="general_examination_intraoral" rows="3">
-            {{ data.dental_examination.general_examination_intraoral }}
-        </textarea>
-        </td>
-    </tr>
-    <tr>
-        <th class="w-25 text-center align-middle">Local Examination (Extraoral)</th>
-        <td><textarea class="form-control" name="local_examination_extraoral" rows="3">
-            {{ data.dental_examination.local_examination_extraoral  }}
-        </textarea>
-        </td>
-    </tr>
-    <tr>
-        <th class="w-25 text-center align-middle">Soft Tissue</th>
-        <td><textarea class="form-control" name="soft_tissue" rows="3">
-            {{ data.dental_examination.soft_tissue  }}
-        </textarea></td>
-    </tr>
-    <tr>
-        <th class="w-25 text-center align-middle">Periodontal Status</th>
-        <td><textarea class="form-control" name="periodontal_status" rows="3">
-            {{ data.dental_examination.periodontal_status  }}
-        </textarea></td>
-    </tr>
-    <tr>
-        <th class="w-25 text-center align-middle">Treatment Plan</th>
-        <td><textarea class="form-control" name="treatment_plan" rows="3">
-            {{ data.dental_examination.treatment_plan  }}
-        </textarea></td>
-    </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">Chief Complaints</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.chief_complaints }}</div></td>
+        </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">History of Present Illness</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.history_of_present_illness }}</div></td>
+        </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">Medical History</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.medical_history }}</div></td>
+        </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">Personal History</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.personal_history }}</div></td>
+        </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">General Examination</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.general_examination }}</div></td>
+        </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">General Examination (Intraoral)</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.general_examination_intraoral }}</div></td>
+        </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">Local Examination (Extraoral)</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.local_examination_extraoral }}</div></td>
+        </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">Soft Tissue</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.soft_tissue }}</div></td>
+        </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">Periodontal Status</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.periodontal_status }}</div></td>
+        </tr>
+        <tr>
+            <th class="w-25 text-center align-middle">Treatment Plan</th>
+            <td><div class="form-control bg-white">{{ data.dental_examination.treatment_plan }}</div></td>
+        </tr>
     </tbody>
-        </table>
-        <div class="d-flex justify-content-start">
-           <button type="submit" class="btn btn-primary w-25 mt-4">Save</button>
-        </div>
-    </form>
+</table>
 
 
 
-
-
+<!---------------DENTITION--------------->
  <hr class="w-100 mb-5 mt-5 mx-auto">
     <h3 class="text-start fw-bold">Dentition</h3>
     <div class="dental-chart">
@@ -473,89 +438,34 @@
             </div>
         </div>
 
-       <!-- Treatment Selection -->
-        <div class="col-md-12">
-            <div class="treatments-list text-center d-flex flex-wrap justify-content-center">
-                {% for treatment in treatments %}
-                <button class="treatment-item my-2 mx-2 py-2 px-3 border-0 text-white d-inline-block"
-                    style="background-color: {{ treatment.color_code }}; border-radius: 5px;">
-                    <strong>{{ treatment.name }}</strong>
-                </button>
-                {% empty %}
-                <p>No treatments available.</p>
-                {% endfor %}
+       <div id="dentition-container" class="bg-light p-4 rounded shadow">
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-header">
+            <div id="dentition-items-container">
+                <!-- Dynamic dentition entries will be displayed here -->
             </div>
-
-
-            <form id="dentition-container" class="bg-light p-4 rounded shadow">
-                {% csrf_token %}
-                <div class="card mb-4 border-0 shadow-sm">
-                    <div class="card-header">
-                        <div id="dentition-items-container">
-                            <!-- Dynamic dentition entries will be added here -->
-                        </div>
-
-                        <!-- Hidden Inputs to Store Selection -->
-                        <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
-                            <div class="flex-grow-1">
-                                <input type="text" id="selectedTeeth" class="form-control mt-2" placeholder="Selected Teeth" readonly>
-                            </div>
-                            <div class="flex-grow-1">
-                                <input type="text" id="selectedTreatment" class="form-control mt-2" placeholder="Selected Treatment" readonly>
-                            </div>
-                            <button type="button" id="add-medicine-btn" style="background:#1c3342; color: #fff;"
-                                class="btn mt-2"><i class="bi bi-plus-lg"></i> Add</button>
-                            <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & Proceed</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
+</div>
 
 
 
-
+<!---------------MEDICAL PRESCRIPTION--------------->
      <hr class="w-100 mx-auto mt-5 mb-5">
 
     <h3 class="text-start fw-bold">Prescription</h3>
-    <form id="medicine-form" class="bg-light p-4 rounded shadow">
-        {% csrf_token %}
 
         <div class="card mb-4 border-0 shadow-sm">
             <div class="card-header">
                 <div id="medicine-items-container">
                     <!-- Dynamic medicine items will be added here -->
                 </div>
-                <button type="button" id="add-medicine-btnn" style="background:#1c3342; color: #fff;"
-                        class="btn mt-2"><i class="bi bi-plus-lg"></i> Add Medicine
-                </button>
-                <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & proceed</button>
             </div>
         </div>
-    </form>
 
 
 
 
-<h3 class="text-start fw-bold">Treatment Bill</h3><br>
-    <div class="mb-3">
-    <label for="total-amount-input" class="form-label fw-bold">Total Amount:</label>
-    <input type="number" id="total-amount-input" class="form-control" step="0.01"
-        value="{{ data.treatment_bill.total_amount|default:'0.00' }}">
-</div>
-
-<div class="mb-3">
-    <label for="paid-amount-input" class="form-label fw-bold">Paid Amount:</label>
-    <input type="number" id="paid-amount-input" class="form-control" step="0.01"
-        value="{{ data.treatment_bill.paid_amount|default:'0.00' }}">
-</div>
-
-<div class="mb-3">
-    <label for="balance-amount" class="form-label fw-bold">Balance Amount:</label>
-    <input type="number" id="balance-amount" class="form-control" step="0.01"
-        value="{{ data.treatment_bill.balance_amount|default:'0.00' }}" readonly>
-</div>
 
 
 
@@ -596,43 +506,6 @@ $(document).ready(function() {
         console.log("Initializing today's appointment view");
     }
 
-    // --------------------- DENTAL EXAMINATION ---------------------
-    $('#checkupForm').submit(function(event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-
-        if (!bookingId) {
-            alert("Booking ID is missing!");
-            return;
-        }
-
-        // Add any investigation files
-        const investigationFiles = $('#investigation')[0]?.files;
-        if (investigationFiles) {
-            for (let i = 0; i < investigationFiles.length; i++) {
-                formData.append('investigation[]', investigationFiles[i]);
-            }
-        }
-
-        $.ajax({
-            url: `/doctor/checkup/${bookingId}/`,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
-            },
-            success: function(response) {
-                if (response.message) {
-                    alert(response.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                alert('An error occurred: ' + error);
-            }
-        });
-    });
 
     // --------------------- DENTITION MANAGEMENT ---------------------
     function initializeDentitionChart() {
@@ -685,7 +558,7 @@ $(document).ready(function() {
                                 <input type="text" name="selected_treatment[]" class="form-control" value="${treatmentName}"
                                     style="background-color: ${treatmentColor}; color: white; padding: 10px; border-radius: 5px; border: none;" readonly>
                             </div>
-                            <button type="button" class="btn btn-danger remove-entry">-</button>
+
                         </div>
                     `;
 
@@ -696,127 +569,7 @@ $(document).ready(function() {
             console.error("Error loading dentition data:", error);
         }
 
-        // Tooth selection handling
-        $(".tooth").on("click", function() {
-            const toothNumber = $(this).data("tooth");
 
-            if (selectedTeeth.includes(toothNumber)) {
-                selectedTeeth = selectedTeeth.filter(num => num !== toothNumber);
-                $(this).removeClass("selected");
-            } else {
-                selectedTeeth.push(toothNumber);
-                $(this).addClass("selected");
-            }
-
-            $("#selectedTeeth").val(selectedTeeth.join(", "));
-        });
-
-        // Treatment selection handling
-        $(".treatment-item").on("click", function() {
-            selectedTreatment = $(this).text().trim();
-            selectedTreatmentColor = $(this).data("color") || $(this).css("background-color");
-
-            $("#selectedTreatment")
-                .val(selectedTreatment)
-                .css({
-                    "background-color": selectedTreatmentColor,
-                    "color": "#fff",
-                    "padding": "10px",
-                    "border-radius": "5px",
-                    "border": "none"
-                });
-        });
-
-        // Apply selected treatment to teeth
-        $("#add-medicine-btn").on("click", function() {
-            if (selectedTeeth.length === 0 || !selectedTreatment) {
-                alert("Please select both teeth and a treatment before adding.");
-                return;
-            }
-
-            selectedTeeth.forEach(toothNumber => {
-                let toothElement = $(`.tooth[data-tooth='${toothNumber}']`);
-                toothElement.attr("data-status", selectedTreatment);
-                toothElement.css("background-color", selectedTreatmentColor);
-            });
-
-            const teethStr = selectedTeeth.join(", ");
-
-            const newEntry = `
-                <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
-                    <div class="flex-grow-1">
-                        <input type="text" name="selected_teeth[]" class="form-control" value="${teethStr}" readonly>
-                    </div>
-                    <div class="flex-grow-1">
-                        <input type="text" name="selected_treatment[]" class="form-control" value="${selectedTreatment}"
-                            style="background-color: ${selectedTreatmentColor}; color: white; padding: 10px; border-radius: 5px; border: none;" readonly>
-                    </div>
-                    <button type="button" class="btn btn-danger remove-entry">-</button>
-                </div>
-            `;
-
-            $("#dentition-items-container").append(newEntry);
-
-            // Reset selections
-            selectedTeeth = [];
-            $(".tooth").removeClass("selected");
-            selectedTreatment = "";
-            $("#selectedTeeth").val("");
-            $("#selectedTreatment").val("").css({
-                "background-color": "",
-                "color": "",
-                "padding": "",
-                "border-radius": "",
-                "border": ""
-            });
-        });
-
-        // Remove dentition entry
-        $(document).on("click", ".remove-entry", function() {
-            $(this).closest(".dentition-entry").remove();
-        });
-
-        // Form submission
-        $("#dentition-container").submit(function(event) {
-            event.preventDefault();
-
-            const dentitionData = [];
-
-            $(".dentition-entry").each(function() {
-                let teeth = $(this).find("input[name='selected_teeth[]']").val();
-                let treatment = $(this).find("input[name='selected_treatment[]']").val();
-
-                if (teeth && treatment) {
-                    dentitionData.push({
-                        selected_teeth: teeth.split(", "), // Ensure array format
-                        treatment: treatment
-                    });
-                }
-            });
-
-            console.log("Collected Dentition Data:", dentitionData);
-
-            if (dentitionData.length === 0) {
-                alert("Please add at least one dentition entry.");
-                return;
-            }
-
-            $.ajax({
-                url: `/doctor/checkup/${bookingId}/`,
-                type: "POST",
-                headers: {
-                    "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
-                },
-                contentType: "application/json",
-                data: JSON.stringify({ dentitions: dentitionData }),
-                success: function(response) {
-                    alert("Dentition data saved successfully!");
-                },
-                error: function(xhr) {
-                    alert("Error saving data: " + xhr.responseText);
-                }
-            });
-        });
     }
 
     // --------------------- PRESCRIPTION MANAGEMENT ---------------------
@@ -914,10 +667,8 @@ $(document).ready(function() {
                     <div class="row">
                         <div class="col-md-4">
                             <label class="form-label">Medicine</label>
-                            <select id="medicine_name_${itemId}" class="form-select" name="medicine_${itemId}">
-                                <option value="">Select Medicine</option>
-                                ${medicineId ? `<option value="${medicineId}" selected>${medicineName || 'Selected Medicine'}</option>` : ''}
-                            </select>
+                            <input type="text" class="form-control" value="${medicineName || 'N/A'}" readonly>
+
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Days</label>
@@ -927,11 +678,7 @@ $(document).ready(function() {
                             <label class="form-label d-block">Medicine Times</label>
                             ${medicineTimeCheckboxes}
                         </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" class="btn btn-danger remove-medicine" data-id="${itemId}">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
+
                     </div>
                     <div class="row mt-2">
                         <div class="col-md-12">
@@ -998,137 +745,10 @@ $(document).ready(function() {
             addMedicineItem();
         }
 
-        // Form submission
-        $('#medicine-form').on('submit', function (e) {
-            e.preventDefault();
-            let medicines = [];
-            let isValid = true;
 
-            if (!bookingId) {
-                alert("Booking ID is required!");
-                return;
-            }
-
-            $('.medicine-item').each(function () {
-                const itemId = $(this).attr('id').split('medicine-item-')[1];
-                const medicineId = $(`#medicine_name_${itemId}`).val();
-                const dosageDays = $(`#dosage_days_${itemId}`).val();
-                let medicineTimes = [];
-                let mealTimes = [];
-
-                $(`input[name="medicine_time_${itemId}"]:checked`).each(function () {
-                    medicineTimes.push($(this).val());
-                });
-                $(`input[name="meal_time_${itemId}"]:checked`).each(function () {
-                    mealTimes.push($(this).val());
-                });
-
-                console.log(`== Checking item ${itemId} ==`);
-                console.log("Medicine ID:", medicineId);
-                console.log("Dosage Days:", dosageDays);
-                console.log("Medicine Times:", medicineTimes);
-                console.log("Meal Times:", mealTimes);
-
-                if (!medicineId || !dosageDays || medicineTimes.length === 0 || mealTimes.length === 0) {
-                    alert('Please fill all fields correctly.');
-                    isValid = false;
-                    return false;
-                }
-
-                medicines.push({
-                    medicine: parseInt(medicineId),
-                    dosage_days: parseInt(dosageDays),
-                    medicine_times: medicineTimes,
-                    meal_times: mealTimes
-                });
-            });
-
-
-            if (!isValid) return;
-
-            $.ajax({
-                url: `/doctor/checkup/${bookingId}/`,
-                type: 'POST',
-                data: JSON.stringify({ booking_id: parseInt(bookingId), medicines: medicines }),
-                contentType: 'application/json',
-                headers: { 'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() },
-                success: function (response) {
-                    alert('Medicine saved successfully!');
-                    $('#medicine-items-container').empty();
-                    addMedicineItem();
-                },
-                error: function (xhr) {
-                    console.error('Error:', xhr.responseText);
-                }
-            });
-        });
     }
 
-    // --------------------- TREATMENT BILL MANAGEMENT ---------------------
-    function initializeBillingSection() {
-        console.log("Initializing billing section...");
-        // Update balance amount calculation
-        function updateBalanceAmount() {
-            let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
-            let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
-            let balanceAmount = totalAmount - paidAmount;
 
-            console.log("Total Amount:", totalAmount);
-            console.log("Paid Amount:", paidAmount);
-            console.log("Calculated Balance:", balanceAmount);
-
-            $("#balance-amount").val(balanceAmount.toFixed(2));
-        }
-
-        // Handle input changes
-        $("#total-amount-input, #paid-amount-input").on("input", updateBalanceAmount);
-
-        // Set initial values
-        try {
-            if (window.existingBillData) {
-                $("#total-amount-input").val(window.existingBillData.total_amount || 0);
-                $("#paid-amount-input").val(window.existingBillData.paid_amount || 0);
-                $("#balance-amount").val(window.existingBillData.balance_amount || 0);
-            }
-        } catch (error) {
-            console.error("Error loading bill data:", error);
-        }
-
-        // Calculate initial balance
-        updateBalanceAmount();
-
-        // Handle form submission
-        $("#treatment-form").on("submit", function(event) {
-            event.preventDefault();
-
-            let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
-            let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
-            let balanceAmount = parseFloat($("#balance-amount").val()) || 0;
-
-            $.ajax({
-                type: "POST",
-                url: `/doctor/checkup/${bookingId}/`,
-                data: JSON.stringify({
-                    treatment_bill: {
-                        total_amount: totalAmount,
-                        paid_amount: paidAmount,
-                        balance_amount: balanceAmount
-                    }
-                }),
-                contentType: "application/json",
-                headers: {
-                    "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
-                },
-                success: function(response) {
-                    alert("Bill data saved successfully!");
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                    alert("Error saving bill data.");
-                }
-            });
-        });
-    }
 
     // --------------------- DATA INITIALIZATION ---------------------
     // Use this to extract the data from the serialized response

@@ -98,7 +98,8 @@ class LastAppointmentPreview(APIView):
 
         return render(request, self.template_name, {
             "data": serializer.data,
-            "booking": last_booking,
+             "booking": booking,
+            "last_booking_id": last_booking.id if last_booking else None,
             "patient_name": patient.full_name,
             "appointment_date": last_booking.appointment_date if last_booking else "",
             "appointment_time": last_booking.appointment_time if last_booking else "",
@@ -209,6 +210,7 @@ class DentalExaminationCheckup(APIView):
             "dentition": dentition_serializer.data if dentition_serializer else {},
             "examination": examination_serializer.data,
             "booking": booking,
+            "booking_id": booking.id,
             "patient_name": patient_name,
             "treatments": treatments,
             "treatment_bill": treatment_bill_serializer.data
