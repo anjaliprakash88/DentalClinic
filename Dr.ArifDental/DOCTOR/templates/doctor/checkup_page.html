@@ -270,6 +270,7 @@
 <button class="btn btn-primary last" style="background: #1c3342;" data-id="{{ booking_id|default:'' }}">
     <i class="fa-solid fa-info" style="color: #ffffff;"></i>
 </button>
+
 <!--------------------------------------->
 
 </div>
@@ -639,7 +640,9 @@
     }
 });
 
-   $(document).on("click", ".last", function () {
+
+
+  $(document).on("click", ".last", function () {
     let bookingId = $(this).data("id");
 
     if (bookingId) {
@@ -648,6 +651,8 @@
         alert("Booking ID is missing!");
     }
 });
+
+
 
 
 
