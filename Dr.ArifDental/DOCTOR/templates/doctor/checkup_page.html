@@ -277,7 +277,6 @@
 
 <!-- Content -->
 <div class="content">
-<!--    <i class="fa-solid fa-info"></i>-->
 <!--    <button class="btn btn-primary checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Adult</button>-->
 <!--    <button class="btn btn-primary paediatric-checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Paediatric</button>-->
     <form id="checkupForm" method="post" enctype="multipart/form-data">
@@ -669,31 +668,32 @@
 
         // Handle form submission
         $("#treatment-form").on("submit", function(event) {
-            event.preventDefault(); // Prevent default form submission
+        event.preventDefault();
 
-            let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
-            let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
-            let balanceAmount = parseFloat($("#balance-amount").val()) || 0;
+        let formData = new FormData();
+        const bookingId = $("#booking_id").val();
 
-            $.ajax({
-                type: "POST",
-                url: `/doctor/checkup/${bookingId}/`,
-                data: {
-                    csrfmiddlewaretoken: "{{ csrf_token }}",
-                    total_amount: totalAmount,
-                    paid_amount: paidAmount,
-                    balance_amount: balanceAmount
-                },
-                success: function(response) {
-                    alert("Data saved successfully!");
+        formData.append("total_amount", $("#total-amount-input").val());
+        formData.append("paid_amount", $("#paid-amount-input").val() || 0);  // Add paid input
+        formData.append("balance_amount", $("#balance-amount").val());
+        formData.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val());
 
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                    alert("Error saving data.");
-                }
-            });
+        $.ajax({
+            type: "POST",
+            url: `/doctor/checkup/${bookingId}/`,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                alert("Treatment bill saved successfully!");
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                alert("Error saving treatment bill.");
+            }
         });
+    });
+
     });
 
 
@@ -1044,17 +1044,17 @@ $(document).ready(function() {
 
     $('#checkupForm').submit(function(event) {
     event.preventDefault();
-    var formData = new FormData(this);
-    var bookingId = $('#booking_id').val();
 
+    let bookingId = $('#booking_id').val();
     if (!bookingId) {
         alert("Booking ID is missing!");
         return;
     }
 
-    var investigationFiles = $('#investigation')[0].files;
-    for (var i = 0; i < investigationFiles.length; i++) {
-        formData.append('investigation[]', investigationFiles[i]);
+    let formData = new FormData(this);
+    let investigationFiles = $('#investigation')[0].files;
+    for (let i = 0; i < investigationFiles.length; i++) {
+        formData.append('investigation', investigationFiles[i]);
     }
 
     $.ajax({
@@ -1064,18 +1064,18 @@ $(document).ready(function() {
         processData: false,
         contentType: false,
         headers: {
-            'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()  // Add CSRF token
+            'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
         },
         success: function(response) {
-            if (response.message) {
-                alert(response.message);
-            }
+            alert(response.message || "Data saved successfully!");
         },
         error: function(xhr, status, error) {
+            console.error("Response Error:", xhr.responseText);
             alert('An error occurred: ' + error);
         }
     });
 });
+
 });
 
 

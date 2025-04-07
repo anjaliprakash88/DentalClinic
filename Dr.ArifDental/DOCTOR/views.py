@@ -42,17 +42,31 @@ class LastAppointmentPreview(APIView):
     template_name = 'doctor/last_appointment_preview.html'
 
     def get(self, request, booking_id, format=None):
+        # Current booking and patient
         booking = get_object_or_404(PatientBooking, id=booking_id)
         patient = booking.patient
 
-        serializer = LastAppointmentPreviewSerializer(booking)
+        # ✅ Get LAST booking BEFORE today
+        last_booking = PatientBooking.objects.filter(
+            patient=patient,
+            appointment_date__lt=date.today()
+        ).order_by('-appointment_date').first()
+
+        # ⛔ No last booking found
+        if not last_booking:
+            return render(request, self.template_name, {
+                "data": {},
+                "message": "No previous appointment found."
+            })
+
+        # Serialize last booking
+        serializer = LastAppointmentPreviewSerializer(last_booking)
         print("Last appointment data:", serializer.data)
 
-        # 🔽 Get the last dentition before today
+        # Dentition Data
         dentitions = Dentition.objects.filter(
-            patient=patient,
-            created_at__date__lt=date.today()
-        ).order_by('-created_at')
+            booking=last_booking
+        )
 
         dentition_data = []
         for d in dentitions:
@@ -66,19 +80,11 @@ class LastAppointmentPreview(APIView):
 
         dentition_data_json = json.dumps(dentition_data)
 
+        # Prescription Data
+        prescriptions = MedicinePrescription.objects.filter(booking=last_booking)
 
-        last_booking = PatientBooking.objects.filter(
-            patient=patient,
-            appointment_date__lt=date.today()
-        ).order_by('-appointment_date').first()
-
-        prescriptions = []
-        if last_booking:
-            prescriptions = MedicinePrescription.objects.filter(booking_id=last_booking.id)
-
-        prescription_data = []
-        for p in prescriptions:
-            prescription_data.append({
+        prescription_data = [
+            {
                 "medicine": {
                     "id": p.medicine.id,
                     "name": p.medicine.medicine_name
@@ -87,27 +93,30 @@ class LastAppointmentPreview(APIView):
                 "dosage_days": p.dosage_days,
                 "medicine_times": p.medicine_times,
                 "meal_times": p.meal_times,
-            })
+            }
+            for p in prescriptions
+        ]
 
         prescription_data_json = json.dumps(prescription_data)
 
+        # All treatment options
         treatments = DentitionTreatment.objects.all()
 
         if format == 'json' or request.headers.get('Accept') == 'application/json':
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data)
 
         return render(request, self.template_name, {
             "data": serializer.data,
-             "booking": booking,
-            "last_booking_id": last_booking.id if last_booking else None,
+            "booking": last_booking,
+            "last_booking_id": last_booking.id,
             "patient_name": patient.full_name,
-            "appointment_date": last_booking.appointment_date if last_booking else "",
-            "appointment_time": last_booking.appointment_time if last_booking else "",
+            "appointment_date": last_booking.appointment_date,
+            "appointment_time": last_booking.appointment_time,
             "patient_email": patient.email,
             "patient_age": patient.age,
             "dentition_data_json": dentition_data_json,
             "treatments": DentitionTreatmentSerializer(treatments, many=True).data,
-            "prescription_data_json": prescription_data_json
+            "prescription_data_json": prescription_data_json,
         })
 
 
@@ -226,26 +235,35 @@ class DentalExaminationCheckup(APIView):
             examination = DentalExamination.objects.create(patient=patient, booking=booking)
 
         # Update examination fields
-        examination.chief_complaints = request.data.get("chief_complaints", "")
-        examination.history_of_present_illness = request.data.get("history_of_present_illness", "")
-        examination.medical_history = request.data.get("medical_history", "")
-        examination.personal_history = request.data.get("personal_history", "")
-        examination.general_examination = request.data.get("general_examination", "")
-        examination.general_examination_intraoral = request.data.get("general_examination_intraoral", "")
-        examination.local_examination_extraoral = request.data.get("local_examination_extraoral", "")
-        examination.soft_tissue = request.data.get("soft_tissue", "")
-        examination.periodontal_status = request.data.get("periodontal_status", "")
-        examination.treatment_plan = request.data.get("treatment_plan", "")
+        examination_fields = [
+            "chief_complaints", "history_of_present_illness", "medical_history",
+            "personal_history", "general_examination", "general_examination_intraoral",
+            "local_examination_extraoral", "soft_tissue", "periodontal_status", "treatment_plan"
+        ]
 
-        # Handle file uploads
+        if any(field in request.data for field in examination_fields):
+            examination.chief_complaints = request.data.get("chief_complaints", examination.chief_complaints)
+            examination.history_of_present_illness = request.data.get("history_of_present_illness",
+                                                                      examination.history_of_present_illness)
+            examination.medical_history = request.data.get("medical_history", examination.medical_history)
+            examination.personal_history = request.data.get("personal_history", examination.personal_history)
+            examination.general_examination = request.data.get("general_examination", examination.general_examination)
+            examination.general_examination_intraoral = request.data.get("general_examination_intraoral",
+                                                                         examination.general_examination_intraoral)
+            examination.local_examination_extraoral = request.data.get("local_examination_extraoral",
+                                                                       examination.local_examination_extraoral)
+            examination.soft_tissue = request.data.get("soft_tissue", examination.soft_tissue)
+            examination.periodontal_status = request.data.get("periodontal_status", examination.periodontal_status)
+            examination.treatment_plan = request.data.get("treatment_plan", examination.treatment_plan)
+            examination.save()
+
+        # ✅ Handle investigations (files)
         if 'investigation[]' in request.FILES:
             for file in request.FILES.getlist('investigation[]'):
                 Investigation.objects.create(
                     dental_examination=examination,
                     image=file
                 )
-
-        examination.save()
 
         # ✅ FIX: Get dentitions from request data
         dentitions = request.data.get("dentitions", [])  # Ensure it's a list
@@ -262,7 +280,7 @@ class DentalExaminationCheckup(APIView):
             )
 
             # Create Dentition instance
-            dentition = Dentition.objects.create(
+            dentition = Dentition.objects.update_or_create(
                 patient=patient,
                 booking=booking,
                 selected_teeth=selected_teeth,

@@ -690,41 +690,12 @@ $(document).ready(function() {
             `;
         }
 
-        // Load medicines into select dropdown
-        function loadMedicines(selectElementId, selectedMedicineId = null) {
-            console.log("Fetching medicines for booking:", bookingId);
-            $.ajax({
-                url: `/doctor/medicine-prescription/${bookingId}/`,
-                type: "GET",
-                dataType: "json",
-                success: function (data) {
-                    console.log("Debug: Full API Response:", data);
-                    if (!data || !data.medicines) {
-                        console.error("Error: Medicines key not found in response.");
-                        return;
-                    }
 
-                    console.log("Debug: Medicine List:", data.medicines);
-                    let selectElement = $(selectElementId);
-                    selectElement.empty().append('<option value="">Select Medicine</option>');
-
-                    $.each(data.medicines, function (index, med) {
-                        const selected = selectedMedicineId && parseInt(med.id) === parseInt(selectedMedicineId) ? 'selected' : '';
-                        selectElement.append(`<option value="${med.id}" ${selected}>${med.medicine_name}</option>`);
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.error("Medicine Fetch Error:", error);
-                    alert("Failed to load medicines.");
-                }
-            });
-        }
 
 
         function addMedicineItem() {
             const newItemHtml = createMedicineItemHtml(medicineCount, "", "", "", [], []);
             $('#medicine-items-container').append(newItemHtml);
-            loadMedicines(`#medicine_name_${medicineCount}`);
 
             $('.remove-medicine').on('click', function () {
                 const itemId = $(this).data('id');
@@ -733,6 +704,7 @@ $(document).ready(function() {
 
             medicineCount++;
         }
+
 
         // Add medicine button click handler
         $('#add-medicine-btnn').on('click', addMedicineItem);
@@ -762,7 +734,7 @@ $(document).ready(function() {
                 window.existingDentitionData = serializedData.dentition ? [serializedData.dentition] : [];
                 window.existingPrescriptionData = serializedData.medicine_prescription ?
                     [serializedData.medicine_prescription] : [];
-                window.existingBillData = serializedData.treatment_bill || {};
+
                 window.patientData = serializedData.patient || {};
                 window.bookingData = serializedData.booking || {};
             }
@@ -777,7 +749,7 @@ $(document).ready(function() {
         initializeTodayAppointment();
         initializeDentitionChart();
         initializePrescriptionManagement();
-        initializeBillingSection();
+
     }
 
     // Start initialization
