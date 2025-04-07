@@ -31,9 +31,9 @@ from .models import (DentalExamination,
 from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import localdate
 from rest_framework.permissions import IsAuthenticated
-from decimal import Decimal
 import json
 from datetime import date
+from decimal import Decimal, InvalidOperation
 
 
 
@@ -321,15 +321,27 @@ class DentalExaminationCheckup(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        print("Booking:", booking)
+        print("Examination:", examination)
+        print("Patient:", patient)
+
         treatment_bill, created = TreatmentBill.objects.get_or_create(
             booking=booking,
             dental_examination=examination,
             defaults={'patient': patient, 'total_amount': 0.00, 'paid_amount': 0.00, 'balance_amount': 0.00}
         )
 
-        # Debug: Check if patient is correctly assigned
-        treatment_bill.total_amount = Decimal(request.data.get("total_amount", 0.00))
-        treatment_bill.paid_amount = Decimal(request.data.get("paid_amount", 0.00))
+        print("Created New:", created)
+        print("Treatment Bill:", treatment_bill)
+
+        def safe_decimal(value, default=Decimal('0.00')):
+            try:
+                return Decimal(value)
+            except (InvalidOperation, TypeError, ValueError):
+                return default
+
+        treatment_bill.total_amount = safe_decimal(request.data.get("total_amount"))
+        treatment_bill.paid_amount = safe_decimal(request.data.get("paid_amount"))
         treatment_bill.balance_amount = treatment_bill.total_amount - treatment_bill.paid_amount
         treatment_bill.save()
 

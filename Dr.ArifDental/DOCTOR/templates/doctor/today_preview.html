@@ -537,21 +537,34 @@
 
 
 
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h3 class="text-start fw-bold m-0">Treatment Bill</h3>
+    </div>
+    <div class="card-body">
+        <!-- Treatment Bill Form -->
+        <div class="mb-3">
+            <label for="total-amount-input" class="form-label fw-bold">Total Amount:</label>
+            <input type="number" id="total-amount-input" class="form-control" step="0.01"
+                value="{{ data.treatment_bill.total_amount|default:'0.00' }}">
+        </div>
 
-<h3 class="text-start fw-bold">Treatment Bill</h3><br>
-    <div class="mb-3">
-    <label for="total-amount-input" class="form-label fw-bold">Total Amount:</label>
-    <input type="number" id="total-amount-input" class="form-control" step="0.01"
-        value="{{ data.treatment_bill.total_amount|default:'0.00' }}">
+
+
+        <div class="mb-3">
+            <label for="balance-amount" class="form-label fw-bold">Balance Amount:</label>
+            <input type="number" id="balance-amount" class="form-control" step="0.01"
+                value="{{ data.treatment_bill.balance_amount|default:'0.00' }}" readonly>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+            <div id="bill-save-status"></div>
+            <button type="button" id="save-bill-btn" class="btn btn-primary">
+                <i class="fa-solid fa-save me-1"></i> Save Bill Information
+            </button>
+        </div>
+    </div>
 </div>
-
-
-<div class="mb-3">
-    <label for="balance-amount" class="form-label fw-bold">Balance Amount:</label>
-    <input type="number" id="balance-amount" class="form-control" step="0.01"
-        value="{{ data.treatment_bill.balance_amount|default:'0.00' }}" readonly>
-</div>
-
 
 
     </div>
@@ -1098,70 +1111,105 @@ $(document).ready(function () {
     }
 
     // --------------------- TREATMENT BILL MANAGEMENT ---------------------
-    function initializeBillingSection() {
-        console.log("Initializing billing section...");
-        // Update balance amount calculation
-        function updateBalanceAmount() {
-            let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
-            let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
-            let balanceAmount = totalAmount - paidAmount;
+   function initializeBillingSection() {
+    console.log("Initializing billing section...");
 
-            console.log("Total Amount:", totalAmount);
-            console.log("Paid Amount:", paidAmount);
-            console.log("Calculated Balance:", balanceAmount);
+    // Update balance amount calculation
+    function updateBalanceAmount() {
+        let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
+        let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
+        let balanceAmount = totalAmount - paidAmount;
 
-            $("#balance-amount").val(balanceAmount.toFixed(2));
+        // Ensure balance doesn't go negative
+        balanceAmount = Math.max(0, balanceAmount);
+
+        console.log("Total Amount:", totalAmount);
+        console.log("Paid Amount:", paidAmount);
+        console.log("Calculated Balance:", balanceAmount);
+
+        $("#balance-amount").val(balanceAmount.toFixed(2));
+    }
+
+    // Handle input changes
+    $("#total-amount-input, #paid-amount-input").on("input", updateBalanceAmount);
+
+    // Set initial values from existing data if available
+    try {
+        if (window.existingBillData) {
+            console.log("Loading existing bill data:", window.existingBillData);
+            $("#total-amount-input").val(window.existingBillData.total_amount || 0);
+            $("#paid-amount-input").val(window.existingBillData.paid_amount || 0);
+
+            // Calculate the balance instead of using the saved value to ensure consistency
+            updateBalanceAmount();
         }
+    } catch (error) {
+        console.error("Error loading bill data:", error);
+    }
 
-        // Handle input changes
-        $("#total-amount-input, #paid-amount-input").on("input", updateBalanceAmount);
+    // Add save button event handler
+    $("#save-bill-btn").on("click", function() {
+        saveTreatmentBill();
+    });
 
-        // Set initial values
-        try {
-            if (window.existingBillData) {
-                $("#total-amount-input").val(window.existingBillData.total_amount || 0);
-                $("#paid-amount-input").val(window.existingBillData.paid_amount || 0);
-                $("#balance-amount").val(window.existingBillData.balance_amount || 0);
-            }
-        } catch (error) {
-            console.error("Error loading bill data:", error);
-        }
+    // Handle form submission
+    $("#treatment-form").on("submit", function(event) {
+        // If you want to save the bill as part of the entire form submission
+        // Remove event.preventDefault() if you want the form to actually submit
+        event.preventDefault();
+        saveTreatmentBill();
+    });
 
-        // Calculate initial balance
-        updateBalanceAmount();
+    // Function to save treatment bill data
+    function saveTreatmentBill() {
+        let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
+        let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
+        let balanceAmount = parseFloat($("#balance-amount").val()) || 0;
 
-        // Handle form submission
-        $("#treatment-form").on("submit", function(event) {
-            event.preventDefault();
+        // Show loading indicator
+        $("#bill-save-status").html('<span class="text-info">Saving...</span>');
 
-            let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
-            let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
-            let balanceAmount = parseFloat($("#balance-amount").val()) || 0;
-
-            $.ajax({
-                type: "POST",
-                url: `/doctor/checkup/${bookingId}/`,
-                data: JSON.stringify({
-                    treatment_bill: {
-                        total_amount: totalAmount,
-                        paid_amount: paidAmount,
-                        balance_amount: balanceAmount
-                    }
-                }),
-                contentType: "application/json",
-                headers: {
-                    "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
-                },
-                success: function(response) {
-                    alert("Bill data saved successfully!");
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                    alert("Error saving bill data.");
+        $.ajax({
+            type: "POST",
+            url: `/doctor/checkup/${bookingId}/`,  // Consider using a dedicated endpoint for bill updates
+            data: JSON.stringify({
+                treatment_bill: {
+                    total_amount: totalAmount,
+                    paid_amount: paidAmount,
+                    balance_amount: balanceAmount
                 }
-            });
+            }),
+            contentType: "application/json",
+            headers: {
+                "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
+            },
+            success: function(response) {
+                console.log("Bill saved successfully:", response);
+                $("#bill-save-status").html('<span class="text-success">Saved successfully!</span>');
+
+                // Clear success message after 3 seconds
+                setTimeout(function() {
+                    $("#bill-save-status").html('');
+                }, 3000);
+
+                // Update the window data to reflect the new values
+                if (!window.existingBillData) window.existingBillData = {};
+                window.existingBillData.total_amount = totalAmount;
+                window.existingBillData.paid_amount = paidAmount;
+                window.existingBillData.balance_amount = balanceAmount;
+            },
+            error: function(xhr, status, error) {
+                console.error("Error saving bill:", xhr.responseText);
+                $("#bill-save-status").html('<span class="text-danger">Error saving! Please try again.</span>');
+            }
         });
     }
+}
+
+// Initialize on document ready
+$(document).ready(function() {
+    initializeBillingSection();
+});
 
     // --------------------- DATA INITIALIZATION ---------------------
     // Use this to extract the data from the serialized response
