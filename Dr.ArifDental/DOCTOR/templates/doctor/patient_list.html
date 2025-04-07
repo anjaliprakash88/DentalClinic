@@ -223,41 +223,35 @@
 <!-- Content -->
 <div class="content">
     <div class="table-container">
-    <table id="bookingsTable" class="table table-striped table-bordered" style="width:100%">
-        <thead>
-            <tr>
-                <th>Patient Name</th>
-                <th>Age</th>
-                <th>Gender</th>  <!-- Changed from Email to Gender -->
-                <th>Phone</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in patients_with_treatments %}
-            <tr>
-                <td>{{ item.patient.full_name }}</td>
-                <td>{{ item.patient.age }}</td>
-                <td>{{ item.patient.gender }}</td>
-                <td>{{ item.patient.phone }}</td>
-                <td>
-                    {% if last_booking_id %}
-                        <button class="btn btn-primary previous_treatment-btn" data-id="{{ last_booking_id }}">Pre.Treatment</button>
-                    {% else %}
-                        <button class="btn btn-secondary" disabled>No Previous Treatment</button>
-                    {% endif %}
-                </td>
+        <table id="bookingsTable" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in patients_with_bookings %}
+                <tr>
+                    <td>{{ item.patient.full_name }}</td>
+                    <td>{{ item.patient.age }}</td>
+                    <td>{{ item.patient.gender }}</td>
+                    <td>{{ item.patient.phone }}</td>
+                    <td>
+                        <button class="btn btn-primary last" style="background: #1c3342;" data-id="{{ item.booking_id }}">
+                            <i class="fa-solid fa-info" style="color: #ffffff;"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
 
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">No patients found</td>
-            </tr>
-            {% endfor %}
-        </tbody>
 
-</table>
-</div>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
@@ -283,17 +277,15 @@
        }
    });
 
-   $(document).on("click", ".previous_treatment-btn", function (e) {
-       e.preventDefault();
+   $(document).on("click", ".last", function () {
+    let bookingId = $(this).data("id");
 
-       var bookingId = $(this).data("id");
-
-       if (!bookingId) {
-           alert("Invalid booking ID!");
-           return;
-       }
-       window.location.href = `/doctor/previous-treatment/${bookingId}/`;
-   });
+    if (bookingId) {
+        window.location.href = `/doctor/previous-treatment/${bookingId}/`;
+    } else {
+        alert("Booking ID is missing!");
+    }
+});
 
 
 <!---------------LOGOUT-------------------->

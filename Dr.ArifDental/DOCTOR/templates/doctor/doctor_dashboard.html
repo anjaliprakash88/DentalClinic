@@ -204,18 +204,14 @@
         <img src="{% static 'images/logo (2).png' %}" alt="Dr. Arif's Dental Clinic Logo">
     </div>
     <div class="sidebar-menu">
-        <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
+        <div class="menu-item">
+            <a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a>
+        </div>
         <div class="menu-item">
             <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
                <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
             </a>
         </div>
-        {% comment %} <div class="menu-item">
-            <a href="/doctor/profile/"><i class="fa-solid fa-user" style="color: #000000;"></i>Profile</a>
-        </div>
-        <div class="menu-item">
-            <a href="javascript:void(0)" class="logout-btn"><i class="fa-solid fa-power-off" style="color: #000000;"></i>Logout</a>
-        </div> {% endcomment %}
     </div>
 </nav>
 

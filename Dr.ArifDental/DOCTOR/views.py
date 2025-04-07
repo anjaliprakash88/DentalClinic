@@ -414,46 +414,33 @@ class DoctorPatientListView(APIView):
     def get(self, request, doctor_id):
         doctor = get_object_or_404(Doctor, id=doctor_id)
 
-        # Get all bookings for this doctor
-        bookings = PatientBooking.objects.filter(doctor=doctor).order_by('-appointment_date')
+        bookings = PatientBooking.objects.filter(doctor=doctor).select_related('patient').order_by('-appointment_date')
 
-        # Organize previous treatments by patient
-        patients_data = {}
+        patient_data = {}
         for booking in bookings:
-            patient_id = booking.patient.id
-            if patient_id not in patients_data:
-                patients_data[patient_id] = {
-                    'patient': booking.patient,
-                    'last_treatment': None
+            if booking.patient.id not in patient_data:
+                patient_data[booking.patient.id] = {
+                    "patient": booking.patient,
+                    "booking_id": booking.id  # save the latest booking
                 }
 
-            # Update last treatment if this is the most recent one
-            if not patients_data[patient_id]['last_treatment'] or \
-                    booking.appointment_date > patients_data[patient_id]['last_treatment'].appointment_date:
-                patients_data[patient_id]['last_treatment'] = booking
-
-        # Convert to list of patients with their last treatment
-        patients_with_treatments = []
-        for patient_data in patients_data.values():
-            patients_with_treatments.append({
-                'patient': PatientSerializer(patient_data['patient']).data,
-                'last_treatment': LastAppointmentPreviewSerializer(patient_data['last_treatment']).data if patient_data[
-                    'last_treatment'] else None
-            })
+        patients_with_bookings = list(patient_data.values())
 
         if request.accepted_renderer.format == 'html':
             return render(request, self.template_name, {
                 "doctor": doctor,
-                "patients_with_treatments": patients_with_treatments
+                "patients_with_bookings": patients_with_bookings,
             })
 
-        return Response(
-            {"doctor": DoctorPatientSerializer(doctor).data, "patients_with_treatments": patients_with_treatments})
-
-
-
-
-
+        return Response({
+            "doctor": DoctorPatientSerializer(doctor).data,
+            "patients": [
+                {
+                    "patient": PatientSerializer(item["patient"]).data,
+                    "booking_id": item["booking_id"]
+                } for item in patients_with_bookings
+            ]
+        })
 
 
 #-----------------------------------------------------------
