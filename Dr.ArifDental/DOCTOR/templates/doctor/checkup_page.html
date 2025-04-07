@@ -263,7 +263,7 @@
 <!-- Top Navbar -->
 <div class="top-navbar d-flex justify-content-between align-items-center">
     <h1 class="dashboard-title ms-center">Dental Examination - {{ patient_name }}</h1>
-    <button class="btn btn-primary preview" style="background: #1c3342;" data-id="{{ booking.id }}">Preview</button>
+
 
 
 <!--------------LAST BOOKING ------------->
@@ -590,7 +590,24 @@
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
+
         </div>
+
+        <div class="row g-2">
+            <div class="col-6">
+                <button id="back-button" class="btn btn-primary w-100" style="background: #1c3342;">
+                    Back <i class="fa-solid fa-house" style="color: #ffffff;"></i>
+                </button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-primary w-100 preview" style="background: #1c3342;" data-id="{{ booking.id }}">
+                    Preview
+                </button>
+            </div>
+</div>
+
+
+
     </div>
 
 </div>
@@ -608,6 +625,11 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+    $(document).on("click", "#back-button", function () {
+        window.location.href = "{% url 'doctor-dashboard' %}";
+    });
+
+
     $(document).on("click", ".preview", function () {
     let bookingId = $(this).data("id");
 

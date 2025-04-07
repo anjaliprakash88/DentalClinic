@@ -315,6 +315,9 @@ class DentalExaminationCheckup(APIView):
         treatment_bill.balance_amount = treatment_bill.total_amount - treatment_bill.paid_amount
         treatment_bill.save()
 
+        booking.status = 'completed'
+        booking.save()
+
         return Response({
             "message": "Checkup details and dentition data saved successfully!",
             "examination": DentalExaminationSerializer(examination).data,
