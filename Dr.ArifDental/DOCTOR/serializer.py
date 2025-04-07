@@ -249,8 +249,6 @@ class TodayPreviewSerializer(serializers.Serializer):
         ).order_by('-created_at').first()
         return TreatmentBillSerializer(bill).data if bill else None
 
-
-
 # ---------------DOCTOR LOGIN SERIALIZER---------------
 class DoctorLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -293,8 +291,6 @@ class LastAppointmentPreviewSerializer(serializers.Serializer):
         ).order_by('-created_at').first()
         return PrescriptionSerializer(prescription).data if prescription else None
 
-
-
     def get_investigations(self, obj):
         exam = DentalExamination.objects.filter(
             patient=obj.patient,
@@ -305,6 +301,7 @@ class LastAppointmentPreviewSerializer(serializers.Serializer):
             investigations = Investigation.objects.filter(dental_examination=exam)
             return InvestigationSerializer(investigations, many=True).data
         return []
+
 
 # ---------------------------------------------
 class PatientSerializer(serializers.ModelSerializer):
