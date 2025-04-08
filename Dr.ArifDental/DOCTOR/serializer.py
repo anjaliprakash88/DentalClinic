@@ -11,9 +11,7 @@ from .models import (DentalExamination,
                      DentitionTreatment,
                      Dentition)
 
-
-
-#-----------------------------------Doctor Change Password SERIALIZER--------------------------------------
+#-------------Doctor Change Password SERIALIZER---------------
 class ChangeDoctorPasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(write_only=True)
     new_password = serializers.CharField(write_only=True)
@@ -41,17 +39,14 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = ['id', 'full_name', 'email', 'phone', 'age', 'gender', 'address']
-
 class PatientBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = PatientBooking
         fields = ['id', 'appointment_date', 'appointment_time', 'reason', 'status']
-
 class InvestigationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investigation
         fields = ['id', 'image', 'uploaded_at']
-
 class DentalExaminationSerializer(serializers.ModelSerializer):
     patient = PatientSerializer(read_only=True)
     booking = PatientBookingSerializer(read_only=True)
@@ -71,8 +66,6 @@ class DentitionTreatmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = DentitionTreatment
         fields = ['id', 'name', 'color_code']
-
-
 class DentitionSerializer(serializers.ModelSerializer):
     patient = PatientSerializer(read_only=True)
     booking = PatientBookingSerializer(read_only=True)
@@ -108,20 +101,15 @@ class DentitionSerializer(serializers.ModelSerializer):
 
         return instance
 
-
 # ---------------DOCTOR VIEW PROFILE SERIALIZER---------------
 class UserViewProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
-
-
 class BranchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Branch
         fields = '__all__'
-
-
 class DoctorViewProfileSerializer(serializers.ModelSerializer):
     user = UserViewProfileSerializer()
     branch = BranchSerializer()
@@ -146,6 +134,7 @@ class DoctorViewProfileSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
 # ---------------------------------------------------------
 class TreatmentBillSerializer(serializers.ModelSerializer):
     dental_examination = DentalExaminationSerializer(read_only=True)
@@ -157,14 +146,11 @@ class TreatmentBillSerializer(serializers.ModelSerializer):
         fields = ['id', 'booking', 'dental_examination', 'total_amount', 
                   'paid_amount', 'balance_amount', 'created_at','payment_status','payment_method']
 
-
 #--------------------------------------------------
 class MedicineSerializer(serializers.ModelSerializer):
     class Meta:
         model = PharmaceuticalMedicine
         fields = ['id', 'medicine_name']
-
-
 class PrescriptionSerializer(serializers.ModelSerializer):
     medicine = serializers.PrimaryKeyRelatedField(
         queryset=PharmaceuticalMedicine.objects.all()
@@ -193,7 +179,6 @@ class PrescriptionSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
 # --------------------------------------------------------------
 class TodayPreviewSerializer(serializers.Serializer):
     patient = PatientSerializer(read_only=True)
@@ -202,22 +187,39 @@ class TodayPreviewSerializer(serializers.Serializer):
     dentition = serializers.SerializerMethodField()
     medicine_prescription = serializers.SerializerMethodField()
     treatment_bill = serializers.SerializerMethodField()
-    investigations = InvestigationSerializer(many=True, read_only=True)
+    investigations = serializers.SerializerMethodField()
 
     def get_dental_examination(self, obj):
-        today = date.today()
+        # Get examination ONLY for this specific booking
         examination = DentalExamination.objects.filter(
-            patient=obj.patient,
-            created_at__date=today
+            booking=obj  # Use booking reference instead of date
         ).order_by('-created_at').first()
-        print("DentalExamination found:", examination)
+        print("TodayPreview - DentalExamination found:", examination)
         return DentalExaminationSerializer(examination).data if examination else None
 
+    def get_dentition(self, obj):
+        # Get dentition ONLY for this specific booking
+        dentition = Dentition.objects.filter(
+            booking=obj  # Use booking reference instead of date
+        ).order_by('-created_at').first()
+        return DentitionSerializer(dentition).data if dentition else None
+
+    def get_medicine_prescription(self, obj):
+        prescription = MedicinePrescription.objects.filter(
+            booking=obj  # This is correct
+        ).order_by('-created_at').first()
+        return PrescriptionSerializer(prescription).data if prescription else None
+
+    def get_treatment_bill(self, obj):
+        bill = TreatmentBill.objects.filter(
+            booking=obj  # This is correct
+        ).order_by('-created_at').first()
+        return TreatmentBillSerializer(bill).data if bill else None
+
     def get_investigations(self, obj):
-        today = date.today()
+        # Get investigations through examination for this specific booking
         examination = DentalExamination.objects.filter(
-            patient=obj.patient,
-            created_at__date=today
+            booking=obj  # Use booking reference instead of date and patient
         ).order_by('-created_at').first()
 
         if examination:
@@ -225,29 +227,6 @@ class TodayPreviewSerializer(serializers.Serializer):
             return InvestigationSerializer(investigations, many=True).data
         return []
 
-    def get_dentition(self, obj):
-        today = date.today()
-        dentition = Dentition.objects.filter(
-            patient=obj.patient,
-            created_at__date=today
-        ).order_by('-created_at').first()
-        return DentitionSerializer(dentition).data if dentition else None
-
-    def get_medicine_prescription(self, obj):
-        today = date.today()
-        prescription = MedicinePrescription.objects.filter(
-            booking=obj,
-            created_at__date=today
-        ).order_by('-created_at').first()
-        return PrescriptionSerializer(prescription).data if prescription else None
-
-    def get_treatment_bill(self, obj):
-        today = date.today()
-        bill = TreatmentBill.objects.filter(
-            booking=obj,
-            created_at__date=today
-        ).order_by('-created_at').first()
-        return TreatmentBillSerializer(bill).data if bill else None
 
 # ---------------DOCTOR LOGIN SERIALIZER---------------
 class DoctorLoginSerializer(serializers.Serializer):
@@ -274,34 +253,37 @@ class LastAppointmentPreviewSerializer(serializers.Serializer):
     investigations = serializers.SerializerMethodField()
 
     def get_dental_examination(self, obj):
+        # This is correct - uses booking reference
         exam = DentalExamination.objects.filter(
-            booking=obj  # ✅ match using the booking, not the date
+            booking=obj
         ).order_by('-created_at').first()
+        print("LastAppointment - DentalExamination found:", exam)
         return DentalExaminationSerializer(exam).data if exam else None
 
     def get_dentition(self, obj):
+        # This is correct - uses booking reference
         dentition = Dentition.objects.filter(
-            booking=obj  # ✅ match using the booking, not the date
+            booking=obj
         ).order_by('-created_at').first()
         return DentitionSerializer(dentition).data if dentition else None
 
     def get_medicine_prescription(self, obj):
+        # This is correct - uses booking reference
         prescription = MedicinePrescription.objects.filter(
             booking=obj
         ).order_by('-created_at').first()
         return PrescriptionSerializer(prescription).data if prescription else None
 
     def get_investigations(self, obj):
+        # Fix to use the booking reference instead of date and patient
         exam = DentalExamination.objects.filter(
-            patient=obj.patient,
-            created_at__date=obj.appointment_date
+            booking=obj  # Use booking reference instead of date and patient
         ).order_by('-created_at').first()
 
         if exam:
             investigations = Investigation.objects.filter(dental_examination=exam)
             return InvestigationSerializer(investigations, many=True).data
         return []
-
 
 # ---------------------------------------------
 class PatientSerializer(serializers.ModelSerializer):
@@ -312,9 +294,6 @@ class PatientSerializer(serializers.ModelSerializer):
             'address', 'occupation', 'patient_code', 'created_at',
             'is_active', 'medical_notes'
         ]
-
-
-
 class DoctorPatientSerializer(serializers.ModelSerializer):
     doctor_name = serializers.SerializerMethodField()
     patients = serializers.SerializerMethodField()  # Use a method to get actual patients

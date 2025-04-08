@@ -186,7 +186,7 @@ class DentalExaminationCheckup(APIView):
     template_name = "doctor/checkup_page.html"
 
     def get(self, request, booking_id, format=None):
-        print(f"Debug: booking_id = {booking_id}")
+        doctor = request.user.doctor
         booking = get_object_or_404(PatientBooking, id=booking_id)
         patient = booking.patient
         examination, created = DentalExamination.objects.get_or_create(patient=patient, booking=booking)
@@ -219,6 +219,7 @@ class DentalExaminationCheckup(APIView):
             "dentition": dentition_serializer.data if dentition_serializer else {},
             "examination": examination_serializer.data,
             "booking": booking,
+            'doctor': doctor,
             "booking_id": booking.id,
             "patient_name": patient_name,
             "treatments": treatments,
@@ -491,7 +492,6 @@ class MedicineAPIView(APIView):
 
         serializer = MedicineSerializer(medicines, many=True)
         return Response({'medicines': serializer.data})
-#
 
 
 # -------------------------- DOCTOR DASHBOARD --------------------------

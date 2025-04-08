@@ -162,34 +162,6 @@
             fill: white;
         }
 
-        .message-box {
-            display: block;
-            width: 100%;
-            max-width: 300px;
-            padding: 12px;
-            margin: 10px auto 0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            transition: all 0.5s ease-in-out;
-            background: grey
-            color: white;
-            border: 1px solid #4682B4;
-
-        }
-
-        .message-box.success {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
-            color: #155724;
-            border: 1px solid #155724;
-        }
-
-        .message-box.error {
-            background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
-            color: #721c24;
-            border: 1px solid #721c24;
-        }
 
         @media (max-width: 480px) {
             .login-container {
@@ -211,6 +183,46 @@
                 height: 24px;
             }
         }
+        /* Loading Spinner */
+        .loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader-inner {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #00BFFF;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
     </style>
 </head>
 <body>
@@ -219,6 +231,14 @@
             <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
         </svg>
     </button>
+
+     <!-- Loading Spinner -->
+    <div class="loader" id="loader">
+        <div class="loader-inner">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
     <div class="login-container">
         <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Pharmacist Icon" class="login-image">
         <h2>DOCTOR LOGIN</h2>
@@ -257,12 +277,17 @@
                 e.preventDefault();
 
                 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                // Reset previous errors
+                $(".error").text("");
+
                 const data = {
                     username: $('#model-username').val(),
                     password: $('#model-password').val(),
                 };
 
-                $('.error-message').remove();
+                // Show loader before sending AJAX request
+                $('#loader').css('display', 'flex');
 
                 $.ajax({
                     url: `/doctor/login/`,
@@ -274,62 +299,28 @@
                     },
                 })
                 .done(function(response) {
-                    showMessage("success", "Doctor Login successful");
-                    setTimeout(() => {
-                        window.location.href = '/doctor/dashboard/';
-                    }, 1000);
+                    $('#loader').css('display', 'none');
+                    alert('Doctor Login successful');
+                    window.location.href = '/doctor/dashboard/';
                 })
                 .fail(function(xhr) {
-                    let errorMessage = "Unknown error occurred";
+                    // Hide loader
+                    $('#loader').css('display', 'none');
 
-                    if (xhr.responseJSON) {
-                        if (xhr.responseJSON.errors) {
-                            if (xhr.responseJSON.errors.username) {
-                                $('#model-username').after(`<span class="error-message">${xhr.responseJSON.errors.username[0]}</span>`);
-                            }
-                            if (xhr.responseJSON.errors.password) {
-                                $('#model-password').after(`<span class="error-message">${xhr.responseJSON.errors.password[0]}</span>`);
-                            }
-                        }
-                        if (xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
-                        }
-                    } else {
-                        switch (xhr.status) {
-                            case 400:
-                                errorMessage = "Invalid credentials. Please check your details.";
-                                break;
-                            case 401:
-                                errorMessage = "Unauthorized: Invalid username or password.";
-                                break;
-                            case 403:
-                                errorMessage = "Access Denied. Contact the admin.";
-                                break;
-                            case 404:
-                                errorMessage = "Login endpoint not found.";
-                                break;
-                            case 500:
-                                errorMessage = "Server error. Please try again later.";
-                                break;
-                        }
+                    const errors = xhr.responseJSON?.errors || {};
+
+                    if (errors.username) {
+                        $('#emailError').text(errors.username);
                     }
-                    showMessage("error", errorMessage);
+                    if (errors.password) {
+                        $('#passwordError').text(errors.password);
+                    }
+                    if (errors.authorization) {
+                        alert(errors.authorization);
+                    }
                 });
             });
-            function showMessage(type, message) {
-            $('.message-box').remove();
-
-            $('.btn-container').append(`<div class="message-box ${type}">${message}</div>`);
-
-            $('.message-box').hide().fadeIn(500);
-
-            setTimeout(() => {
-                $('.message-box').fadeOut(500, function () {
-                    $(this).remove();
-                });
-            }, 3000);
-        }
-    });
+        });
 </script>
 </body>
 </html>

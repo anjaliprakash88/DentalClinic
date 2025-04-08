@@ -253,10 +253,11 @@
             <a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a>
         </div>
         <div class="menu-item">
-            <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
-               <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
+            <a href="#" class="view-patients" data-doctor-id="{{ doctor.id }}">
+                <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
             </a>
         </div>
+
     </div>
 </nav>
 
@@ -625,6 +626,20 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+<!---------------REDIRECT VIEW PATIENTS--------------->
+$(document).on("click", ".view-patients", function (e) {
+   e.preventDefault();
+
+    let doctorId = $(this).data("doctor-id");
+    if (doctorId) {
+        window.location.href = `/doctor/patients/${doctorId}/`;
+    } else {
+        alert("Doctor ID not found!");
+    }
+});
+
+
+
     $(document).on("click", "#back-button", function () {
         window.location.href = "{% url 'doctor-dashboard' %}";
     });
@@ -992,7 +1007,7 @@ $(document).ready(function() {
         }
     });
 
-    console.log("Collected Dentition Data:", dentitionData);  // ✅ Debugging Line
+    console.log("Collected Dentition Data:", dentitionData);
 
 
 
