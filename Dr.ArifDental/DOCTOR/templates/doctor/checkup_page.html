@@ -268,9 +268,17 @@
 
 
 <!--------------LAST BOOKING ------------->
-<button class="btn btn-primary last" style="background: #1c3342;" data-id="{{ booking_id|default:'' }}">
-    <i class="fa-solid fa-info" style="color: #ffffff;"></i>
-</button>
+{% if previous_booking_id %}
+    <button class="btn btn-primary last" style="background: #1c3342;" data-id="{{ previous_booking_id }}">
+        <i class="fa-solid fa-info" style="color: #ffffff;"></i>
+    </button>
+{% else %}
+    <button class="btn btn-secondary" style="background: #999;" disabled title="No previous history available">
+        <i class="fa-solid fa-info" style="color: #ffffff;"></i>
+    </button>
+{% endif %}
+
+
 
 <!--------------------------------------->
 
@@ -615,10 +623,6 @@
 
 
 
-
-
-
-
 <!-- jQuery, Bootstrap JS, DataTables -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -656,16 +660,17 @@ $(document).on("click", ".view-patients", function (e) {
 });
 
 
-
-  $(document).on("click", ".last", function () {
+<!---------------PREVIOUS BOOKING DETAILS--------------->
+$(document).on("click", ".last", function () {
     let bookingId = $(this).data("id");
 
     if (bookingId) {
         window.location.href = `/doctor/previous-treatment/${bookingId}/`;
     } else {
-        alert("Booking ID is missing!");
+        alert("No previous treatment history found for this patient.");
     }
 });
+
 
 
 

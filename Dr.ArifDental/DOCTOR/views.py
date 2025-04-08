@@ -193,6 +193,13 @@ class DentalExaminationCheckup(APIView):
         examination_serializer = DentalExaminationSerializer(examination)
         patient_name = patient.full_name
 
+        previous_booking = (
+            PatientBooking.objects
+            .filter(patient=patient, appointment_date__lt=booking.appointment_date)
+            .order_by('-appointment_date', '-id')  # latest previous
+            .first()
+        )
+
         dentition = Dentition.objects.filter(patient=patient, booking=booking).first()
         if dentition:
             dentition_serializer = DentitionSerializer(dentition)
@@ -210,6 +217,7 @@ class DentalExaminationCheckup(APIView):
         if format == 'json':
             return Response({
                 "dentition": dentition_serializer.data if dentition_serializer else {},
+                "previous_booking_id": previous_booking.id if previous_booking else None,
                 "examination": examination_serializer.data,
                 "treatment_bill": treatment_bill_serializer.data,
                 "treatments": DentitionTreatmentSerializer(treatments, many=True).data
@@ -220,6 +228,7 @@ class DentalExaminationCheckup(APIView):
             "examination": examination_serializer.data,
             "booking": booking,
             'doctor': doctor,
+            "previous_booking_id": previous_booking.id if previous_booking else None,
             "booking_id": booking.id,
             "patient_name": patient_name,
             "treatments": treatments,
