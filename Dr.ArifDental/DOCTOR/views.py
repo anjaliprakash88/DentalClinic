@@ -36,37 +36,30 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 
 
-
+# ---------------LAST APPOINTMENT PREVIEW-------------
 class LastAppointmentPreview(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'doctor/last_appointment_preview.html'
 
     def get(self, request, booking_id, format=None):
-        # Current booking and patient
-        booking = get_object_or_404(PatientBooking, id=booking_id)
-        patient = booking.patient
+        last_booking = get_object_or_404(PatientBooking, id=booking_id)
+        patient = last_booking.patient
 
-        # ✅ Get LAST booking BEFORE today
-        last_booking = PatientBooking.objects.filter(
+        current_booking = PatientBooking.objects.filter(
             patient=patient,
-            appointment_date__lt=date.today()
-        ).order_by('-appointment_date').first()
+            appointment_date__gte=date.today()
+        ).order_by('appointment_date').first()
 
-        # ⛔ No last booking found
-        if not last_booking:
+        if not current_booking:
             return render(request, self.template_name, {
                 "data": {},
-                "message": "No previous appointment found."
+                "message": "No current appointment found."
             })
 
-        # Serialize last booking
         serializer = LastAppointmentPreviewSerializer(last_booking)
         print("Last appointment data:", serializer.data)
 
-        # Dentition Data
-        dentitions = Dentition.objects.filter(
-            booking=last_booking
-        )
+        dentitions = Dentition.objects.filter(booking=last_booking)
 
         dentition_data = []
         for d in dentitions:
@@ -80,7 +73,6 @@ class LastAppointmentPreview(APIView):
 
         dentition_data_json = json.dumps(dentition_data)
 
-        # Prescription Data
         prescriptions = MedicinePrescription.objects.filter(booking=last_booking)
 
         prescription_data = [
@@ -99,7 +91,6 @@ class LastAppointmentPreview(APIView):
 
         prescription_data_json = json.dumps(prescription_data)
 
-        # All treatment options
         treatments = DentitionTreatment.objects.all()
 
         if format == 'json' or request.headers.get('Accept') == 'application/json':
@@ -107,7 +98,7 @@ class LastAppointmentPreview(APIView):
 
         return render(request, self.template_name, {
             "data": serializer.data,
-            "booking": last_booking,
+            "booking_id": current_booking.id,
             "last_booking_id": last_booking.id,
             "patient_name": patient.full_name,
             "appointment_date": last_booking.appointment_date,
@@ -119,8 +110,7 @@ class LastAppointmentPreview(APIView):
             "prescription_data_json": prescription_data_json,
         })
 
-
-
+# --------------TODAY PREVIEW--------------
 class TodayPreview(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = "doctor/today_preview.html"

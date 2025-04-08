@@ -187,92 +187,88 @@
 <body>
 
 
-<!-- Top Navbar -->
+<!--------------- Top Navbar ---------------->
 <div class="top-navbar d-flex justify-content-between align-items-center">
     <h1 class="dashboard-title ms-center"></h1>
     <div class="d-flex justify-content-end">
-    <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
-        aria-label="Close" id="closeCheckup" data-booking-id="{{ booking.id }}"></button>
+       <button type="button" class="btn-close mb-2"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            id="closeCheckup"
+            data-booking-id="{{ booking_id }}"></button>
+    </div>
 </div>
 
 
-</div>
-
-
-<!-- Content -->
+<!-------------- Content ---------------->
 <div class="container" style="margin-top:80px">
     <div class="card mb-4">
-    <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">Last Appointment</h4>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <p><strong>Patient Name:</strong> {{ booking.patient.full_name }}</p>
-                <p><strong>Last Appointment Date:</strong> {{ booking.appointment_date }}</p>
-            </div>
-            <div class="col-md-6">
-                <p><strong>Email:</strong> {{ booking.patient.email }}</p>
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Last Appointment</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Patient Name:</strong> {{ patient_name }}</p>
+                    <p><strong>Last Appointment Date:</strong> {{ appointment_date }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Email:</strong> {{ patient_email }}</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-
 
 
 <!--------------- DENTAL EXAMINATION --------------->
-<h3 class="text-start fw-bold">Dental Examination</h3>
-
-<table class="table table-bordered table-striped">
-    <tbody>
-        <tr>
-            <th class="w-25 text-center align-middle">Chief Complaints</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.chief_complaints }}</div></td>
-        </tr>
-        <tr>
-            <th class="w-25 text-center align-middle">History of Present Illness</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.history_of_present_illness }}</div></td>
-        </tr>
-        <tr>
-            <th class="w-25 text-center align-middle">Medical History</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.medical_history }}</div></td>
-        </tr>
-        <tr>
-            <th class="w-25 text-center align-middle">Personal History</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.personal_history }}</div></td>
-        </tr>
-        <tr>
-            <th class="w-25 text-center align-middle">General Examination</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.general_examination }}</div></td>
-        </tr>
-        <tr>
-            <th class="w-25 text-center align-middle">General Examination (Intraoral)</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.general_examination_intraoral }}</div></td>
-        </tr>
-        <tr>
-            <th class="w-25 text-center align-middle">Local Examination (Extraoral)</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.local_examination_extraoral }}</div></td>
-        </tr>
-        <tr>
-            <th class="w-25 text-center align-middle">Soft Tissue</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.soft_tissue }}</div></td>
-        </tr>
-        <tr>
-            <th class="w-25 text-center align-middle">Periodontal Status</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.periodontal_status }}</div></td>
-        </tr>
-        <tr>
-            <th class="w-25 text-center align-middle">Treatment Plan</th>
-            <td><div class="form-control bg-white">{{ data.dental_examination.treatment_plan }}</div></td>
-        </tr>
-    </tbody>
-</table>
-
-
+    <h3 class="text-start fw-bold">Dental Examination</h3>
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th class="w-25 text-center align-middle">Chief Complaints</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.chief_complaints }}</div></td>
+            </tr>
+            <tr>
+                <th class="w-25 text-center align-middle">History of Present Illness</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.history_of_present_illness }}</div></td>
+            </tr>
+            <tr>
+                <th class="w-25 text-center align-middle">Medical History</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.medical_history }}</div></td>
+            </tr>
+            <tr>
+                <th class="w-25 text-center align-middle">Personal History</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.personal_history }}</div></td>
+            </tr>
+            <tr>
+                <th class="w-25 text-center align-middle">General Examination</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.general_examination }}</div></td>
+            </tr>
+            <tr>
+                <th class="w-25 text-center align-middle">General Examination (Intraoral)</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.general_examination_intraoral }}</div></td>
+            </tr>
+            <tr>
+                <th class="w-25 text-center align-middle">Local Examination (Extraoral)</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.local_examination_extraoral }}</div></td>
+            </tr>
+            <tr>
+                <th class="w-25 text-center align-middle">Soft Tissue</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.soft_tissue }}</div></td>
+            </tr>
+            <tr>
+                <th class="w-25 text-center align-middle">Periodontal Status</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.periodontal_status }}</div></td>
+            </tr>
+            <tr>
+                <th class="w-25 text-center align-middle">Treatment Plan</th>
+                <td><div class="form-control bg-white">{{ data.dental_examination.treatment_plan }}</div></td>
+            </tr>
+        </tbody>
+    </table>
 
 <!---------------DENTITION--------------->
- <hr class="w-100 mb-5 mt-5 mx-auto">
+    <hr class="w-100 mb-5 mt-5 mx-auto">
     <h3 class="text-start fw-bold">Dentition</h3>
     <div class="dental-chart">
         <div class="quadrant">
@@ -439,19 +435,20 @@
         </div>
 
        <div id="dentition-container" class="bg-light p-4 rounded shadow">
-    <div class="card mb-4 border-0 shadow-sm">
-        <div class="card-header">
-            <div id="dentition-items-container">
-                <!-- Dynamic dentition entries will be displayed here -->
+       <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header">
+                <div id="dentition-items-container">
+                    <!-- Dynamic dentition entries will be displayed here -->
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+         </div>
+       </div>
+
 
 
 
 <!---------------MEDICAL PRESCRIPTION--------------->
-     <hr class="w-100 mx-auto mt-5 mb-5">
+        <hr class="w-100 mx-auto mt-5 mb-5">
 
     <h3 class="text-start fw-bold">Prescription</h3>
 
@@ -462,29 +459,7 @@
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <!-- jQuery, Bootstrap JS, DataTables -->
@@ -497,12 +472,10 @@
 <script>
 
 $(document).ready(function() {
-    // Get booking ID
     const bookingId = $("#booking_id").val();
 
     // --------------------- APPOINTMENT DETAILS ---------------------
     function initializeTodayAppointment() {
-        // This will use the data already passed from the view to display in the HTML structure
         console.log("Initializing today's appointment view");
     }
 
@@ -513,42 +486,31 @@ $(document).ready(function() {
         let selectedTreatment = "";
         let selectedTreatmentColor = "";
 
-        console.log("Dentition Chart Initialization Started");
 
-        // Clear previous event handlers
         $(".tooth").off("click");
         $(".treatment-item").off("click");
         $("#add-medicine-btn").off("click");
         $(document).off("click", ".remove-entry");
 
-        // Initialize teeth to healthy status
         $(".tooth").each(function() {
             $(this).attr("data-status", "healthy");
             $(this).css("background-color", "#229954");
         });
-         console.log("All teeth set to healthy");
 
-        // Load existing dentition data if available
         try {
             if (window.existingDentitionData) {
-                console.log("Existing dentition data found:", window.existingDentitionData);
                 for (const dentition of window.existingDentitionData) {
-                    console.log("Processing tooth:", dentition.tooth_id);
-                    console.log("Treatment:", dentition.treatment);
-                    console.log("Color:", dentition.color_code);
                     const teethArray = [dentition.tooth_id];
 
                     const treatmentName = dentition.treatment;
-                    const treatmentColor = dentition.color_code || "#FF0000"; // Default to red if no color
+                    const treatmentColor = dentition.color_code || "#FF0000";
 
-                    // Apply treatment colors to teeth
                     for (const toothNumber of teethArray) {
                         const toothElement = $(`.tooth[data-tooth='${toothNumber}']`);
                         toothElement.attr("data-status", treatmentName);
                         toothElement.css("background-color", treatmentColor);
                     }
 
-                    // Add entry to the dentition items container
                     const newEntry = `
                         <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
                             <div class="flex-grow-1">
@@ -577,7 +539,6 @@ $(document).ready(function() {
         let medicineCount = 1;
         console.log("Prescription management initialized.");
 
-        // Load existing prescriptions
         function loadExistingPrescriptions() {
             console.log("Loading existing prescriptions...");
             try {
@@ -640,7 +601,6 @@ $(document).ready(function() {
 
 
         function createMedicineItemHtml(itemId, medicineId, medicineName, dosageDays, medicineTimes, mealTimes) {
-            // Helper function to create checkbox with checked state
             function createCheckbox(value, name, isChecked) {
                 return `
                     <div class="form-check form-check-inline">
@@ -650,13 +610,11 @@ $(document).ready(function() {
                 `;
             }
 
-            // Create medicine time checkboxes
             const medicineTimeOptions = ['Morning', 'Afternoon', 'Evening', 'Night'];
             const medicineTimeCheckboxes = medicineTimeOptions.map(time =>
                 createCheckbox(time, `medicine_time_${itemId}`, medicineTimes.includes(time))
             ).join('');
 
-            // Create meal time checkboxes
             const mealTimeOptions = ['Before Meal', 'After Meal'];
             const mealTimeCheckboxes = mealTimeOptions.map(time =>
                 createCheckbox(time, `meal_time_${itemId}`, mealTimes.includes(time))
@@ -706,13 +664,13 @@ $(document).ready(function() {
         }
 
 
-        // Add medicine button click handler
+
         $('#add-medicine-btnn').on('click', addMedicineItem);
 
-        // Load existing prescriptions first
+
         loadExistingPrescriptions();
 
-        // If no prescriptions exist, add one empty item
+
         if ($('#medicine-items-container').children().length === 0) {
             addMedicineItem();
         }
@@ -723,14 +681,12 @@ $(document).ready(function() {
 
 
     // --------------------- DATA INITIALIZATION ---------------------
-    // Use this to extract the data from the serialized response
+
     function initializePageData() {
         try {
-            // Use a script tag to pass data from Django template to JavaScript
             const serializedData = $("#page-data").data("content");
 
             if (serializedData) {
-                // Store data for different sections
                 window.existingDentitionData = serializedData.dentition ? [serializedData.dentition] : [];
                 window.existingPrescriptionData = serializedData.medicine_prescription ?
                     [serializedData.medicine_prescription] : [];
@@ -766,13 +722,14 @@ $(document).ready(function() {
 
 
 
-
+<!---------------REDIRECTING CHECKUP PAGE--------------->
 document.addEventListener("DOMContentLoaded", function () {
     var closeButton = document.getElementById("closeCheckup");
 
     if (closeButton) {
         closeButton.addEventListener("click", function () {
-            var bookingId = this.getAttribute("data-booking-id"); // Get Booking ID from button
+            var bookingId = this.getAttribute("data-booking-id");
+            console.log(bookingId)
 
             if (bookingId) {
                 window.location.href = `/doctor/checkup/${bookingId}/`;
@@ -780,12 +737,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Booking ID not found!");
             }
         });
-    } else {
-        console.error("Close button not found in the DOM!");
     }
 });
 
 </script>
-
 </body>
 </html>
