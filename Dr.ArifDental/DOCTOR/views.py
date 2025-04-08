@@ -355,9 +355,6 @@ class DentalExaminationCheckup(APIView):
             "created_prescriptions": created_prescriptions
         }, status=status.HTTP_200_OK)
 
-
-
-
 #---------------CHANGE DOCTOR PASSWORD---------------
 class ChangeDoctorPassword(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
@@ -375,7 +372,6 @@ class ChangeDoctorPassword(APIView):
             return Response({"message": "Password changed successfully"}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # ----------------------------LOGOUT VIEW------------------------------#
 class LogoutView(APIView):
@@ -454,7 +450,7 @@ class DoctorPatientListView(APIView):
             if booking.patient.id not in patient_data:
                 patient_data[booking.patient.id] = {
                     "patient": booking.patient,
-                    "booking_id": booking.id  # save the latest booking
+                    "booking_id": booking.id
                 }
 
         patients_with_bookings = list(patient_data.values())

@@ -3,6 +3,18 @@ from RECEPTION.models import Patient, PatientBooking
 from SUPER_ADMIN.models import PharmaceuticalMedicine
 from decimal import Decimal
 
+# ---------------DIAGNOSIS---------------
+class Diagnosis(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='diagnoses')
+    booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name='diagnoses')
+
+    diagnosis = models.TextField(blank=True, null=True, help_text="Enter diagnosis summary")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Diagnosis for {self.patient.full_name} on {self.booking.appointment_date}"
 
 # -----------------DENTAL EXAMINATION--------------
 class DentalExamination(models.Model):
@@ -40,7 +52,6 @@ class DentitionTreatment(models.Model):
     def __str__(self):
         return self.name
 
-
 class Dentition(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='dentitions')
     booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name='dentitions')
@@ -61,8 +72,7 @@ class Dentition(models.Model):
     def __str__(self):
         return f"Dentition for {self.patient.full_name} - Booking {self.booking.id}"
 
-
-# -------------------- Medicine Prescription Model --------------------
+# ---------------MEDICINE PRESCRIPTION-------------
 class MedicinePrescription(models.Model):
     booking = models.ForeignKey(
         PatientBooking, on_delete=models.CASCADE, related_name="prescriptions"
@@ -78,7 +88,7 @@ class MedicinePrescription(models.Model):
     def __str__(self):
         return self.medicine.medicine_name
 
-
+# ---------------TREATMENT BILL-------------
 class TreatmentBill(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     booking = models.ForeignKey(PatientBooking, on_delete=models.CASCADE, related_name="treatment_bills")
