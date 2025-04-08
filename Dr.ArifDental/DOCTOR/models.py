@@ -111,4 +111,3 @@ class TreatmentBill(models.Model):
     def _str_(self):
         return f"Bill for {self.booking.patient.full_name} - ${self.total_amount}"
 
-
