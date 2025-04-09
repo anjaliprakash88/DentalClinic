@@ -486,58 +486,92 @@ $(document).ready(function() {
 
 
     // --------------------- DENTITION MANAGEMENT ---------------------
-    function initializeDentitionChart() {
+function initializeDentitionChart() {
+    $(document).ready(function () {
         let selectedTeeth = [];
         let selectedTreatment = "";
         let selectedTreatmentColor = "";
-
+        let dentitionCount = 0;
+        let activeFormId = null;
 
         $(".tooth").off("click");
         $(".treatment-item").off("click");
         $("#add-medicine-btn").off("click");
-        $(document).off("click", ".remove-entry");
+        $(document).off("click", ".remove-dentition");
+        $(document).off("click", ".dentition-item");
 
-        $(".tooth").each(function() {
+        // Initialize teeth to healthy
+        $(".tooth").each(function () {
             $(this).attr("data-status", "healthy");
             $(this).css("background-color", "#229954");
         });
 
+        // Load existing dentition data if available
         try {
             if (window.existingDentitionData) {
+                $("#dentition-items-container").empty();
+
+                // Filter out "Healthy" treatments from UI display
+                const nonHealthyDentitions = window.existingDentitionData.filter(
+                    dentition => dentition.treatment !== "Healthy"
+                );
+
+                // Create a map to track which teeth already have treatments
+                const teethTreatmentMap = {};
+
+                // First pass: map each tooth to its treatment
                 for (const dentition of window.existingDentitionData) {
-                    const teethArray = [dentition.tooth_id];
+                    const toothId = dentition.tooth_id;
+                    teethTreatmentMap[toothId] = {
+                        treatment: dentition.treatment,
+                        color: dentition.color_code || "#229954",  // Use green for healthy
+                        note: dentition.note || ""
+                    };
+                }
 
-                    const treatmentName = dentition.treatment;
-                    const treatmentColor = dentition.color_code || "#FF0000";
+                // Apply treatments to teeth and create UI entries only for non-healthy teeth
+                for (const [toothId, data] of Object.entries(teethTreatmentMap)) {
+                    const toothElement = $(`.tooth[data-tooth='${toothId}']`);
+                    toothElement.attr("data-status", data.treatment);
+                    toothElement.css("background-color", data.treatment === "Healthy" ? "#229954" : data.color);
 
-                    for (const toothNumber of teethArray) {
-                        const toothElement = $(`.tooth[data-tooth='${toothNumber}']`);
-                        toothElement.attr("data-status", treatmentName);
-                        toothElement.css("background-color", treatmentColor);
+                    if (data.treatment !== "Healthy") {
+                        const id = dentitionCount++;
+
+                        const newEntry = `
+                            <div class="dentition-item p-3 mb-3 border rounded bg-white shadow-sm"
+                                 id="dentition-item-${id}" data-id="${id}">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="text" name="selected_teeth[]" class="form-control" value="${toothId}" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" name="selected_treatment[]" class="form-control" value="${data.treatment}"
+                                        style="background-color: ${data.color}; color: white; padding: 10px; border-radius: 5px; border: none;" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                       <textarea name="treatment_note[]" class="form-control" placeholder="Add a note..." rows="1">${data.note}</textarea>
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-end">
+                                        <button type="button" class="btn btn-danger remove-dentition" data-id="${id}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        $("#dentition-items-container").append(newEntry);
+                        $(`#dentition-item-${id}`).data("treatment-color", data.color);
+                        $(`#dentition-item-${id}`).data("tooth-colors", { [toothId]: data.color });
                     }
-
-                    const newEntry = `
-                        <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
-                            <div class="flex-grow-1">
-                                <input type="text" name="selected_teeth[]" class="form-control" value="${teethArray.join(', ')}" readonly>
-                            </div>
-                            <div class="flex-grow-1">
-                                <input type="text" name="selected_treatment[]" class="form-control" value="${treatmentName}"
-                                    style="background-color: ${treatmentColor}; color: white; padding: 10px; border-radius: 5px; border: none;" readonly>
-                            </div>
-
-                        </div>
-                    `;
-
-                    $("#dentition-items-container").append(newEntry);
                 }
             }
         } catch (error) {
             console.error("Error loading dentition data:", error);
         }
-
-
-    }
+    }); // <-- closes $(document).ready
+} // <-- closes function
 
     // --------------------- PRESCRIPTION MANAGEMENT ---------------------
     function initializePrescriptionManagement() {
