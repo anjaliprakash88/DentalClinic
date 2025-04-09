@@ -58,7 +58,6 @@ class LastAppointmentPreview(APIView):
             })
 
         serializer = LastAppointmentPreviewSerializer(last_booking)
-        print("Last appointment data:", serializer.data)
 
         dentitions = Dentition.objects.filter(booking=last_booking)
 

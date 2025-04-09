@@ -221,48 +221,49 @@
 
 
 <!--------------- DENTAL EXAMINATION --------------->
+     <hr class="w-100 mb-5 mt-5 mx-auto">
     <h3 class="text-start fw-bold">Dental Examination</h3>
     <table class="table table-bordered table-striped">
         <tbody>
             <tr>
                 <th class="w-25 text-center align-middle">Chief Complaints</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.chief_complaints }}</div></td>
+                <td>{{ data.dental_examination.chief_complaints }}</td>
             </tr>
             <tr>
                 <th class="w-25 text-center align-middle">History of Present Illness</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.history_of_present_illness }}</div></td>
+                <td>{{ data.dental_examination.history_of_present_illness }}</td>
             </tr>
             <tr>
                 <th class="w-25 text-center align-middle">Medical History</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.medical_history }}</div></td>
+                <td>{{ data.dental_examination.medical_history }}</td>
             </tr>
             <tr>
                 <th class="w-25 text-center align-middle">Personal History</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.personal_history }}</div></td>
+                <td>{{ data.dental_examination.personal_history }}</td>
             </tr>
             <tr>
                 <th class="w-25 text-center align-middle">General Examination</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.general_examination }}</div></td>
+                <td>{{ data.dental_examination.general_examination }}</td>
             </tr>
             <tr>
                 <th class="w-25 text-center align-middle">General Examination (Intraoral)</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.general_examination_intraoral }}</div></td>
+                <td>{{ data.dental_examination.general_examination_intraoral }}</td>
             </tr>
             <tr>
                 <th class="w-25 text-center align-middle">Local Examination (Extraoral)</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.local_examination_extraoral }}</div></td>
+                <td>{{ data.dental_examination.local_examination_extraoral }}</td>
             </tr>
             <tr>
                 <th class="w-25 text-center align-middle">Soft Tissue</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.soft_tissue }}</div></td>
+                <td>{{ data.dental_examination.soft_tissue }}</td>
             </tr>
             <tr>
                 <th class="w-25 text-center align-middle">Periodontal Status</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.periodontal_status }}</div></td>
+                <td>{{ data.dental_examination.periodontal_status }}</td>
             </tr>
             <tr>
                 <th class="w-25 text-center align-middle">Treatment Plan</th>
-                <td><div class="form-control bg-white">{{ data.dental_examination.treatment_plan }}</div></td>
+                <td class="text-center">{{ data.dental_examination.treatment_plan }}</td>
             </tr>
         </tbody>
     </table>
@@ -434,23 +435,27 @@
                 </div>
             </div>
 
-       <div id="dentition-container" class="bg-light p-4 rounded shadow">
-       <div class="card mb-4 border-0 shadow-sm">
-            <div class="card-header">
-                <div id="dentition-items-container">
-                    <!-- Dynamic dentition entries will be displayed here -->
-                </div>
-            </div>
-         </div>
+       <div id="dentition-container" class="bg-light p-4 rounded">
+           <div id="dentition-items-container">
+               <!-- Dynamic dentition entries will be displayed here -->
+           </div>
        </div>
+    </div>
 
-
-
+<!--------------- DIAGNOSIS --------------->
+     <hr class="w-100 mb-5 mt-5 mx-auto">
+    <h3 class="text-start fw-bold">Diagnosis</h3>
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td>{{ data.diagnosis.diagnosis }}</td>
+            </tr>
+        </tbody>
+    </table>
 
 <!---------------MEDICAL PRESCRIPTION--------------->
         <hr class="w-100 mx-auto mt-5 mb-5">
-
-    <h3 class="text-start fw-bold">Prescription</h3>
+        <h3 class="text-start fw-bold">Prescription</h3>
 
         <div class="card mb-4 border-0 shadow-sm">
             <div class="card-header">
@@ -459,7 +464,7 @@
                 </div>
             </div>
         </div>
-    </div>
+
 
 
 <!-- jQuery, Bootstrap JS, DataTables -->
@@ -621,30 +626,35 @@ $(document).ready(function() {
             ).join('');
 
             return `
-                <div class="medicine-item p-3 mb-3 border rounded bg-white shadow-sm" id="medicine-item-${itemId}">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label class="form-label">Medicine</label>
-                            <input type="text" class="form-control" value="${medicineName || 'N/A'}" readonly>
+                <table class="medicine-item table table-bordered table-striped" id="medicine-item-${itemId}">
+                    <tr>
+                         <th><label class="form-label">Medicine</label></th>
+                         <td>
+                             <input type="text" class="form-control" value="${medicineName || 'N/A'}" readonly>
+                         </td>
+                    </tr>
 
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Days</label>
-                            <input type="number" id="dosage_days_${itemId}" class="form-control" name="dosage_days_${itemId}" min="1" value="${dosageDays || ''}">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label d-block">Medicine Times</label>
-                            ${medicineTimeCheckboxes}
-                        </div>
+                    <tr>
+                        <th><label class="form-label">Days</label></th>
+                        <td>
+                              <input type="number" id="dosage_days_${itemId}" class="form-control" name="dosage_days_${itemId}" min="1" value="${dosageDays || ''}">
+                        </td>
+                    </tr>
 
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-12">
-                            <label class="form-label">Meal Time</label>
+                    <tr>
+                        <th><label class="form-label d-block">Medicine Times</label></th>
+                        <td>
+                             ${medicineTimeCheckboxes}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th> <label class="form-label d-block">Meal Time</label></th>
+                        <td>
                             ${mealTimeCheckboxes}
-                        </div>
-                    </div>
-                </div>
+                        </td>
+                    </tr>
+                </table>
             `;
         }
 

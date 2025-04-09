@@ -516,28 +516,24 @@
                     <p>No treatments available.</p>
                     {% endfor %}
                 </div>
-                <form id="dentition-container" class="bg-light p-4 rounded shadow">
+                <form id="dentition-container" class="bg-light p-4 rounded">
                     {% csrf_token %}
-                    <div class="card mb-4 border-0 shadow-sm">
-                        <div class="card-header">
-                            <div id="dentition-items-container">
-                                <!-- Dynamic dentition entries will be added here -->
-                            </div>
-
-                            <!-- Hidden Inputs to Store Selection -->
-                            <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
-                                <div class="flex-grow-1">
-                                    <input type="text" id="selectedTeeth" class="form-control mt-2" placeholder="Selected Teeth" readonly>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <input type="text" id="selectedTreatment" class="form-control mt-2" placeholder="Selected Treatment" readonly>
-                                </div>
-                                <button type="button" id="add-medicine-btn" style="background:#1c3342; color: #fff;"
-                                    class="btn mt-2"><i class="bi bi-plus-lg"></i> Add</button>
-                                <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & Proceed</button>
-                            </div>
+                        <div id="dentition-items-container">
+                            <!-- Dynamic dentition entries will be added here -->
                         </div>
-                    </div>
+
+                        <!-- Hidden Inputs to Store Selection -->
+                        <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
+                            <div class="flex-grow-1">
+                                <input type="text" id="selectedTeeth" class="form-control mt-2" placeholder="Selected Teeth" readonly>
+                            </div>
+                            <div class="flex-grow-1">
+                                <input type="text" id="selectedTreatment" class="form-control mt-2" placeholder="Selected Treatment" readonly>
+                            </div>
+                            <button type="button" id="add-medicine-btn" style="background:#1c3342; color: #fff;"
+                                class="btn mt-2"><i class="bi bi-plus-lg"></i> Add</button>
+                            <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & Proceed</button>
+                        </div>
                 </form>
             </div>
         </div>
