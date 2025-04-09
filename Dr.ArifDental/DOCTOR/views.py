@@ -18,7 +18,8 @@ from .serializer import (DoctorLoginSerializer,
                          PatientSerializer,
                          DentitionSerializer,
                          TodayPreviewSerializer,
-                         DentitionTreatmentSerializer)
+                         DentitionTreatmentSerializer,
+                         DiagnosisSerializer)
 from RECEPTION.serializer import PatientBookingSerializer
 from SUPER_ADMIN.models import Doctor, PharmaceuticalMedicine
 from RECEPTION.models import PatientBooking, Patient
@@ -27,7 +28,8 @@ from .models import (DentalExamination,
                      Dentition,
                      TreatmentBill,
                      DentitionTreatment,
-                     MedicinePrescription)
+                     MedicinePrescription,
+                     Diagnosis)
 from django.shortcuts import get_object_or_404,render
 from django.utils.timezone import localdate
 from rest_framework.permissions import IsAuthenticated
@@ -35,8 +37,7 @@ import json
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
-
-# ---------------LAST APPOINTMENT PREVIEW-------------
+# -------------LAST APPOINTMENT PREVIEW------------
 class LastAppointmentPreview(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'doctor/last_appointment_preview.html'
@@ -110,7 +111,7 @@ class LastAppointmentPreview(APIView):
             "prescription_data_json": prescription_data_json,
         })
 
-# --------------TODAY PREVIEW--------------
+# -------------TODAY PREVIEW------------
 class TodayPreview(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = "doctor/today_preview.html"
@@ -170,7 +171,7 @@ class TodayPreview(APIView):
             "prescription_data_json": prescription_data_json
         })
 
-# ----------------------------------
+# ---------------DENTAL EXAMINATION--------------
 class DentalExaminationCheckup(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = "doctor/checkup_page.html"
@@ -186,7 +187,7 @@ class DentalExaminationCheckup(APIView):
         previous_booking = (
             PatientBooking.objects
             .filter(patient=patient, appointment_date__lt=booking.appointment_date)
-            .order_by('-appointment_date', '-id')  # latest previous
+            .order_by('-appointment_date', '-id')
             .first()
         )
 
@@ -289,6 +290,16 @@ class DentalExaminationCheckup(APIView):
             )
             created_dentitions.append(dentition)
 
+        diagnosis_text = request.data.get("diagnosis", "").strip()
+        if diagnosis_text:
+            diagnosis_obj, created = Diagnosis.objects.update_or_create(
+                patient=patient,
+                booking=booking,
+                defaults={"diagnosis": diagnosis_text}
+            )
+        else:
+            diagnosis_obj = None
+
         medicines_data = request.data.get('medicines', [])
         created_prescriptions = []
         errors = []
@@ -321,18 +332,11 @@ class DentalExaminationCheckup(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        print("Booking:", booking)
-        print("Examination:", examination)
-        print("Patient:", patient)
-
         treatment_bill, created = TreatmentBill.objects.get_or_create(
             booking=booking,
             dental_examination=examination,
             defaults={'patient': patient, 'total_amount': 0.00, 'paid_amount': 0.00, 'balance_amount': 0.00}
         )
-
-        print("Created New:", created)
-        print("Treatment Bill:", treatment_bill)
 
         def safe_decimal(value, default=Decimal('0.00')):
             try:
@@ -351,11 +355,12 @@ class DentalExaminationCheckup(APIView):
         return Response({
             "message": "Checkup details and dentition data saved successfully!",
             "examination": DentalExaminationSerializer(examination).data,
+            "diagnosis": DiagnosisSerializer(diagnosis_obj).data if diagnosis_obj else None,
             "treatment_bill": TreatmentBillSerializer(treatment_bill).data,
             "created_prescriptions": created_prescriptions
         }, status=status.HTTP_200_OK)
 
-#---------------CHANGE DOCTOR PASSWORD---------------
+#------------CHANGE DOCTOR PASSWORD------------
 class ChangeDoctorPassword(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'doctor/doctor_dashboard.html'
@@ -373,7 +378,7 @@ class ChangeDoctorPassword(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# ----------------------------LOGOUT VIEW------------------------------#
+# ---------------LOGOUT ---------------
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -382,7 +387,7 @@ class LogoutView(APIView):
         request.user.auth_token.delete()
         return Response({"message": "Successfully logged out"}, status=200)
 
-#--------------DOCTOR PROFILE VIEW---------------
+# ---------------DOCTOR PROFILE ---------------
 class DoctorProfileView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'doctor/doctor_profile.html'
@@ -434,8 +439,7 @@ class DoctorProfileView(APIView):
         doctor.save()
         return Response({"message": "Doctor profile updated successfully"}, status=status.HTTP_200_OK)
 
-
-# ------------------------------------------------
+# ---------------DOCTOR PATIENT LIST---------------
 class DoctorPatientListView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'doctor/patient_list.html'
@@ -471,8 +475,7 @@ class DoctorPatientListView(APIView):
             ]
         })
 
-
-#-----------------------------------------------------------
+#---------------MEDICINE---------------
 class MedicineAPIView(APIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = "doctor/checkup_page.html"
@@ -488,8 +491,7 @@ class MedicineAPIView(APIView):
         serializer = MedicineSerializer(medicines, many=True)
         return Response({'medicines': serializer.data})
 
-
-# -------------------------- DOCTOR DASHBOARD --------------------------
+# ---------------DOCTOR DASHBOARD ---------------
 class DoctorDashboard(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'doctor/doctor_dashboard.html'
@@ -510,7 +512,7 @@ class DoctorDashboard(APIView):
 
         return Response({"appointments": serialized_data}, status=status.HTTP_200_OK)
 
-# --------------DOCTOR LOGIN---------------
+# ---------------DOCTOR LOGIN ---------------
 class DoctorLoginView(APIView):
     renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
     template_name = 'doctor/docter_login.html'

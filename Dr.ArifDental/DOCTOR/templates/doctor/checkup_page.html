@@ -552,11 +552,17 @@
         </div>
     </div>
 
-
+<!---------------DIAGNOSIS FORM--------------->
+    <hr class="w-100 mx-auto mb-5">
+    <h3 class="text-start fw-bold">Diagnosis</h3>
+    <form id="diagnosisForm">
+        {% csrf_token %}
+        <textarea name="diagnosis" id="diagnosis" class="form-control" placeholder="Enter diagnosis here..." required></textarea>
+        <button type="submit" class="btn btn-success mt-2">Save Diagnosis</button>
+    </form>
 
 
      <hr class="w-100 mx-auto mt-5 mb-5">
-
     <h3 class="text-start fw-bold">Prescription</h3>
     <form id="medicine-form" class="bg-light p-4 rounded shadow">
         {% csrf_token %}
@@ -722,8 +728,31 @@ $(document).on("click", ".last", function () {
     });
 
 
-
-
+<!---------------DIAGNOSIS FORM SUBMISSION--------------->
+$(document).ready(function() {
+    var bookingId = $('#booking_id').val();
+    $("#diagnosisForm").on("submit", function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: `/doctor/checkup/${bookingId}/`,
+            data: {
+                diagnosis: $("#diagnosis").val(),
+                csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+            },
+            success: function(response) {
+                alert("✅ Diagnosis saved successfully!");
+                $("#diagnosisResponse").text("Diagnosis saved successfully!");
+                console.log(response.diagnosis);
+            },
+            error: function(xhr) {
+                alert("❌ Failed to save diagnosis. Please try again.");
+                $("#diagnosisResponse").text("Error saving diagnosis.");
+                console.log(xhr.responseJSON);
+            }
+        });
+    });
+});
 
 
 
