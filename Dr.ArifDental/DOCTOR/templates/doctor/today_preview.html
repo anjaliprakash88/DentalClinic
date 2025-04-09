@@ -514,9 +514,20 @@
     </div>
 
 
+ <!---------------DIAGNOSIS FORM--------------->
+        <hr class="w-100 mx-auto mb-5">
+        <h3 class="text-start fw-bold">Diagnosis</h3>
+        <form id="diagnosisForm">
+            {% csrf_token %}
+            <textarea name="diagnosis" id="diagnosis" class="form-control" required>
+                {{ data.diagnosis.diagnosis }}
+            </textarea>
+            <button type="submit" class="btn btn-success mt-2">Save Diagnosis</button>
+        </form>
 
 
-     <hr class="w-100 mx-auto mt-5 mb-5">
+
+    <hr class="w-100 mx-auto mt-5 mb-5">
 
     <h3 class="text-start fw-bold">Prescription</h3>
     <form id="medicine-form" class="bg-light p-4 rounded shadow">
@@ -864,6 +875,37 @@ function initializeDentitionChart() {
 $(document).ready(function () {
     initializeDentitionChart();
 });
+
+<!---------------DIAGNOSIS UPDATE FORM SUBMISSION--------------->
+$(document).ready(function () {
+        $("#diagnosisForm").on("submit", function (e) {
+            e.preventDefault();
+
+            const diagnosisText = $("#diagnosis").val().trim();
+
+            if (!diagnosisText) {
+                alert("Diagnosis cannot be empty.");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: `/doctor/checkup/${bookingId}/`,
+                data: {
+                    diagnosis: diagnosisText,
+                    csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+                },
+                success: function (response) {
+                    alert("Diagnosis saved successfully!");
+                    console.log("Saved Diagnosis:", response);
+                },
+                error: function (xhr) {
+                    alert("Failed to save diagnosis.");
+                    console.error(xhr.responseJSON || xhr.responseText);
+                }
+            });
+        });
+    });
 
     // --------------------- PRESCRIPTION MANAGEMENT ---------------------
     function initializePrescriptionManagement() {
