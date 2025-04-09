@@ -487,28 +487,14 @@
             </div>
 
 
-            <form id="dentition-container" class="bg-light p-4 rounded shadow">
+            <form id="dentition-container" class="bg-light p-4 rounded">
                 {% csrf_token %}
-                <div class="card mb-4 border-0 shadow-sm">
-                    <div class="card-header">
-                        <div id="dentition-items-container">
-                            <!-- Dynamic dentition entries will be added here -->
-                        </div>
-
-                        <!-- Hidden Inputs to Store Selection -->
-                        <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
-                            <div class="flex-grow-1">
-                                <input type="text" id="selectedTeeth" class="form-control mt-2" placeholder="Selected Teeth" readonly>
-                            </div>
-                            <div class="flex-grow-1">
-                                <input type="text" id="selectedTreatment" class="form-control mt-2" placeholder="Selected Treatment" readonly>
-                            </div>
-                            <button type="button" id="add-medicine-btn" style="background:#1c3342; color: #fff;"
-                                class="btn mt-2"><i class="bi bi-plus-lg"></i> Add</button>
-                            <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & Proceed</button>
-                        </div>
+                    <div id="dentition-items-container">
+                        <!-- Dynamic dentition entries will be added here -->
                     </div>
-                </div>
+                    <button type="button" id="add-medicine-btn" style="background:#1c3342; color: #fff;"
+                        class="btn mt-2"><i class="bi bi-plus-lg"></i> Add</button>
+                    <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & Proceed</button>
             </form>
         </div>
     </div>
@@ -655,226 +641,352 @@ $(document).ready(function() {
 
   // --------------------- DENTITION MANAGEMENT ---------------------
 function initializeDentitionChart() {
-    let selectedTeeth = [];
-    let selectedTreatment = "";
-    let selectedTreatmentColor = "";
+    $(document).ready(function () {
+        let selectedTeeth = [];
+        let selectedTreatment = "";
+        let selectedTreatmentColor = "";
+        let dentitionCount = 0;
+        let activeFormId = null;
 
-    console.log("Dentition Chart Initialization Started");
+        $(".tooth").off("click");
+        $(".treatment-item").off("click");
+        $("#add-medicine-btn").off("click");
+        $(document).off("click", ".remove-dentition");
+        $(document).off("click", ".dentition-item");
 
-    // Clean up previous event handlers to prevent duplicates
-    $(".tooth").off("click");
-    $(".treatment-item").off("click");
-    $("#add-medicine-btn").off("click");
-    $(document).off("click", ".remove-entry");
+        // Initialize teeth to healthy
+        $(".tooth").each(function () {
+            $(this).attr("data-status", "healthy");
+            $(this).css("background-color", "#229954");
+        });
 
-    // Reset selections
-    selectedTeeth = [];
-    selectedTreatment = "";
-    selectedTreatmentColor = "";
-    $("#selectedTeeth").val("");
-    $("#selectedTreatment").val("").removeAttr("style");
+        // Load existing dentition data if available
+        // Load existing dentition data if available
+        try {
+            if (window.existingDentitionData) {
+                $("#dentition-items-container").empty();
 
-    // Reset all teeth to healthy state - using green color
-    $(".tooth").each(function() {
-        $(this).attr("data-status", "healthy");
-        $(this).css("background-color", "#229954");  // Keep green for healthy
-        $(this).removeClass("selected");
-    });
-    console.log("All teeth set to healthy");
+                // Filter out "Healthy" treatments from UI display
+                const nonHealthyDentitions = window.existingDentitionData.filter(
+                    dentition => dentition.treatment !== "Healthy"
+                );
 
-    // Load existing dentition data if available
-    try {
-        if (window.existingDentitionData) {
-            $("#dentition-items-container").empty();
-            console.log("Existing dentition data found:", window.existingDentitionData);
+                // Create a map to track which teeth already have treatments
+                const teethTreatmentMap = {};
 
-            // Filter out "Healthy" treatments from UI display
-            const nonHealthyDentitions = window.existingDentitionData.filter(
-                dentition => dentition.treatment !== "Healthy"
-            );
+                // First pass: map each tooth to its treatment
+                for (const dentition of window.existingDentitionData) {
+                    const toothId = dentition.tooth_id;
+                    teethTreatmentMap[toothId] = {
+                        treatment: dentition.treatment,
+                        color: dentition.color_code || "#229954",  // Use green for healthy
+                        note: dentition.note || ""
+                    };
+                }
 
-            // Create a map to track which teeth already have treatments
-            const teethTreatmentMap = {};
+                // Apply treatments to teeth and create UI entries only for non-healthy teeth
+                for (const [toothId, data] of Object.entries(teethTreatmentMap)) {
+                    const toothElement = $(`.tooth[data-tooth='${toothId}']`);
+                    toothElement.attr("data-status", data.treatment);
+                    toothElement.css("background-color", data.treatment === "Healthy" ? "#229954" : data.color);
 
-            // First pass: map each tooth to its treatment
-            for (const dentition of window.existingDentitionData) {
-                const toothId = dentition.tooth_id;
-                teethTreatmentMap[toothId] = {
-                    treatment: dentition.treatment,
-                    color: dentition.color_code || "#229954",  // Use green for healthy
-                    note: dentition.note || ""
-                };
-            }
+                    if (data.treatment !== "Healthy") {
+                        const id = dentitionCount++;
 
-            // Apply treatments to teeth and create UI entries only for non-healthy teeth
-            for (const [toothId, data] of Object.entries(teethTreatmentMap)) {
-                // Update tooth visual for all teeth
-                const toothElement = $(`.tooth[data-tooth='${toothId}']`);
-                toothElement.attr("data-status", data.treatment);
-                toothElement.css("background-color", data.treatment === "Healthy" ? "#229954" : data.color);
-
-                // Only create UI entries for non-healthy teeth
-                if (data.treatment !== "Healthy") {
-                    const newEntry = `
-                        <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
-                            <div class="flex-grow-1">
-                                <input type="text" name="selected_teeth[]" class="form-control" value="${toothId}" readonly>
+                        const newEntry = `
+                            <div class="dentition-item p-3 mb-3 border rounded bg-white shadow-sm"
+                                 id="dentition-item-${id}" data-id="${id}">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input type="text" name="selected_teeth[]" class="form-control" value="${toothId}" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" name="selected_treatment[]" class="form-control" value="${data.treatment}"
+                                        style="background-color: ${data.color}; color: white; padding: 10px; border-radius: 5px; border: none;" readonly>
+                                    </div>
+                                    <div class="col-md-3">
+                                       <textarea name="treatment_note[]" class="form-control" placeholder="Add a note..." rows="1">${data.note}</textarea>
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-end">
+                                        <button type="button" class="btn btn-danger remove-dentition" data-id="${id}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex-grow-1">
-                                <input type="text" name="selected_treatment[]" class="form-control" value="${data.treatment}"
-                                    style="background-color: ${data.color}; color: white; padding: 10px; border-radius: 5px; border: none;" readonly>
-                            </div>
-                            <button type="button" class="btn btn-danger remove-entry">-</button>
-                        </div>
-                    `;
+                        `;
 
-                    $("#dentition-items-container").append(newEntry);
+                        $("#dentition-items-container").append(newEntry);
+                        $(`#dentition-item-${id}`).data("treatment-color", data.color);
+                        $(`#dentition-item-${id}`).data("tooth-colors", { [toothId]: data.color });
+                    }
                 }
             }
-        }
-    } catch (error) {
-        console.error("Error loading dentition data:", error);
-    }
-
-    // Handle tooth selection
-    $(".tooth").on("click", function() {
-        const toothNumber = $(this).data("tooth");
-
-        if (selectedTeeth.includes(toothNumber)) {
-            selectedTeeth = selectedTeeth.filter(num => num !== toothNumber);
-            $(this).removeClass("selected");
-        } else {
-            selectedTeeth.push(toothNumber);
-            $(this).addClass("selected");
+        } catch (error) {
+            console.error("Error loading dentition data:", error);
         }
 
-        $("#selectedTeeth").val(selectedTeeth.join(", "));
-    });
 
-    // Handle treatment selection
-    $(".treatment-item").on("click", function() {
-        selectedTreatment = $(this).text().trim();
-        selectedTreatmentColor = $(this).data("color") || $(this).css("background-color");
+        // Handle tooth selection
+        $(".tooth").on("click", function () {
+            const toothNumber = $(this).data("tooth");
 
-        $("#selectedTreatment")
-            .val(selectedTreatment)
-            .css({
-                "background-color": selectedTreatmentColor,
-                "color": "#fff",
-                "padding": "10px",
-                "border-radius": "5px",
-                "border": "none"
-            });
-    });
+            if (selectedTeeth.includes(toothNumber)) {
+                selectedTeeth = selectedTeeth.filter(num => num !== toothNumber);
+                $(this).removeClass("selected");
+            } else {
+                selectedTeeth.push(toothNumber);
+                $(this).addClass("selected");
 
-    // Add treatment entry
-    $("#add-medicine-btn").on("click", function() {
-        if (selectedTeeth.length === 0 || !selectedTreatment) {
-            alert("Please select both teeth and a treatment before adding.");
-            return;
-        }
-
-        // Process each selected tooth individually
-        selectedTeeth.forEach(function(toothNumber) {
-            // Remove any existing entry for this tooth from UI
-            $(".dentition-entry").each(function() {
-                const existingTeeth = $(this).find("input[name='selected_teeth[]']").val();
-                if (existingTeeth === toothNumber.toString()) {
-                    $(this).remove();
+                if (selectedTreatmentColor) {
+                    $(this).css("background-color", selectedTreatmentColor);
                 }
-            });
+            }
 
-            // Update tooth visual
-            const tooth = $(`.tooth[data-tooth='${toothNumber}']`);
-            tooth.attr("data-status", selectedTreatment);
-            tooth.css("background-color", selectedTreatmentColor);
-            tooth.removeClass("selected");
+            $("#selectedTeeth").val(selectedTeeth.join(", "));
 
-            // Only create UI entry if not "Healthy" treatment
-            if (selectedTreatment !== "Healthy") {
-                const newEntry = `
-                    <div class="dentition-entry d-flex align-items-center gap-2 flex-wrap mt-2 p-2 border rounded">
-                        <div class="flex-grow-1">
-                            <input type="text" name="selected_teeth[]" class="form-control" value="${toothNumber}" readonly>
-                        </div>
-                        <div class="flex-grow-1">
-                            <input type="text" name="selected_treatment[]" class="form-control" value="${selectedTreatment}"
-                                style="background-color: ${selectedTreatmentColor}; color: white; padding: 10px; border-radius: 5px; border: none;" readonly>
-                        </div>
-                        <button type="button" class="btn btn-danger remove-entry">-</button>
-                    </div>
-                `;
+            if (activeFormId !== null) {
+                const $form = $(`#dentition-item-${activeFormId}`);
+                $form.find("input[name='selected_teeth[]']").val(selectedTeeth.join(", "));
 
-                $("#dentition-items-container").append(newEntry);
+                // Update tooth-color map for the form
+                let toothColors = $form.data("tooth-colors") || {};
+                selectedTeeth.forEach(tooth => {
+                    if (selectedTreatmentColor) {
+                        toothColors[tooth] = selectedTreatmentColor;
+                    }
+                });
+                $form.data("tooth-colors", toothColors);
             }
         });
 
-        // Reset selections
-        selectedTeeth = [];
-        selectedTreatment = "";
-        selectedTreatmentColor = "";
-        $("#selectedTeeth").val("");
-        $("#selectedTreatment").val("").removeAttr("style");
-    });
+        // Handle treatment selection
+        $(".treatment-item").on("click", function () {
+            selectedTreatment = $(this).text().trim();
+            selectedTreatmentColor = $(this).css("background-color");
 
-    // Handle removing entry
-    $(document).on("click", ".remove-entry", function() {
-        const toothNumber = $(this).closest(".dentition-entry").find("input[name='selected_teeth[]']").val();
+            $("#selectedTreatment")
+                .val(selectedTreatment)
+                .css({
+                    "background-color": selectedTreatmentColor,
+                    "color": "#fff",
+                    "padding": "10px",
+                    "border-radius": "5px",
+                    "border": "none"
+                });
 
-        // Reset tooth to healthy
-        const tooth = $(`.tooth[data-tooth='${toothNumber}']`);
-        tooth.attr("data-status", "Healthy");
-        tooth.css("background-color", "#229954");  // Green for healthy
+            if (activeFormId !== null) {
+                const $form = $(`#dentition-item-${activeFormId}`);
+                $form.find("input[name='selected_treatment[]']")
+                    .val(selectedTreatment)
+                    .css({
+                        "background-color": selectedTreatmentColor,
+                        "color": "white"
+                    });
 
-        // Remove entry from list
-        $(this).closest(".dentition-entry").remove();
-    });
+                let toothColors = $form.data("tooth-colors") || {};
+                selectedTeeth.forEach(tooth => {
+                    $(`.tooth[data-tooth="${tooth}"]`).css("background-color", selectedTreatmentColor);
+                    toothColors[tooth] = selectedTreatmentColor;
+                });
+                $form.data("tooth-colors", toothColors);
+                $form.data("treatment-color", selectedTreatmentColor);
+            }
+        });
 
-    // Handle form submission
-    $("#dentition-container").submit(function(event) {
-        event.preventDefault();
+        addDentitionItem();
 
-        const dentitionData = [];
+        // Add treatment entry
+        $("#add-medicine-btn").on("click", function () {
+            addDentitionItem();
 
-        // Gather data from the UI for non-healthy teeth
-        $(".dentition-entry").each(function() {
-            let tooth = $(this).find("input[name='selected_teeth[]']").val();
-            let treatment = $(this).find("input[name='selected_treatment[]']").val();
+        });
 
-            if (tooth && treatment) {
-                dentitionData.push({
-                    selected_teeth: [tooth], // Always an array with one tooth
-                    treatment: treatment
+        function addDentitionItem(teethStr = '', treatment = '', treatmentColor = '', note = '') {
+            const id = dentitionCount;
+
+            const teethArray = teethStr ? teethStr.split(", ").map(t => t.trim()) : [];
+            const toothColors = {};
+            teethArray.forEach(tooth => {
+                toothColors[tooth] = treatmentColor;
+            });
+
+            const newDentitionHtml = `
+                <div class="dentition-item p-3 mb-3 border rounded bg-white shadow-sm"
+                     id="dentition-item-${id}" data-id="${id}">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Selected Teeth</label>
+                            <input type="text" class="form-control" name="selected_teeth[]" value="${teethStr}" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Treatment</label>
+                            <input type="text" class="form-control" name="selected_treatment[]" value="${treatment}"
+                                style="${treatmentColor ? `background-color: ${treatmentColor}; color: white;` : ''}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Note</label>
+                            <textarea name="treatment_note[]" class="form-control" placeholder="Add a note..." rows="1">${note}</textarea>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger remove-dentition" data-id="${id}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('#dentition-items-container').append(newDentitionHtml);
+            $(`#dentition-item-${id}`).data("treatment-color", treatmentColor);
+            $(`#dentition-item-${id}`).data("tooth-colors", toothColors);
+
+            setActiveForm(id);
+            dentitionCount++;
+        }
+
+        $(document).on('click', '.dentition-item', function () {
+            const itemId = $(this).data('id');
+            setActiveForm(itemId);
+        });
+
+        function setActiveForm(id) {
+
+
+            if (activeFormId !== null) {
+                $(`#dentition-item-${activeFormId}`).removeClass('active-form');
+            }
+
+            activeFormId = id;
+            $(`#dentition-item-${id}`).addClass('active-form');
+
+            selectedTeeth = [];
+            $(".tooth").removeClass("selected");
+
+            const teethStr = $(`#dentition-item-${id}`).find("input[name='selected_teeth[]']").val();
+            const form = $(`#dentition-item-${id}`);
+            const toothColorMap = form.data("tooth-colors") || {};
+            const formTreatmentColor = form.data("treatment-color");
+
+            if (teethStr) {
+                selectedTeeth = teethStr.split(", ").map(t => t.trim()).filter(t => t);
+                selectedTeeth.forEach(toothNum => {
+                    const $tooth = $(`.tooth[data-tooth="${toothNum}"]`);
+                    $tooth.addClass("selected");
+                    const color = toothColorMap[toothNum] || formTreatmentColor || "#229954";
+                    $tooth.css("background-color", color);
                 });
             }
+
+            selectedTreatment = form.find("input[name='selected_treatment[]']").val();
+            selectedTreatmentColor = formTreatmentColor || form.find("input[name='selected_treatment[]']").css("background-color");
+
+            if (selectedTreatment) {
+                $("#selectedTreatment")
+                    .val(selectedTreatment)
+                    .css({
+                        "background-color": selectedTreatmentColor,
+                        "color": "#fff",
+                        "padding": "10px",
+                        "border-radius": "5px",
+                        "border": "none"
+                    });
+            } else {
+                $("#selectedTreatment").val("").removeAttr("style");
+            }
+        }
+
+
+
+        function resetSelections() {
+            selectedTeeth = [];
+            selectedTreatment = "";
+            selectedTreatmentColor = "";
+            $(".tooth").removeClass("selected");
+            $("#selectedTeeth").val("");
+            $("#selectedTreatment").val("").removeAttr("style");
+        }
+
+        // Handle removing entry
+        $(document).on('click', '.remove-dentition', function (e) {
+            e.stopPropagation();
+            const itemId = $(this).data('id');
+
+            if (activeFormId === itemId) {
+                resetSelections();
+                activeFormId = null;
+            }
+
+            $(`#dentition-item-${itemId}`).remove();
         });
 
-        // For teeth that are visually marked as "healthy", we don't need to explicitly add them
-        // They will be interpreted as healthy by default in the backend
+        // Handle form submission
+        $("#dentition-container").submit(function (event) {
+            event.preventDefault();
+            const bookingId = $('#booking_id').val();
+            const dentitionData = [];
 
-        console.log("Sending dentition data:", dentitionData);
+            $(".dentition-item").each(function () {
+                let teeth = $(this).find("input[name='selected_teeth[]']").val();
+                let treatment = $(this).find("input[name='selected_treatment[]']").val();
+                let note = $(this).find("textarea[name='treatment_note[]']").val();
+                let treatmentColor = $(this).data("treatment-color");
 
-        $.ajax({
-            url: `/doctor/checkup/${bookingId}/`,
-            type: "POST",
-            headers: {
-                "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
-            },
-            contentType: "application/json",
-            data: JSON.stringify({ dentitions: dentitionData }),
-            success: function(response) {
-                alert("Dentition data saved successfully!");
-            },
-            error: function(xhr) {
-                alert("Error saving data: " + xhr.responseText);
+                if (teeth && treatment) {
+                    dentitionData.push({
+                        selected_teeth: teeth.split(", "),
+                        treatment: treatment,
+                        treatment_color: treatmentColor,
+                        note: note
+                    });
+                }
+            });
+
+            $.ajax({
+                url: `/doctor/checkup/${bookingId}/`,
+                type: "POST",
+                headers: {
+                    "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
+                },
+                contentType: "application/json",
+                data: JSON.stringify({ dentitions: dentitionData }),
+                success: function (response) {
+                    alert("Dentition data saved successfully!");
+                    $("#dentition-items-container").empty();
+                    addDentitionItem();
+                    resetSelections();
+                    activeFormId = 0;
+                },
+                error: function (xhr) {
+                    alert("Error saving data: " + xhr.responseText);
+                }
+            });
+        });
+
+        $("<style>")
+            .prop("type", "text/css")
+            .html(`
+                .active-form {
+                    border: 2px solid #007bff !important;
+                    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5) !important;
+                }
+                .dentition-item {
+                    cursor: pointer;
+                }
+            `)
+            .appendTo("head");
+
+        document.querySelectorAll('.tooth').forEach(function (tooth) {
+            const status = tooth.getAttribute('data-status');
+            if (status === 'healthy') {
+                tooth.style.backgroundColor = "#229954";
             }
         });
     });
 }
 
-$(document).ready(function () {
-    initializeDentitionChart();
-});
+// Call it explicitly
+initializeDentitionChart();
 
 <!---------------DIAGNOSIS UPDATE FORM SUBMISSION--------------->
 $(document).ready(function () {
