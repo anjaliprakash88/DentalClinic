@@ -20,6 +20,14 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
     <style>
+        :root {
+            --primary-color: #87CEEB;
+            --secondary-color: #B0E0E6;
+            --text-color: #2c3e50;
+            --hover-color: #5dade2;
+            --shadow-color: rgba(0,0,0,0.1);
+            --white: #ffffff;
+        }
         body {
             font-family: 'Poppins', sans-serif;
             background: #d2e3e9;
@@ -32,7 +40,7 @@
             position: fixed;
             left: 0;
             top: 0;
-            background:#1c3342;
+            background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
             padding-top: 20px;
             color: white;
             transition: 0.3s;
@@ -43,11 +51,11 @@
         }
 
         .sidebar .sidebar-logo img {
-            width: 70px;
+            width: 120px;
             height: auto;
             margin-bottom: 12px;
-            border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+
+
         }
 
         .sidebar .sidebar-menu {
@@ -56,7 +64,7 @@
             gap: 12px; /* Adds space between menu items */
             padding: 0 10px;
         }
-        
+
         .sidebar .menu-item {
             padding: 10px 15px;
             color: black;
@@ -121,7 +129,7 @@
             position: fixed;
             top: 0;
             left: 260px;
-            background: #d2e3e9;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             display: flex;
             align-items: center;
             padding: 0 20px;
@@ -191,7 +199,8 @@
         }
         .btn-primary{
             border:none;
-            background:#1c3342;
+            color:black;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 
         }
     </style>
