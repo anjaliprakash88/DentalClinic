@@ -35,11 +35,10 @@
             position: fixed;
             left: 0;
             top: 0;
-            background: #1c3342;
+            background:#1c3342;
             padding-top: 20px;
             color: white;
             transition: 0.3s;
-            z-index: 1100;
         }
 
         .sidebar .sidebar-logo {
@@ -59,7 +58,6 @@
             flex-direction: column;
             gap: 12px; /* Adds space between menu items */
             padding: 0 10px;
-            margin-top: 30px;
         }
 
         .sidebar .menu-item {
@@ -76,9 +74,15 @@
             overflow: hidden;
         }
 
+        /* Alternative if not using gap */
+        .sidebar .menu-item:not(:last-child) {
+            margin-bottom: 10px;
+        }
+
+
         .menu-item.active {
-            background: #0d6efd;
-            color: white;
+            background: var(--hover-color);
+            color: var(--white);
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0,0,0,0.15);
         }
@@ -90,7 +94,7 @@
             top: 0;
             height: 100%;
             width: 4px;
-            background-color: white;
+            background-color: var(--white);
         }
 
         .menu-item a {
@@ -107,7 +111,8 @@
         }
 
         .menu-item:hover {
-            background: #b8cfd8;
+            background: #d2e3e9;
+            color: clack;
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0,0,0,0.15);
         }
@@ -136,7 +141,7 @@
         }
 
         .top-navbar .nav-icons a {
-            color: #1c3342;
+            color: white;
             font-size: 20px;
             margin-left: 15px;
             transition: 0.3s;
@@ -149,10 +154,9 @@
         /* Content Area */
         .content {
             margin-left: 260px;
-            margin-top: 80px;
+            margin-top: 50px;
             padding: 20px;
         }
-
         .dental-chart {
             display: flex;
             flex-wrap: wrap;
@@ -163,13 +167,11 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        .quadrant {
+         .quadrant {
             width: 45%;
             min-width: 300px;
             margin-bottom: 20px;
         }
-
         .quadrant-header {
             display: flex;
             justify-content: space-between;
@@ -178,13 +180,11 @@
             padding-bottom: 5px;
             border-bottom: 2px solid #e0e5ea;
         }
-
         .quadrant-title {
             font-weight: bold;
             font-size: 16px;
             color: #2a6496;
         }
-
         .quadrant-number {
             display: inline-block;
             width: 24px;
@@ -197,16 +197,15 @@
             font-size: 14px;
             font-weight: bold;
         }
-
         .teeth-row {
             display: flex;
             justify-content: space-between;
-            gap: 8px;
-        }
+            gap: 2px;
 
+        }
         .tooth {
-            width: 45px;
-            height: 65px;
+            width: 40px;
+            height: 60px;
             border: 2px solid #ddd;
             border-radius: 5px;
             display: flex;
@@ -218,423 +217,344 @@
             position: relative;
             transition: all 0.2s ease;
         }
-
         .tooth:hover {
             transform: translateY(-2px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
         .tooth.selected {
             background-color: #b3d9ff;
             border-color: #2a6496;
             box-shadow: 0 0 0 2px rgba(42,100,150,0.3);
             transform: translateY(-2px);
         }
-
-        .tooth.healthy {
-            background-color: #d4edda;
-        }
-
-        .tooth.carious {
-            background-color: #f8d7da;
-        }
-
-        .tooth.filled {
-            background-color: #d1ecf1;
-        }
-
-        .tooth.missing {
-            background-color: #f2f2f2;
-            text-decoration: line-through;
-        }
-
-        .tooth.needs-cleaning {
-            border: 2px dashed #ffc107;
-        }
-
         .tooth-number {
             font-size: 12px;
             margin-bottom: 3px;
             font-weight: bold;
-            color: #555;
+            color: #FFFFFF;
+        }
+        .tooth-image {
+            width: 30px;
+            height: 30px;
         }
 
-        /* Form elements */
-        .form-control, .form-select {
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #1c3342;
-            box-shadow: 0 0 0 0.25rem rgba(28, 51, 66, 0.25);
-        }
-
-        .btn-primary {
-            background-color: #1c3342;
-            border-color: #1c3342;
-        }
-
-        .btn-primary:hover {
-            background-color: #152733;
-            border-color: #152733;
-        }
-
-        /* Table styling */
-        .table {
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .table th {
-            background-color: #f0f5f8;
-            font-weight: 600;
-            vertical-align: middle;
-        }
-
-        /* Medicine form */
-        .medicine-item {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            padding: 15px;
-        }
-
-        /* Responsive fixes */
-        @media (max-width: 992px) {
-            .sidebar {
-                width: 200px;
-            }
-            .top-navbar, .content {
-                left: 200px;
-                width: calc(100% - 200px);
-            }
-            .content {
-                margin-left: 200px;
-            }
-            .quadrant {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 0;
-                padding: 0;
-                overflow: hidden;
-            }
-            .sidebar.active {
-                width: 200px;
-                padding: 20px 0;
-            }
-            .top-navbar, .content {
-                left: 0;
-                width: 100%;
-            }
-            .content {
-                margin-left: 0;
-            }
-            .dental-chart {
-                flex-direction: column;
-            }
-        }
     </style>
 </head>
-<html>
 
+
+<body>
 <!-- Sidebar -->
-<nav class="sidebar">
-    <div class="sidebar-logo">
-        <img src="{% static 'images/logo (2).png' %}" alt="Dr. Arif's Dental Clinic Logo">
-    </div>
-    <div class="sidebar-menu">
-        <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
-        <div class="menu-item">
-            <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">
-               <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
-            </a>
+ <nav class="sidebar">
+        <div class="sidebar-logo">
+            <img src="{% static 'images/logo (2).png' %}" alt="Dr. Arif's Dental Clinic Logo">
         </div>
-    </div>
-</nav>
+        <div class="sidebar-menu">
+            <div class="menu-item">
+                <a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a>
+            </div>
+            <div class="menu-item">
+                <a href="#" class="view-patients" data-doctor-id="{{ doctor.id }}">
+                    <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients
+                </a>
+            </div>
+
+        </div>
+    </nav>
 
 <!-- Top Navbar -->
-<div class="top-navbar d-flex justify-content-between align-items-center">
-    <h1 class="dashboard-title">Dental Examination - {{ examination.patient_name }}</h1>
-
-</div>
-
-<!-- Content -->
-<div class="content">
-    <div class="d-flex gap-2 mb-3">
-        <button class="btn btn-primary checkup" data-id="{{ booking.id }}">Adult</button>
-        <button class="btn btn-primary paediatric-checkup" data-id="{{ booking.id }}">Paediatric</button>
+ <div class="top-navbar d-flex justify-content-between align-items-center">
+        <h1 class="dashboard-title ms-center">Dental Examination - {{ patient_name }}</h1>
+    <!--------------LAST BOOKING ------------->
+        {% if previous_booking_id %}
+        <button class="btn btn-primary last" style="background: #1c3342;" data-id="{{ previous_booking_id }}">
+            <i class="fa-solid fa-info" style="color: #ffffff;"></i>
+        </button>
+        {% else %}
+        <button class="btn btn-secondary" style="background: #999;" disabled title="No previous history available">
+            <i class="fa-solid fa-info" style="color: #ffffff;"></i>
+        </button>
+        {% endif %}
     </div>
 
-    <form id="checkupForm" method="post" enctype="multipart/form-data" class="mb-5">
-        {% csrf_token %}
+<!-- Content -->
+ <div class="content">
+        <button class="btn btn-primary checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Adult</button>
+        <button class="btn btn-primary paediatric-checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Paediatric</button>
+        <form id="checkupForm" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="booking_id" id="booking_id" value="{{ booking.id }}">
+            {% csrf_token %}
+            <table class="table table-bordered table-striped">
+                <tbody>
+                    <tr>
+                        <th class="w-25 text-center align-middle">Chief Complaints</th>
+                        <td><textarea class="form-control" name="chief_complaints" rows="3"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 text-center align-middle">History of Present Illness</th>
+                        <td><textarea class="form-control" name="history_of_present_illness" rows="3"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 text-center align-middle">Medical History</th>
+                        <td><textarea class="form-control" name="medical_history" rows="3"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 text-center align-middle">Personal History</th>
+                        <td><textarea class="form-control" name="personal_history" rows="3"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 text-center align-middle">General Examination</th>
+                        <td><textarea class="form-control" name="general_examination" rows="3"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 text-center align-middle">General Examination (Intraoral)</th>
+                        <td><textarea class="form-control" name="general_examination_intraoral" rows="3"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 text-center align-middle">Local Examination (Extraoral)</th>
+                        <td><textarea class="form-control" name="local_examination_extraoral" rows="3"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 text-center align-middle">Soft Tissue</th>
+                        <td><textarea class="form-control" name="soft_tissue" rows="3"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 text-center align-middle">Periodontal Status</th>
+                        <td><textarea class="form-control" name="periodontal_status" rows="3"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 text-center align-middle">Investigation</th>
+                        <td><input type="file" class="form-control" name="investigation" id="investigation" multiple></td>
+                    </tr>
 
-        <table class="table table-bordered table-striped mb-4">
-            <tbody>
-                <tr>
-                    <th class="w-25 text-center align-middle">Chief Complaints</th>
-                    <td><textarea class="form-control" name="chief_complaints" rows="3"></textarea></td>
-                </tr>
-                <tr>
-                    <th class="w-25 text-center align-middle">History of Present Illness</th>
-                    <td><textarea class="form-control" name="history_of_present_illness" rows="3"></textarea></td>
-                </tr>
-                <tr>
-                    <th class="w-25 text-center align-middle">Medical History</th>
-                    <td><textarea class="form-control" name="medical_history" rows="3"></textarea></td>
-                </tr>
-                <tr>
-                    <th class="w-25 text-center align-middle">Personal History</th>
-                    <td><textarea class="form-control" name="personal_history" rows="3"></textarea></td>
-                </tr>
-                <tr>
-                    <th class="w-25 text-center align-middle">General Examination</th>
-                    <td><textarea class="form-control" name="general_examination" rows="3"></textarea></td>
-                </tr>
-                <tr>
-                    <th class="w-25 text-center align-middle">General Examination (Intraoral)</th>
-                    <td><textarea class="form-control" name="general_examination_intraoral" rows="3"></textarea></td>
-                </tr>
-                <tr>
-                    <th class="w-25 text-center align-middle">Local Examination (Extraoral)</th>
-                    <td><textarea class="form-control" name="local_examination_extraoral" rows="3"></textarea></td>
-                </tr>
-                <tr>
-                    <th class="w-25 text-center align-middle">Soft Tissue</th>
-                    <td><textarea class="form-control" name="soft_tissue" rows="3"></textarea></td>
-                </tr>
-            </tbody>
-        </table>
+                    <tr>
+                        <th class="w-25 text-center align-middle">Treatment Plan</th>
+                        <td><textarea class="form-control" name="treatment_plan" rows="3"></textarea></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-start">
+               <button type="submit" class="btn btn-primary w-25 mt-4">Save</button>
+            </div>
+        </form>
 
-        <hr class="w-100 mb-4 mt-4">
 
-        <h3 class="text-start fw-bold mb-3">Dentition</h3>
+         <hr class="w-100 mb-5 mt-5 mx-auto">
+        <h3 class="text-start fw-bold">Dentition</h3>
+
+
         <div class="dental-chart">
             <div class="quadrant">
                 <div class="quadrant-header">
-                    <span class="quadrant-title">Upper Right</span>
+                    <span class="quadrant-title">Upper Left</span>
                     <span class="quadrant-number">1</span>
                 </div>
                 <div class="teeth-row">
-                    <div class="tooth" id="tooth-14" data-tooth="14" data-status="healthy">
+                    <div class="tooth" id="tooth-55" data-tooth="55" data-status="healthy">
                         <div class="tooth-number">55</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-15" data-tooth="15" data-status="healthy">
+                    <div class="tooth" id="tooth-54" data-tooth="54" data-status="healthy">
                         <div class="tooth-number">54</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-16" data-tooth="16" data-status="healthy">
+                    <div class="tooth" id="tooth-53" data-tooth="53" data-status="healthy">
                         <div class="tooth-number">53</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-17" data-tooth="17" data-status="healthy">
+                    <div class="tooth" id="tooth-52" data-tooth="52" data-status="healthy">
                         <div class="tooth-number">52</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-18" data-tooth="18" data-status="healthy">
+                    <div class="tooth" id="tooth-51" data-tooth="51" data-status="healthy">
                         <div class="tooth-number">51</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
                 </div>
             </div>
-
+            <div class="separator"></div>
             <div class="quadrant">
                 <div class="quadrant-header">
-                    <span class="quadrant-title">Upper Left</span>
+                    <span class="quadrant-title">Upper Right</span>
                     <span class="quadrant-number">2</span>
                 </div>
                 <div class="teeth-row">
-                    <div class="tooth" id="tooth-21" data-tooth="21" data-status="healthy">
+                    <div class="tooth" id="tooth-61" data-tooth="61" data-status="healthy">
                         <div class="tooth-number">61</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-22" data-tooth="22" data-status="healthy">
+                    <div class="tooth" id="tooth-62" data-tooth="62" data-status="healthy">
                         <div class="tooth-number">62</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-23" data-tooth="23" data-status="healthy">
+                    <div class="tooth" id="tooth-63" data-tooth="63" data-status="healthy">
                         <div class="tooth-number">63</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-24" data-tooth="24" data-status="healthy">
+                    <div class="tooth" id="tooth-64" data-tooth="64" data-status="healthy">
                         <div class="tooth-number">64</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-25" data-tooth="25" data-status="healthy">
+                    <div class="tooth" id="tooth-65" data-tooth="65" data-status="healthy">
                         <div class="tooth-number">65</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
                 </div>
             </div>
-
-            <div class="quadrant">
-                <div class="quadrant-header">
-                    <span class="quadrant-title">Lower Right</span>
-                    <span class="quadrant-number">4</span>
-                </div>
-                <div class="teeth-row">
-                    <div class="tooth" id="tooth-31" data-tooth="31" data-status="healthy">
-                        <div class="tooth-number">71</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
-                    </div>
-                    <div class="tooth" id="tooth-32" data-tooth="32" data-status="healthy">
-                        <div class="tooth-number">72</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
-                    </div>
-                    <div class="tooth" id="tooth-33" data-tooth="33" data-status="healthy">
-                        <div class="tooth-number">73</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
-                    </div>
-                    <div class="tooth" id="tooth-34" data-tooth="34" data-status="healthy">
-                        <div class="tooth-number">74</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
-                    </div>
-                    <div class="tooth" id="tooth-35" data-tooth="35" data-status="healthy">
-                        <div class="tooth-number">75</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
-                    </div>
-                </div>
-            </div>
-
             <div class="quadrant">
                 <div class="quadrant-header">
                     <span class="quadrant-title">Lower Left</span>
+                    <span class="quadrant-number">4</span>
+                </div>
+                <div class="teeth-row">
+                    <div class="tooth" id="tooth-85" data-tooth="85" data-status="healthy">
+                        <div class="tooth-number">85</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                    </div>
+                    <div class="tooth" id="tooth-84" data-tooth="84" data-status="healthy">
+                        <div class="tooth-number">84</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                    </div>
+                    <div class="tooth" id="tooth-83" data-tooth="83" data-status="healthy">
+                        <div class="tooth-number">83</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                    </div>
+                    <div class="tooth" id="tooth-82" data-tooth="82" data-status="healthy">
+                        <div class="tooth-number">82</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                    </div>
+                    <div class="tooth" id="tooth-81" data-tooth="81" data-status="healthy">
+                        <div class="tooth-number">81</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="separator"></div>
+            <div class="quadrant">
+                <div class="quadrant-header">
+                    <span class="quadrant-title">Lower Right</span>
                     <span class="quadrant-number">3</span>
                 </div>
                 <div class="teeth-row">
-                    <div class="tooth" id="tooth-41" data-tooth="41" data-status="healthy">
-                        <div class="tooth-number">85</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                    <div class="tooth" id="tooth-71" data-tooth="71" data-status="healthy">
+                        <div class="tooth-number">71</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-42" data-tooth="42" data-status="healthy">
-                        <div class="tooth-number">84</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                    <div class="tooth" id="tooth-72" data-tooth="72" data-status="healthy">
+                        <div class="tooth-number">72</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-43" data-tooth="43" data-status="healthy">
-                        <div class="tooth-number">83</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                    <div class="tooth" id="tooth-73" data-tooth="73" data-status="healthy">
+                        <div class="tooth-number">73</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-44" data-tooth="44" data-status="healthy">
-                        <div class="tooth-number">82</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                    <div class="tooth" id="tooth-74" data-tooth="74" data-status="healthy">
+                        <div class="tooth-number">74</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
-                    <div class="tooth" id="tooth-45" data-tooth="45" data-status="healthy">
-                        <div class="tooth-number">81</div>
-                        <i class="fa-solid fa-tooth fs-2"></i>
+                    <div class="tooth" id="tooth-75" data-tooth="75" data-status="healthy">
+                        <div class="tooth-number">75</div>
+                        <i class="fa-solid fa-tooth fs-2 text-light healthy"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex flex-column align-items-center mt-4 w-100">
-                <button id="teeth-select-all" class="btn btn-primary mb-3">Select All Teeth</button>
-                <div class="selected-info text-center w-100">
-                    <div id="selected-teeth" class="border border-3 p-3 text-center">No teeth selected</div>
-                </div>
-                <input type="hidden" name="dentition" id="dentition-data">
-            </div>
-        </div>
-
-        <table class="table table-bordered table-striped mt-4">
-            <tbody>
-                <tr>
-                    <th class="w-25 text-center align-middle">Periodontal Status</th>
-                    <td><textarea class="form-control" name="periodontal_status" rows="3"></textarea></td>
-                </tr>
-                <tr>
-                    <th class="w-25 text-center align-middle">Investigation</th>
-                    <td><input type="file" class="form-control" name="investigation"></td>
-                </tr>
-                <tr>
-                    <th class="w-25 text-center align-middle">Treatment Plan</th>
-                    <td><textarea class="form-control" name="treatment_plan" rows="3"></textarea></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="mt-4 p-3 bg-light rounded">
-            <p>
-                I hereby declare that all the information I have given are true to the best of my knowledge.
-                I have been explained about the positive and negitive findings of the treatment and I gave
-                for the respective treatment.
-            </p>
-
-            <div class="row align-items-center mt-3">
-                <!-- Doctor Signature -->
-                <div class="col-md-6 d-flex flex-column">
-                    <label for="doctor-signature" class="fw-bold mb-2">Doctor Signature</label>
-                    <input type="file" id="doctor-signature" class="form-control">
-                </div>
-
-                <!-- Patient Signature (Aligned to the right) -->
-                <div class="col-md-6 d-flex flex-column">
-                    <label for="patient-signature" class="fw-bold mb-2 text-md-end w-100">Patient Signature</label>
-                    <input type="file" id="patient-signature" class="form-control">
-                </div>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-start mt-4">
-            <button type="submit" class="btn btn-primary w-25">Save</button>
-        </div>
-    </form>
-
-    <hr class="w-100 mx-auto mt-4 mb-4">
-
-    <h3 class="text-start fw-bold mb-3">Prescription</h3>
-    <form id="medicine-form" class="bg-light p-4 rounded shadow mb-4">
-        {% csrf_token %}
-        <input type="hidden" id="booking_id" value="{{ booking.id|default:'' }}">
-
-        <div class="card mb-3 border-0 shadow-sm">
-            <div class="card-header bg-white p-3">
-                <div id="medicine-items-container">
-                    <!-- Dynamic medicine items will be added here -->
-                </div>
-                <div class="d-flex gap-2 mt-3">
-                    <button type="button" id="add-medicine-btn" class="btn btn-primary">
-                        <i class="bi bi-plus-lg"></i> Add Medicine
+             <div class="col-md-12">
+                <div class="treatments-list text-center d-flex flex-wrap justify-content-center">
+                    {% for treatment in treatments %}
+                    <button class="treatment-item my-2 mx-2 py-2 px-3 border-0 text-white d-inline-block"
+                        style="background-color: {{ treatment.color_code }}; border-radius: 5px;">
+                        <strong>{{ treatment.name }}</strong>
                     </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-save"></i> Save & proceed
-                    </button>
+                    {% empty %}
+                    <p>No treatments available.</p>
+                    {% endfor %}
                 </div>
+
+                 <form id="dentition-container" class="bg-light p-4 rounded">
+                    {% csrf_token %}
+                        <div id="dentition-items-container">
+                            <!-- Dynamic dentition entries will be added here -->
+                        </div>
+                        <button type="button" id="add-medicine-btn" style="background:#1c3342; color: #fff;"
+                                class="btn mt-2"><i class="bi bi-plus-lg"></i> Add</button>
+                            <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & Proceed</button>
+                </form>
             </div>
         </div>
-    </form>
 
-    <hr class="w-100 mx-auto mt-4 mb-4">
+<!---------------DIAGNOSIS FORM--------------->
+        <hr class="w-100 mx-auto mb-5">
+        <h3 class="text-start fw-bold">Diagnosis</h3>
+        <form id="diagnosisForm">
+            {% csrf_token %}
+            <textarea name="diagnosis" id="diagnosis" class="form-control" placeholder="Enter diagnosis here..." required></textarea>
+            <button type="submit" class="btn btn-success mt-2">Save Diagnosis</button>
+        </form>
 
-    <h3 class="text-start fw-bold mb-3">Treatment Bill</h3>
 
-    <div class="card w-100 shadow-sm mb-5">
-        <div class="card-body p-4">
-            <form id="treatment-form">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="total-amount-input" class="form-label fw-bold">Total Amount:</label>
-                    <input type="number" id="total-amount-input" class="form-control" step="0.01"
-                        value="{{ treatment_bill.total_amount }}">
+        <hr class="w-100 mx-auto mt-5 mb-5">
+        <h3 class="text-start fw-bold">Prescription</h3>
+        <form id="medicine-form" class="bg-light p-4 rounded shadow">
+            {% csrf_token %}
+
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header">
+                    <div id="medicine-items-container">
+                        <!-- Dynamic medicine items will be added here -->
+                    </div>
+                    <button type="button" id="add-medicine-btnn" style="background:#1c3342; color: #fff;"
+                            class="btn mt-2"><i class="bi bi-plus-lg"></i> Add Medicine
+                    </button>
+                    <button type="submit" class="btn btn-success mt-2"><i class="bi bi-save"></i> Save & proceed</button>
                 </div>
+            </div>
+        </form>
 
-                <div class="mb-3">
-                    <label for="balance-amount" class="form-label fw-bold">Balance Amount:</label>
-                    <input type="number" id="balance-amount" class="form-control" step="0.01"
-                        value="{{ treatment_bill.balance_amount }}" readonly>
+
+        <hr class="w-100 mx-auto mt-5 mb-5">
+        <h3 class="text-start fw-bold">Treatment Bill</h3>
+        <div class="card w-100">
+            <div class="card-body">
+                <form id="treatment-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="total-amount-input" class="form-label fw-bold">Total Amount:</label>
+                        <input type="number" id="total-amount-input" class="form-control" step="0.01"
+                            value="{{ treatment_bill.total_amount }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="balance-amount" class="form-label fw-bold">Balance Amount:</label>
+                        <input type="number" id="balance-amount" class="form-control" step="0.01"
+                            value="{{ treatment_bill.balance_amount }}" readonly>
+                    </div>
+                    <div class="text-start">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="row g-2">
+                <div class="col-6">
+                    <button id="back-button" class="btn btn-primary w-100" style="background: #1c3342;">
+                        Back <i class="fa-solid fa-house" style="color: #ffffff;"></i>
+                    </button>
                 </div>
-                <div class="text-start">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                <div class="col-6">
+                    <button class="btn btn-primary w-100 preview" style="background: #1c3342;" data-id="{{ booking.id }}">
+                        Preview
+                    </button>
                 </div>
-            </form>
-        </div>
     </div>
-</div>
+
+
+
+        </div>
+
+    </div>
+
+
 
 <!-- jQuery, Bootstrap JS, DataTables -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -643,26 +563,61 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-<!-------------------------------------------------------->
-    $(document).on("click", ".checkup", function () {
-    let bookingId = $(this).data("id");  // Get the booking ID
 
-    if (bookingId) {
+   $(document).ready(function() {
+    $('.checkup').click(function() {
+        const bookingId = $(this).data('id');
         window.location.href = `/doctor/checkup/${bookingId}/`;
+    });
+
+    $('.paediatric-checkup').click(function() {
+        const bookingId = $(this).data('id');
+        window.location.href = `/doctor/paediatric_checkup/${bookingId}/`;
+    });
+});
+<!---------------REDIRECT VIEW PATIENTS--------------->
+$(document).on("click", ".view-patients", function (e) {
+   e.preventDefault();
+
+    let doctorId = $(this).data("doctor-id");
+    if (doctorId) {
+        window.location.href = `/doctor/patients/${doctorId}/`;
     } else {
-        alert("Booking ID is missing!");
+        alert("Doctor ID not found!");
     }
 });
 
-   $(document).on("click", ".paediatric-checkup", function () {
-    let bookingId = $(this).data("id");  // Get the booking ID
+
+
+    $(document).on("click", "#back-button", function () {
+        window.location.href = "{% url 'doctor-dashboard' %}";
+    });
+
+
+    $(document).on("click", ".preview", function () {
+    let bookingId = $(this).data("id");
 
     if (bookingId) {
-        window.location.href = `/doctor/paediatric-checkup/${bookingId}/`;
+        window.location.href = `/doctor/today_preview/${bookingId}/`;
     } else {
         alert("Booking ID is missing!");
     }
 });
+
+
+<!---------------PREVIOUS BOOKING DETAILS--------------->
+$(document).on("click", ".last", function () {
+    let bookingId = $(this).data("id");
+
+    if (bookingId) {
+        window.location.href = `/doctor/previous-treatment/${bookingId}/`;
+    } else {
+        alert("No previous treatment history found for this patient.");
+    }
+});
+
+
+
 
 
 
@@ -683,136 +638,97 @@
 
         // Handle form submission
         $("#treatment-form").on("submit", function(event) {
-            event.preventDefault(); // Prevent default form submission
+        event.preventDefault();
 
-            let totalAmount = parseFloat($("#total-amount-input").val()) || 0;
-            let paidAmount = parseFloat($("#paid-amount-input").val()) || 0;
-            let balanceAmount = parseFloat($("#balance-amount").val()) || 0;
+        let formData = new FormData();
+        const bookingId = $("#booking_id").val();
 
-            $.ajax({
-                type: "POST",
-                url: `/doctor/checkup/${bookingId}/`,
-                data: {
-                    csrfmiddlewaretoken: "{{ csrf_token }}",
-                    total_amount: totalAmount,
-                    paid_amount: paidAmount,
-                    balance_amount: balanceAmount
-                },
-                success: function(response) {
-                    console.log("Response received:", response);
-                    alert("Data saved successfully!");
-                    window.location.href = "/doctor/dashboard/";
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                    alert("Error saving data.");
-                }
-            });
-        });
-    });
-
-
-
-    $(document).ready(function(){
-        $('#checkupForm').submit(function(event){
-            event.preventDefault();
-
-            var formData = new FormData(this);
-
-            $.ajax({
-                url: window.location.href,
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
-                success: function(response){
-
-                },
-                error: function(xhr){
-                    alert("Error saving data! " + xhr.responseText);
-                }
-            });
-        });
-    });
-{% comment %} ---------------------------------------------------- {% endcomment %}
-    document.addEventListener("DOMContentLoaded", function () {
-        const selectedTeethDiv = document.getElementById("selected-teeth");
-        const teethElements = document.querySelectorAll(".tooth");
-        let selectedTeeth = [];
-
-        teethElements.forEach((tooth) => {
-            tooth.addEventListener("click", function () {
-                const toothNumber = this.dataset.tooth;
-
-                if (selectedTeeth.includes(toothNumber)) {
-                    // Deselect tooth
-                    selectedTeeth = selectedTeeth.filter((num) => num !== toothNumber);
-                    this.classList.remove("selected");  // Remove highlight
-                } else {
-                    // Select tooth
-                    selectedTeeth.push(toothNumber);
-                    this.classList.add("selected");  // Add highlight
-                }
-
-                // Update UI
-                selectedTeethDiv.textContent =
-                    selectedTeeth.length > 0
-                        ? `Selected Teeth: ${selectedTeeth.join(", ")}`
-                        : "No teeth selected";
-
-                // Store JSON in hidden input for Django
-                document.getElementById("dentition-data").value = JSON.stringify(selectedTeeth);
-            });
-        });
-    });
-
-<!---------------LOGOUT-------------------->
-
-$(document).ready(function() {
-    $('.toggle-btn').on('click', function() {
-        $('.sidebar').toggleClass('active');
-    });
-
-    $('.logout-btn').on('click', function() {
-        const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        formData.append("total_amount", $("#total-amount-input").val());
+        formData.append("paid_amount", $("#paid-amount-input").val() || 0);  // Add paid input
+        formData.append("balance_amount", $("#balance-amount").val());
+        formData.append("csrfmiddlewaretoken", $("input[name=csrfmiddlewaretoken]").val());
 
         $.ajax({
-            url: '/doctor/logout/',
-            type: 'POST',
-            headers: { 'X-CSRFToken': csrftoken },
+            type: "POST",
+            url: `/doctor/checkup/${bookingId}/`,
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function(response) {
-                alert(response.message);
-                window.location.href = '/doctor/login';
+                alert("Treatment bill saved successfully!");
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                alert("Error saving treatment bill.");
+            }
+        });
+    });
+
+    });
+
+
+<!---------------DIAGNOSIS FORM SUBMISSION--------------->
+$(document).ready(function() {
+    var bookingId = $('#booking_id').val();
+    $("#diagnosisForm").on("submit", function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: `/doctor/checkup/${bookingId}/`,
+            data: {
+                diagnosis: $("#diagnosis").val(),
+                csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+            },
+            success: function(response) {
+                alert("✅ Diagnosis saved successfully!");
+                $("#diagnosisResponse").text("Diagnosis saved successfully!");
+                console.log(response.diagnosis);
             },
             error: function(xhr) {
-                let errorMessage = xhr.responseJSON?.error || xhr.statusText || 'Unknown error';
-                alert(`Logout failed: ${errorMessage}`);
+                alert("❌ Failed to save diagnosis. Please try again.");
+                $("#diagnosisResponse").text("Error saving diagnosis.");
+                console.log(xhr.responseJSON);
             }
         });
     });
 });
 
 
- $(document).ready(function() {
+
+
+
+   $(document).ready(function () {
     let medicineCount = 1;
     const bookingId = $("#booking_id").val();
 
     function loadMedicines(selectElementId) {
+        console.log("Fetching medicines for booking:", bookingId);
         $.ajax({
             url: `/doctor/medicine-prescription/${bookingId}/`,
             type: "GET",
-            success: function(data) {
-                const selectElement = $(selectElementId);
+            dataType: "json",
+            success: function (data) {
+                console.log("Debug: Full API Response:", data);
+                if (!data || !data.medicines) {
+                    console.error("Error: Medicines key not found in response.");
+                    return;
+                }
+
+                console.log("Debug: Medicine List:", data.medicines);
+                let selectElement = $(selectElementId);
                 selectElement.empty().append('<option value="">Select Medicine</option>');
-                $.each(data.medicines, function(index, med) {
+
+                $.each(data.medicines, function (index, med) {
                     selectElement.append(`<option value="${med.id}">${med.medicine_name}</option>`);
                 });
             },
-            error: function() { alert("Failed to load medicines."); }
+            error: function (xhr, status, error) {
+                console.error("Medicine Fetch Error:", error);
+                alert("Failed to load medicines.");
+            }
         });
     }
-<!--------------------------------------------------------------------->
+
     function addMedicineItem() {
         const newItemHtml = `
             <div class="medicine-item p-3 mb-3 border rounded bg-white shadow-sm" id="medicine-item-${medicineCount}">
@@ -825,7 +741,7 @@ $(document).ready(function() {
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Days</label>
-                        <input type="number" id="dosage_days_${medicineCount}" class="form-control"  name="dosage_days_${medicineCount}" min="1">
+                        <input type="number" id="dosage_days_${medicineCount}" class="form-control" name="dosage_days_${medicineCount}" min="1">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label d-block">Medicine Times</label>
@@ -864,14 +780,14 @@ $(document).ready(function() {
                             <label class="form-check-label">After Meal</label>
                         </div>
                     </div>
-                   </div>
+                </div>
             </div>
         `;
 
         $('#medicine-items-container').append(newItemHtml);
         loadMedicines(`#medicine_name_${medicineCount}`);
 
-        $('.remove-medicine').on('click', function() {
+        $('.remove-medicine').on('click', function () {
             const itemId = $(this).data('id');
             $(`#medicine-item-${itemId}`).remove();
         });
@@ -879,10 +795,10 @@ $(document).ready(function() {
         medicineCount++;
     }
 
-    $('#add-medicine-btn').on('click', addMedicineItem);
+    $('#add-medicine-btnn').on('click', addMedicineItem);
     addMedicineItem();
 
-    $('#medicine-form').on('submit', function(e) {
+    $('#medicine-form').on('submit', function (e) {
         e.preventDefault();
         let medicines = [];
         let isValid = true;
@@ -892,17 +808,17 @@ $(document).ready(function() {
             return;
         }
 
-        $('.medicine-item').each(function() {
+        $('.medicine-item').each(function () {
             const itemId = $(this).attr('id').split('-').pop();
             const medicineId = $(`#medicine_name_${itemId}`).val();
             const dosageDays = $(`#dosage_days_${itemId}`).val();
             let medicineTimes = [];
             let mealTimes = [];
 
-            $(`input[name="medicine_time_${itemId}"]:checked`).each(function() {
+            $(`input[name="medicine_time_${itemId}"]:checked`).each(function () {
                 medicineTimes.push($(this).val());
             });
-            $(`input[name="meal_time_${itemId}"]:checked`).each(function() {
+            $(`input[name="meal_time_${itemId}"]:checked`).each(function () {
                 mealTimes.push($(this).val());
             });
 
@@ -928,46 +844,382 @@ $(document).ready(function() {
             data: JSON.stringify({ booking_id: parseInt(bookingId), medicines: medicines }),
             contentType: 'application/json',
             headers: { 'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val() },
-            success: function(response) {
+            success: function (response) {
                 alert('Medicine saved successfully!');
                 $('#medicine-items-container').empty();
                 addMedicineItem();
             },
-            error: function(xhr) { console.error('Error:', xhr.responseText); }
+            error: function (xhr) {
+                console.error('Error:', xhr.responseText);
+            }
         });
     });
 });
 
 
-<!--------------------------------------------------->
+
+
+
 $(document).ready(function () {
-    $(".btn-primary[type='submit']").click(function (event) {
-        event.preventDefault(); // Prevent form submission (remove if using form submission)
-        alert("Data saved successfully!");
+    let selectedTeeth = [];
+    let selectedTreatment = "";
+    let selectedTreatmentColor = "";
+    let dentitionCount = 0;
+    let activeFormId = null;
+
+    $(".tooth").off("click");
+    $(".treatment-item").off("click");
+    $("#add-medicine-btn").off("click");
+    $(document).off("click", ".remove-dentition");
+    $(document).off("click", ".dentition-item");
+
+    // Initialize teeth to healthy
+    $(".tooth").each(function () {
+        $(this).attr("data-status", "healthy");
+        $(this).css("background-color", "#229954");
     });
 
-    $("#teeth-select-all").click(function () {
-        // Your logic for selecting/deselecting teeth
-        let allTeeth = $(".tooth");
-        let isAllSelected = allTeeth.length === $(".tooth.selected").length;
+    // Tooth selection
+    $(".tooth").on("click", function () {
+        const toothNumber = $(this).data("tooth");
 
-        if (isAllSelected) {
-            allTeeth.removeClass("selected btn-success").addClass("btn-outline-secondary");
-            $("#selected-teeth").text("No teeth selected");
+        if (selectedTeeth.includes(toothNumber)) {
+            selectedTeeth = selectedTeeth.filter(num => num !== toothNumber);
+            $(this).removeClass("selected");
         } else {
-            allTeeth.addClass("selected btn-success").removeClass("btn-outline-secondary");
-            updateSelectedTeeth();
+            selectedTeeth.push(toothNumber);
+            $(this).addClass("selected");
+
+            if (selectedTreatmentColor) {
+                $(this).css("background-color", selectedTreatmentColor);
+            }
+        }
+
+        $("#selectedTeeth").val(selectedTeeth.join(", "));
+
+        if (activeFormId !== null) {
+            const $form = $(`#dentition-item-${activeFormId}`);
+            $form.find("input[name='selected_teeth[]']").val(selectedTeeth.join(", "));
+
+            // Update tooth-color map for the form
+            let toothColors = $form.data("tooth-colors") || {};
+            selectedTeeth.forEach(tooth => {
+                if (selectedTreatmentColor) {
+                    toothColors[tooth] = selectedTreatmentColor;
+                }
+            });
+            $form.data("tooth-colors", toothColors);
         }
     });
 
-    function updateSelectedTeeth() {
-        let selectedTeeth = $(".tooth.selected").map(function () {
-            return $(this).data("tooth");
-        }).get();
+    // Treatment selection
+    $(".treatment-item").on("click", function () {
+        selectedTreatment = $(this).text().trim();
+        selectedTreatmentColor = $(this).css("background-color");
 
-        $("#selected-teeth").text(selectedTeeth.length ? selectedTeeth.join(", ") : "No teeth selected");
+        $("#selectedTreatment")
+            .val(selectedTreatment)
+            .css({
+                "background-color": selectedTreatmentColor,
+                "color": "#fff",
+                "padding": "10px",
+                "border-radius": "5px",
+                "border": "none"
+            });
+
+        if (activeFormId !== null) {
+            const $form = $(`#dentition-item-${activeFormId}`);
+            $form.find("input[name='selected_treatment[]']")
+                .val(selectedTreatment)
+                .css({
+                    "background-color": selectedTreatmentColor,
+                    "color": "white"
+                });
+
+            let toothColors = $form.data("tooth-colors") || {};
+            selectedTeeth.forEach(tooth => {
+                $(`.tooth[data-tooth="${tooth}"]`).css("background-color", selectedTreatmentColor);
+                toothColors[tooth] = selectedTreatmentColor;
+            });
+            $form.data("tooth-colors", toothColors);
+            $form.data("treatment-color", selectedTreatmentColor);
+        }
+    });
+
+    addDentitionItem();
+
+    $("#add-medicine-btn").on("click", function () {
+        addDentitionItem();
+
+    });
+
+    function addDentitionItem(teethStr = '', treatment = '', treatmentColor = '', note = '') {
+        const id = dentitionCount;
+
+        const teethArray = teethStr ? teethStr.split(", ").map(t => t.trim()) : [];
+        const toothColors = {};
+        teethArray.forEach(tooth => {
+            toothColors[tooth] = treatmentColor;
+        });
+
+        const newDentitionHtml = `
+            <div class="dentition-item p-3 mb-3 border rounded bg-white shadow-sm"
+                 id="dentition-item-${id}" data-id="${id}">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Selected Teeth</label>
+                        <input type="text" class="form-control" name="selected_teeth[]" value="${teethStr}" readonly>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Treatment</label>
+                        <input type="text" class="form-control" name="selected_treatment[]" value="${treatment}"
+                            style="${treatmentColor ? `background-color: ${treatmentColor}; color: white;` : ''}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Note</label>
+                        <textarea name="treatment_note[]" class="form-control" placeholder="Add a note..." rows="1">${note}</textarea>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger remove-dentition" data-id="${id}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('#dentition-items-container').append(newDentitionHtml);
+        $(`#dentition-item-${id}`).data("treatment-color", treatmentColor);
+        $(`#dentition-item-${id}`).data("tooth-colors", toothColors);
+
+        setActiveForm(id);
+        dentitionCount++;
     }
+
+    $(document).on('click', '.dentition-item', function () {
+        const itemId = $(this).data('id');
+        setActiveForm(itemId);
+    });
+
+    function setActiveForm(id) {
+
+
+        if (activeFormId !== null) {
+            $(`#dentition-item-${activeFormId}`).removeClass('active-form');
+        }
+
+        activeFormId = id;
+        $(`#dentition-item-${id}`).addClass('active-form');
+
+        selectedTeeth = [];
+        $(".tooth").removeClass("selected");
+
+        const teethStr = $(`#dentition-item-${id}`).find("input[name='selected_teeth[]']").val();
+        const form = $(`#dentition-item-${id}`);
+        const toothColorMap = form.data("tooth-colors") || {};
+        const formTreatmentColor = form.data("treatment-color");
+
+        if (teethStr) {
+            selectedTeeth = teethStr.split(", ").map(t => t.trim()).filter(t => t);
+            selectedTeeth.forEach(toothNum => {
+                const $tooth = $(`.tooth[data-tooth="${toothNum}"]`);
+                $tooth.addClass("selected");
+                const color = toothColorMap[toothNum] || formTreatmentColor || "#229954";
+                $tooth.css("background-color", color);
+            });
+        }
+
+        selectedTreatment = form.find("input[name='selected_treatment[]']").val();
+        selectedTreatmentColor = formTreatmentColor || form.find("input[name='selected_treatment[]']").css("background-color");
+
+        if (selectedTreatment) {
+            $("#selectedTreatment")
+                .val(selectedTreatment)
+                .css({
+                    "background-color": selectedTreatmentColor,
+                    "color": "#fff",
+                    "padding": "10px",
+                    "border-radius": "5px",
+                    "border": "none"
+                });
+        } else {
+            $("#selectedTreatment").val("").removeAttr("style");
+        }
+    }
+
+
+
+    function resetSelections() {
+        selectedTeeth = [];
+        selectedTreatment = "";
+        selectedTreatmentColor = "";
+        $(".tooth").removeClass("selected");
+        $("#selectedTeeth").val("");
+        $("#selectedTreatment").val("").removeAttr("style");
+    }
+
+    $(document).on('click', '.remove-dentition', function (e) {
+        e.stopPropagation();
+        const itemId = $(this).data('id');
+
+        if (activeFormId === itemId) {
+            resetSelections();
+            activeFormId = null;
+        }
+
+        $(`#dentition-item-${itemId}`).remove();
+    });
+
+    $("#dentition-container").submit(function (event) {
+        event.preventDefault();
+        const bookingId = $('#booking_id').val();
+        const dentitionData = [];
+
+        $(".dentition-item").each(function () {
+            let teeth = $(this).find("input[name='selected_teeth[]']").val();
+            let treatment = $(this).find("input[name='selected_treatment[]']").val();
+            let note = $(this).find("textarea[name='treatment_note[]']").val();
+            let treatmentColor = $(this).data("treatment-color");
+
+            if (teeth && treatment) {
+                dentitionData.push({
+                    selected_teeth: teeth.split(", "),
+                    treatment: treatment,
+                    treatment_color: treatmentColor,
+                    note: note
+                });
+            }
+        });
+
+        $.ajax({
+            url: `/doctor/checkup/${bookingId}/`,
+            type: "POST",
+            headers: {
+                "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
+            },
+            contentType: "application/json",
+            data: JSON.stringify({ dentitions: dentitionData }),
+            success: function (response) {
+                alert("Dentition data saved successfully!");
+                $("#dentition-items-container").empty();
+                addDentitionItem();
+                resetSelections();
+                activeFormId = 0;
+            },
+            error: function (xhr) {
+                alert("Error saving data: " + xhr.responseText);
+            }
+        });
+    });
+
+    $("<style>")
+        .prop("type", "text/css")
+        .html(`
+            .active-form {
+                border: 2px solid #007bff !important;
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.5) !important;
+            }
+            .dentition-item {
+                cursor: pointer;
+            }
+        `)
+        .appendTo("head");
+
+    document.querySelectorAll('.tooth').forEach(function (tooth) {
+        const status = tooth.getAttribute('data-status');
+        if (status === 'healthy') {
+            tooth.style.backgroundColor = "#229954";
+        }
+    });
 });
 
+
+<!----------------DENTAL EXAMINATION------------>
+$(document).ready(function() {
+    var bookingId = $('#booking_id').val();
+
+    $(document).on("click", ".checkup", function() {
+        if (!bookingId) {
+            alert("Booking ID is missing!");
+            return;
+        }
+        window.location.href = `/doctor/checkup/${bookingId}/`;
+    });
+
+    $('#checkupForm').submit(function(event) {
+    event.preventDefault();
+
+    let bookingId = $('#booking_id').val();
+    if (!bookingId) {
+        alert("Booking ID is missing!");
+        return;
+    }
+
+    let formData = new FormData(this);
+    let investigationFiles = $('#investigation')[0].files;
+    for (let i = 0; i < investigationFiles.length; i++) {
+        formData.append('investigation[]', investigationFiles[i]);
+    }
+
+    $.ajax({
+        url: `/doctor/checkup/${bookingId}/`,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+        },
+        success: function(response) {
+            alert(response.message || "Data saved successfully!");
+        },
+        error: function(xhr, status, error) {
+            console.error("Response Error:", xhr.responseText);
+            alert('An error occurred: ' + error);
+        }
+    });
+});
+
+});
+
+
+
+
+
+
+
+
+
+<!---------------LOGOUT-------------------->
+
+$(document).ready(function() {
+    $('.toggle-btn').on('click', function() {
+        $('.sidebar').toggleClass('active');
+    });
+
+    $('.logout-btn').on('click', function() {
+        const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        $.ajax({
+            url: '/doctor/logout/',
+            type: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+            success: function(response) {
+                alert(response.message);
+                window.location.href = '/doctor/login';
+            },
+            error: function(xhr) {
+                let errorMessage = xhr.responseJSON?.error || xhr.statusText || 'Unknown error';
+                alert(`Logout failed: ${errorMessage}`);
+            }
+        });
+    });
+});
+
+
+
 </script>
+</body>
 </html>
+
+

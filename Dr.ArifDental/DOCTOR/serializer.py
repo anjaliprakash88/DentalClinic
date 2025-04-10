@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from SUPER_ADMIN.models import PharmaceuticalMedicine, Doctor, Branch, User
 from RECEPTION.models import PatientBooking, Patient
+from datetime import date
 from .models import (DentalExamination,
                      MedicinePrescription,
                      TreatmentBill,
@@ -349,6 +350,86 @@ class LastAppointmentPreviewSerializer(serializers.Serializer):
         return []
 
 # ---------------PATIENT LIST VIEW---------------
+class RecentTreatmentSerializer(serializers.Serializer):
+    dental_examination = serializers.SerializerMethodField()
+    diagnosis = serializers.SerializerMethodField()
+    dentition = serializers.SerializerMethodField()
+    prescriptions = serializers.SerializerMethodField()
+
+    def get_latest_entry(self, model, patient):
+        today = date.today()
+        today_entry = model.objects.filter(
+            patient=patient,
+            booking__appointment_date=today
+        ).order_by('-created_at').first()
+
+        if today_entry:
+            return today_entry
+        return model.objects.filter(patient=patient).order_by('-created_at').first()
+
+    def get_dental_examination(self, obj):
+        exam = self.get_latest_entry(DentalExamination, obj)
+        if exam:
+            return {
+                "chief_complaints": exam.chief_complaints,
+                "history_of_present_illness": exam.history_of_present_illness,
+                "medical_history": exam.medical_history,
+                "personal_history": exam.personal_history,
+                "general_examination": exam.general_examination,
+                "general_examination_intraoral": exam.general_examination_intraoral,
+                "local_examination_extraoral": exam.local_examination_extraoral,
+                "soft_tissue": exam.soft_tissue,
+                "periodontal_status": exam.periodontal_status,
+                "treatment_plan": exam.treatment_plan,
+                "created_at": exam.created_at,
+                "updated_at": exam.updated_at
+            }
+        return None
+
+    def get_diagnosis(self, obj):
+        diagnosis = self.get_latest_entry(Diagnosis, obj)
+        if diagnosis:
+            return {
+                "diagnosis": diagnosis.diagnosis,
+                "created_at": diagnosis.created_at,
+                "updated_at": diagnosis.updated_at
+            }
+        return None
+
+    def get_dentition(self, obj):
+        dentition = self.get_latest_entry(Dentition, obj)
+        if dentition:
+            return {
+                "selected_teeth": dentition.selected_teeth,
+                "treatment": dentition.treatment.name if dentition.treatment else None,
+                "color_code": dentition.treatment.color_code if dentition.treatment else "#00FF00",
+                "note": dentition.note,
+                "created_at": dentition.created_at
+            }
+        return None
+
+    def get_prescriptions(self, obj):
+        today = date.today()
+        prescriptions = MedicinePrescription.objects.filter(
+            booking__patient=obj,
+            booking__appointment_date=today
+        )
+
+        if not prescriptions.exists():
+            prescriptions = MedicinePrescription.objects.filter(
+                booking__patient=obj
+            ).order_by('-created_at')[:5]
+
+        return [
+            {
+                "medicine": p.medicine.medicine_name,
+                "dosage_days": p.dosage_days,
+                "medicine_times": p.medicine_times,
+                "meal_times": p.meal_times,
+                "created_at": p.created_at
+            }
+            for p in prescriptions
+        ]
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
@@ -359,7 +440,7 @@ class PatientSerializer(serializers.ModelSerializer):
         ]
 class DoctorPatientSerializer(serializers.ModelSerializer):
     doctor_name = serializers.SerializerMethodField()
-    patients = serializers.SerializerMethodField()  # Use a method to get actual patients
+    patients = serializers.SerializerMethodField()
 
     class Meta:
         model = Doctor
@@ -369,9 +450,12 @@ class DoctorPatientSerializer(serializers.ModelSerializer):
         return f"{obj.user.first_name} {obj.user.last_name}"
 
     def get_patients(self, obj):
-        """
-        Fetches unique patients who have booked an appointment with the doctor.
-        """
         bookings = PatientBooking.objects.filter(doctor=obj).select_related('patient')
-        unique_patients = {booking.patient for booking in bookings}  # Get unique patients
-        return PatientSerializer(unique_patients, many=True).data
+        unique_patients = {booking.patient for booking in bookings}
+
+        result = []
+        for patient in unique_patients:
+            patient_data = PatientSerializer(patient).data
+            patient_data['recent_treatment'] = RecentTreatmentSerializer(patient).data
+            result.append(patient_data)
+        return result

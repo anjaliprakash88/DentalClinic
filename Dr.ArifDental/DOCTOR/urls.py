@@ -13,6 +13,8 @@ urlpatterns = [
     path('change-password/', views.ChangeDoctorPassword.as_view(), name='change_password'),
 
     path('checkup/<int:booking_id>/', views.DentalExaminationCheckup.as_view(), name='checkup_page'),
+    path('paediatric_checkup/<int:booking_id>/', views.PaediatricDentalExaminationCheckup.as_view(), name='paediatric_checkup_page'),
+
     path('today_preview/<int:booking_id>/', views.TodayPreview.as_view(), name='today_preview'),
 
     path('medicine-prescription/<int:booking_id>/', views.MedicineAPIView.as_view(), name='medicine-prescription'),
@@ -21,7 +23,7 @@ urlpatterns = [
 
 
 
-
+    path("patient/<int:pk>/", views.RecentTreatmentDetailView.as_view(), name="recent-treatment"),
 
 
 ]

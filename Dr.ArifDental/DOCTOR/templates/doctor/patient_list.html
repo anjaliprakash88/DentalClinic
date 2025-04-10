@@ -241,9 +241,13 @@
                     <td>{{ item.patient.gender }}</td>
                     <td>{{ item.patient.phone }}</td>
                     <td>
-                        <button class="btn btn-primary last" style="background: #1c3342;" data-id="{{ item.booking_id }}">
-                           View
+                        {% with latest_booking=item.bookings.0 %}
+                        <button class="btn btn-primary last" style="background: #1c3342;"
+                                data-id="{{ latest_booking.id }}"
+                                data-patient-id="{{ item.patient.id }}">
+                            View
                         </button>
+                        {% endwith %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -253,6 +257,20 @@
 </div>
 
 
+<!-- Treatment Detail Modal -->
+<div class="modal fade" id="treatmentModal" tabindex="-1" aria-labelledby="treatmentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color:#1c3342; color:white;">
+        <h5 class="modal-title" id="treatmentModalLabel">Recent Treatment Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="treatmentModalBody">
+        <p>Loading...</p>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <!-- jQuery, Bootstrap JS, and DataTables -->
@@ -275,16 +293,96 @@
        }
    });
 
-   $(document).on("click", ".last", function () {
-    let bookingId = $(this).data("id");
 
-    if (bookingId) {
-        window.location.href = `/doctor/previous-treatment/${bookingId}/`;
-    } else {
-        alert("Booking ID is missing!");
+$(document).on("click", ".btn.last", function () {
+    const patientId = $(this).data("patient-id");
+
+    if (!patientId) {
+        alert("Patient ID not found!");
+        return;
     }
-});
 
+    $.ajax({
+        url: `/doctor/patient/${patientId}`,  // Make sure this endpoint is set correctly
+        type: "GET",
+        success: function (data) {
+            let html = "";
+
+            if (data.dental_examination) {
+                html += `<h5><strong><u>Dental Examination</u></strong></h5>`;
+                html += `
+                    <table class="table table-bordered">
+                        <tr><th>Chief Complaints</th><td>${data.dental_examination.chief_complaints}</td></tr>
+                        <tr><th>History Of Present Illness</th><td>${data.dental_examination.history_of_present_illness}</td></tr>
+                        <tr><th>Medical History</th><td>${data.dental_examination.medical_history}</td></tr>
+                        <tr><th>Personal History</th><td>${data.dental_examination.personal_history}</td></tr>
+                        <tr><th>General Examination</th><td>${data.dental_examination.general_examination}</td></tr>
+                        <tr><th>General Examination Intraoral</th><td>${data.dental_examination.general_examination_intraoral}</td></tr>
+                        <tr><th>Local Examination Extraoral</th><td>${data.dental_examination.local_examination_extraoral}</td></tr>
+                        <tr><th>Soft Tissue</th><td>${data.dental_examination.soft_tissue}</td></tr>
+                        <tr><th>Periodontal Status</th><td>${data.dental_examination.periodontal_status}</td></tr>
+                        <tr><th>Treatment Plan</th><td>${data.dental_examination.treatment_plan}</td></tr>
+                    </table>`;
+
+            }
+
+            if (data.diagnosis) {
+                html += `<h5><strong><u>Diagnosis</u></strong></h5>`;
+                html += `
+                    <table class="table table-bordered">
+                        <tr><th>Diagnosis</th><td>${data.diagnosis.diagnosis}</td></tr>
+                    </table>`;
+            }
+
+            if (data.dentition) {
+                html += `<h5><strong><u>Dentition</u></strong></h5>`;
+                html += `
+                    <table class="table table-bordered">
+                        <tr><th>Selected Teeth</th><td>${data.dentition.selected_teeth}</td></tr>
+                        <tr><th>Treatment</th><td>${data.dentition.treatment}</td></tr>
+                        <tr><th>Note</th><td>${data.dentition.note}</td></tr>
+                    </table>`;
+            }
+
+            if (data.prescriptions && data.prescriptions.length > 0) {
+                html += `<h5><strong><u>Prescriptions</u></strong></h5>`;
+                html += `<table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Days</th>
+                                    <th>Times</th>
+                                    <th>Meal Times</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                data.prescriptions.forEach(p => {
+                    html += `
+                        <tr>
+                            <td>${p.medicine}</td>
+                            <td>${p.dosage_days}</td>
+                            <td>${p.medicine_times}</td>
+                            <td>${p.meal_times}</td>
+                        </tr>`;
+                });
+                html += `</tbody></table>`;
+            }
+
+            if (html === "") {
+                html = "<p>No recent treatment data found.</p>";
+            }
+
+            $("#treatmentModalBody").html(html);
+            const modal = new bootstrap.Modal(document.getElementById('treatmentModal'));
+            modal.show();
+        },
+        error: function () {
+            $("#treatmentModalBody").html("<p>Error fetching treatment details.</p>");
+            const modal = new bootstrap.Modal(document.getElementById('treatmentModal'));
+            modal.show();
+        }
+    });
+});
 
 <!---------------LOGOUT-------------------->
 

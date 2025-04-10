@@ -279,8 +279,8 @@
 
     <!-- Content -->
     <div class="content">
-    <!--    <button class="btn btn-primary checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Adult</button>-->
-    <!--    <button class="btn btn-primary paediatric-checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Paediatric</button>-->
+        <button class="btn btn-primary checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Adult</button>
+        <button class="btn btn-primary paediatric-checkup mb-3" style="background: #1c3342;" data-id="{{ booking.id }}">Paediatric</button>
         <form id="checkupForm" method="post" enctype="multipart/form-data">
             <input type="hidden" name="booking_id" id="booking_id" value="{{ booking.id }}">
             {% csrf_token %}
@@ -609,6 +609,18 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+
+    $(document).ready(function() {
+    $('.checkup').click(function() {
+        const bookingId = $(this).data('id');
+        window.location.href = `/doctor/checkup/${bookingId}/`;
+    });
+
+    $('.paediatric-checkup').click(function() {
+        const bookingId = $(this).data('id');
+        window.location.href = `/doctor/paediatric_checkup/${bookingId}/`;
+    });
+});
 <!---------------REDIRECT VIEW PATIENTS--------------->
 $(document).on("click", ".view-patients", function (e) {
    e.preventDefault();
@@ -1251,8 +1263,6 @@ $(document).ready(function() {
 });
 
 
-
 </script>
-
 </body>
 </html>
