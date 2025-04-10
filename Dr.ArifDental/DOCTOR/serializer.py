@@ -276,11 +276,52 @@ class LastAppointmentPreviewSerializer(serializers.Serializer):
         return DentalExaminationSerializer(exam).data if exam else None
 
     def get_dentition(self, obj):
-        # This is correct - uses booking reference
-        dentition = Dentition.objects.filter(
-            booking=obj
-        ).order_by('-created_at').first()
-        return DentitionSerializer(dentition).data if dentition else None
+        patient = obj.patient
+
+        # All bookings including current
+        all_bookings = PatientBooking.objects.filter(
+            patient=patient,
+            appointment_date__lte=obj.appointment_date
+        ).order_by('appointment_date')  # ascending so history builds up properly
+
+        # All dentitions including current booking
+        all_dentitions = Dentition.objects.filter(booking__in=all_bookings)
+
+        # Build history map
+        tooth_history = {}
+
+        for dent in all_dentitions:
+            treatment_name = dent.treatment.name if dent.treatment else "Healthy"
+            treatment_color = dent.treatment.color_code if dent.treatment else "#229954"
+            note = dent.note or ""
+
+            for tooth_id in dent.selected_teeth:
+                if tooth_id not in tooth_history:
+                    tooth_history[tooth_id] = []
+
+                tooth_history[tooth_id].append({
+                    "treatment": treatment_name,
+                    "color_code": treatment_color,
+                    "note": note,
+                    "date": dent.booking.appointment_date.strftime("%Y-%m-%d")
+                })
+
+        # Get latest dentition for this booking
+        latest_dentition = Dentition.objects.filter(booking=obj).order_by('-created_at').first()
+        latest_data = DentitionSerializer(latest_dentition).data if latest_dentition else None
+
+        if latest_data:
+            latest_data['all_notes'] = list(
+                Dentition.objects.filter(booking=obj)
+                .exclude(note__isnull=True)
+                .exclude(note__exact="")
+                .values_list('note', flat=True)
+            )
+
+            # 💡 Add full tooth history including current
+            latest_data['tooth_history'] = tooth_history
+
+        return latest_data
 
     def get_diagnosis(self, obj):
         # This is correct - uses booking reference

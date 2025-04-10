@@ -58,17 +58,39 @@ class LastAppointmentPreview(APIView):
             })
 
         serializer = LastAppointmentPreviewSerializer(last_booking)
+        serialized_data = serializer.data
+
+        # Get all notes from the serialized data
+        all_notes = []
+        if serialized_data.get('dentition') and serialized_data['dentition'].get('all_notes'):
+            all_notes = serialized_data['dentition']['all_notes']
+        print("all: ", all_notes)
 
         dentitions = Dentition.objects.filter(booking=last_booking)
+        past_dentitions = Dentition.objects.filter(booking__patient=patient).order_by('booking__appointment_date')
 
+        # Build note map
+        from collections import defaultdict
+        tooth_notes_map = defaultdict(list)
+        for d in past_dentitions:
+            for tooth_id in d.selected_teeth:  # Loop through each selected tooth
+                if d.note and d.note.strip().lower() != "healthy":
+                    note_str = f"{d.booking.appointment_date}: {d.treatment} - {d.note}"
+                    tooth_notes_map[tooth_id].append(note_str)
+
+        # Append history and all_notes for each tooth
         dentition_data = []
-        for d in dentitions:
-            for tooth_id in d.selected_teeth:
+        tooth_history = serialized_data.get('dentition', {}).get('tooth_history', {})
+
+        for tooth_id, treatments in tooth_history.items():
+            for treatment_entry in treatments:
                 dentition_data.append({
                     "tooth_id": tooth_id,
-                    "treatment": d.treatment.name if d.treatment else "Healthy",
-                    "color_code": d.treatment.color_code if d.treatment else "#229954",
-                    "note": d.note or "",
+                    "treatment": treatment_entry['treatment'],
+                    "color_code": treatment_entry['color_code'],
+                    "note": treatment_entry['note'],
+                    "date": treatment_entry['date'],
+                    "all_notes": tooth_notes_map[tooth_id]
                 })
 
         dentition_data_json = json.dumps(dentition_data)
@@ -108,6 +130,7 @@ class LastAppointmentPreview(APIView):
             "dentition_data_json": dentition_data_json,
             "treatments": DentitionTreatmentSerializer(treatments, many=True).data,
             "prescription_data_json": prescription_data_json,
+            "tooth_history_json": json.dumps(tooth_history),
         })
 
 # -------------TODAY PREVIEW------------
