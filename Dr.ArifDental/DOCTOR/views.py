@@ -608,12 +608,9 @@ class DoctorProfileView(APIView):
     def get(self, request):
         try:
             doctor = get_object_or_404(Doctor, user=request.user)
-
             if request.accepted_renderer.format == 'json':
                 doctor_serializer = DoctorViewProfileSerializer(doctor)
                 return Response({'doctors': doctor_serializer.data}, status=status.HTTP_200_OK)
-
-            # Send model instance to HTML template
             return Response({'doctors': doctor}, template_name=self.template_name)
 
         except Doctor.DoesNotExist:
@@ -621,20 +618,17 @@ class DoctorProfileView(APIView):
 
     def post(self, request):
         doctor = get_object_or_404(Doctor, user=request.user)
-        # Extract user-related fields
         user_data = {
             "username": request.data.get("username"),
             "first_name": request.data.get("first_name"),
             "last_name": request.data.get("last_name"),
             "email": request.data.get("email"),
         }
-
         for attr, value in user_data.items():
             if value:
                 setattr(doctor.user, attr, value)
             doctor.user.save()
 
-            # Update Doctor model fields
         doctor_data = {
             "phone_number": request.data.get("phone_number"),
             "experience_years": request.data.get("experience_years"),

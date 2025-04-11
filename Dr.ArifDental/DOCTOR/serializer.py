@@ -123,25 +123,20 @@ class DoctorViewProfileSerializer(serializers.ModelSerializer):
     user = UserViewProfileSerializer()
     branch = BranchSerializer()
 
-
-
     class Meta:
         model = Doctor
         fields = '__all__'
 
     def update(self, instance, validated_data):
-        # Update related user fields
         user_data = validated_data.pop('user', {})
         user = instance.user
         for attr, value in user_data.items():
             setattr(user, attr, value)
         user.save()
 
-        # Update doctor fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-
         return instance
 
 # ---------------TREATMENT BILL---------------
