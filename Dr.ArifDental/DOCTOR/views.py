@@ -266,8 +266,12 @@ class LastAppointmentPreview(APIView):
                     tooth_notes_map[tooth_id].append(note_str)
 
         # Append history and all_notes for each tooth
+        # Safely handle possible missing 'dentition' key
+        dentition_serialized = serialized_data.get('dentition') or {}
+        all_notes = dentition_serialized.get('all_notes', [])
+        tooth_history = dentition_serialized.get('tooth_history', {})
+
         dentition_data = []
-        tooth_history = serialized_data.get('dentition', {}).get('tooth_history', {})
 
         for tooth_id, treatments in tooth_history.items():
             for treatment_entry in treatments:
