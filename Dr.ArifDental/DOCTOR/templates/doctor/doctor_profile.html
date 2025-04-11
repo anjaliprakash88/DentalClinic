@@ -23,138 +23,12 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: #d2e3e9;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            background:#1c3342;
-            padding-top: 20px;
-            color: white;
-            transition: 0.3s;
-        }
-
-        .sidebar .sidebar-logo {
-            text-align: center;
-        }
-
-        .sidebar .sidebar-logo img {
-            width: 70px;
-            height: auto;
-            margin-bottom: 12px;
-            border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .sidebar .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 12px; /* Adds space between menu items */
-            padding: 0 10px;
-        }
-        
-        .sidebar .menu-item {
-            padding: 10px 15px;
-            color: black;
-            background: #d2e3e9;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Alternative if not using gap */
-        .sidebar .menu-item:not(:last-child) {
-            margin-bottom: 10px;
-        }
-        
-
-        .menu-item.active {
-            background: var(--hover-color);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-        }
-
-        .menu-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background-color: var(--white);
-        }
-
-        .menu-item a {
-            color: inherit;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-
-        .menu-item i {
-            margin-right: 8px;
-            font-size: 14px;
-        }
-
-        .menu-item:hover {
-            background: #d2e3e9;
-            color: clack;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-        }
-
-        /* Navbar */
-        .top-navbar {
-            height: 60px;
-            width: calc(100% - 260px);
-            position: fixed;
-            top: 0;
-            left: 260px;
-            background: #d2e3e9;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            justify-content: space-between;
-            color: black;
-            z-index: 1000;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .top-navbar .dashboard-title {
-            font-size: 22px;
-            font-weight: bold;
-            margin-left: 20px;
-        }
-
-        .top-navbar .nav-icons a {
-            color: white;
-            font-size: 20px;
-            margin-left: 15px;
-            transition: 0.3s;
-        }
-
-        .top-navbar .nav-icons a:hover {
-            color: #f1c40f;
+            background: #87CEEB;
         }
 
         /* Content Area */
         .content {
-            margin-left: 100px;
-            margin-top: 50px;
             padding: 20px;
-
         }
 
         /* Tooltip */
@@ -189,14 +63,14 @@
 
         }
         .profile-card {
-        width: 100%;
-        max-width: 600px;
-        padding: 20px;
-        background: white;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
-        text-align: center;
-    }
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            text-align: center;
+        }
 
     .profile-card h2 {
         color: #333; /* Changed from blue to neutral */
@@ -260,7 +134,7 @@
     }
 
     .modal-header {
-        background: #333;
+        background: #87CEEB;
         color: white;
         border-radius: 12px 12px 0 0;
     }
@@ -298,99 +172,107 @@
             width: 90%;
         }
     }
-        .btn-dark
-        {
-        border:none;
-            background:#1c3342;
 
+        .sidebar-logo{
+        height:150px;
+        width:150px;
         }
 
     </style>
 </head>
 <body>
 
-<!-- Sidebar -->
-<nav class="sidebar">
-    <div class="sidebar-logo">
-        <img src="{% static 'images/logo (2).png' %}" alt="Dr. Arif's Dental Clinic Logo">
-    </div>
-    <div class="sidebar-menu">
-        <div class="menu-item"><a href="/doctor/dashboard/"><i class="fa-solid fa-house" style="color: #000000;"></i>Home</a></div>
-<!--        <div class="menu-item"><a href="#"><i class="fa-solid fa-calendar-check" style="color: #000000;"></i>Today Appointment</a></div>-->
-<!--        <div class="menu-item">-->
-<!--            <a href="" class="view-patients" data-doctor-id="{{ doctor.id }}">-->
-<!--               <i class="fa-solid fa-hospital-user" style="color: #000000;"></i>View Patients-->
-<!--            </a>-->
-<!--        </div>-->
 
-    </div>
-</nav>
 
-<!-- Top Navbar -->
-<div class="top-navbar d-flex justify-content-between align-items-center">
-    <h1 class="dashboard-title ms-center">DOCTOR PROFILE</h1>
-
-</div>
 
 <!-- Content -->
 <div class="content d-flex justify-content-center align-items-center">
-
-    <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%;">
-        <div class="d-flex justify-content-end">
-            <button type="button" class="btn-close mb-2 " data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="card shadow-lg p-4" style="max-width: 1000px; width: 100%;">
+         <div class="d-flex justify-content-between align-items-center m">
+            <h4 class="dashboard-title mb-3"><strong>DOCTOR PROFILE</strong></h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        {% if doctors %}
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th class="bg-light">USERNAME</th>
-                        <td>{{ doctors.user.username }}</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">FIRST NAME</th>
-                        <td>{{ doctors.user.first_name }}</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">LAST NAME</th>
-                        <td>{{ doctors.user.last_name }}</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">EMAIL</th>
-                        <td>{{ doctors.user.email }}</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">EXPERIENCE</th>
-                        <td>{{ doctors.experience_years }} Years</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">QUALIFICATION</th>
-                        <td>{{ doctors.qualification }}</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">PHONE</th>
-                        <td>{{ doctors.phone_number }}</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">BRANCH</th>
-                        <td>{{ doctors.branch.name }}</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">ADDRESS</th>
-                        <td>{{ doctors.address }}</td>
-                    </tr>
-                    <tr>
-                        <th class="bg-light">SPECIALIZATION</th>
-                        <td>{{ doctors.specialization }}</td>
-                    </tr>
-                </tbody>
-            </table>
 
+        {% if doctors %}
+           <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>Username: </strong> {{ doctors.user.username }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>First Name:</strong> {{ doctors.user.first_name }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>Last Name:</strong> {{ doctors.user.last_name }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>Email:</strong> {{ doctors.user.email }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>Experience:</strong> {{ doctors.experience_years }} Years
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>Qualification:</strong> {{ doctors.qualification }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>Phone:</strong> {{ doctors.phone_number }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>Branch:</strong> {{ doctors.branch.name }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>Address:</strong> {{ doctors.address }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                        <strong>Specialization:</strong> {{ doctors.specialization }}
+                    </div>
+                </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                            <strong>Edu. Certificate:</strong><br>
+                            {% if doctors.educational_certificate %}
+                                <img src="{{ doctors.educational_certificate.url }}" alt="Educational Certificate" class="img-fluid" height="100" width="400">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded text-center" style="background:#d2e3e9">
+                            <strong>Edu. Certificate:</strong><br>
+                            {% if doctors.medical_license %}
+                                <img src="{{ doctors.medical_license.url }}" alt="Medical License" class="img-fluid" height="100" width="400">
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+
+            </div>
             <!-- Edit Button -->
-            <div class="text-center mt-3">
-                <a href="#" class="btn btn-dark px-4" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+
+            <div class="mt-3">
+                <a href="#" class="btn btn-dark w-100 py-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                     Edit Profile
                 </a>
             </div>
+
 
         {% else %}
             <p class="text-danger text-center mt-3">Doctor profile not found.</p>
@@ -478,20 +360,28 @@
 
                     <!-- File Upload Fields -->
                     <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label fw-bold">UPLOAD EDU.CERTIFICATE</label>
-                            <input type="file" class="form-control" id="edit_educational_certificate">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">UPLOAD EDU.CERTIFICATE</label>
+                                <input type="file" class="form-control" id="edit_educational_certificate">
+                                {% if doctors.educational_certificate %}
+                                    <small class="text-muted mt-1 d-block">Current File: {{ doctors.educational_certificate.name|cut:'media/' }}</small>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label fw-bold">UPLOAD MED.LICENSE</label>
-                            <input type="file" class="form-control" id="edit_medical_license">
+                        <!-- Medical License -->
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">UPLOAD MED.LICENSE</label>
+                                {% if doctors.medical_license %}
+                                <input type="file" class="form-control" id="edit_medical_license">
+                                {% endif %}
+                                    <small class="text-muted mt-1 d-block">Current File: {{ doctors.medical_license.name|cut:'media/' }}</small>
+
+                            </div>
                         </div>
-                    </div>
-
-                    <button type="submit" style="border:None;" class="btn btn-dark" id="saveProfileChanges">
+                    <button type="submit" style="border:None;" class="btn btn-dark w-100 py-2" id="saveProfileChanges">
                         Update
                     </button>
                 </form>

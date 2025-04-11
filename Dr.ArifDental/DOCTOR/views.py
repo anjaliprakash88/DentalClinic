@@ -608,11 +608,13 @@ class DoctorProfileView(APIView):
     def get(self, request):
         try:
             doctor = get_object_or_404(Doctor, user=request.user)
-            doctor_serializer = DoctorViewProfileSerializer(doctor)
 
             if request.accepted_renderer.format == 'json':
+                doctor_serializer = DoctorViewProfileSerializer(doctor)
                 return Response({'doctors': doctor_serializer.data}, status=status.HTTP_200_OK)
-            return Response({'doctors': doctor_serializer.data}, template_name=self.template_name)
+
+            # Send model instance to HTML template
+            return Response({'doctors': doctor}, template_name=self.template_name)
 
         except Doctor.DoesNotExist:
             return Response({'message': 'Doctor profile not found'}, status=status.HTTP_404_NOT_FOUND)
