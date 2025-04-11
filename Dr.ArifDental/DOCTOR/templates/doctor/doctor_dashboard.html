@@ -281,34 +281,34 @@
 </div>
 
 <!---------------CHANGE PASSWORD-------------->
- <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header text-white" style="background: #1c3342; color:white;" >
-                <h5 class="modal-title" id="changePasswordModalLabel">CHANGE PASSWORD</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="doctorchangepasswordForm" action="/doctor/change-password/" method="POST">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">Old Password</label>
-                        <input type="password" class="form-control" id="model-oldpassword" name="oldpassword" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">New Password</label>
-                        <input type="password" class="form-control" id="model-newpassword" name="newpassword" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="model-confirmpassword" name="confirmpassword" required>
-                    </div>
-                    <button type="submit" class="btn w-100 " style="background: #1c3342; color:white;">Submit</button>
-                </form>
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #87CEEB;" >
+                    <h5 class="modal-title" id="changePasswordModalLabel"><strong>Change Password</strong></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="doctorchangepasswordForm" action="/doctor/change-password/" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Old Password</strong></label>
+                            <input type="password" class="form-control" id="model-oldpassword" name="oldpassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>New Password</strong></label>
+                            <input type="password" class="form-control" id="model-newpassword" name="newpassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Confirm Password</strong></label>
+                            <input type="password" class="form-control" id="model-confirmpassword" name="confirmpassword" required>
+                        </div>
+                        <button type="submit" class="btn w-100 " style="background: #87CEEB;"><strong>Submit</strong></button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 <!-- jQuery, Bootstrap JS, DataTables -->
@@ -410,29 +410,29 @@ $(document).on("click", ".view-patients", function (e) {
 });
 
 <!---------------LOGOUT-------------------->
-$(document).ready(function() {
-    $('.toggle-btn').on('click', function() {
-        $('.sidebar').toggleClass('active');
-    });
+    $(document).ready(function() {
+        $('.toggle-btn').on('click', function() {
+            $('.sidebar').toggleClass('active');
+        });
 
-    $('.logout-btn').on('click', function() {
-        const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        $('.logout-btn').on('click', function() {
+            const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        $.ajax({
-            url: '/doctor/logout/',
-            type: 'POST',
-            headers: { 'X-CSRFToken': csrftoken },
-            success: function(response) {
-                alert(response.message);
-                window.location.href = '/doctor/login';
-            },
-            error: function(xhr) {
-                let errorMessage = xhr.responseJSON?.error || xhr.statusText || 'Unknown error';
-                alert(`Logout failed: ${errorMessage}`);
-            }
+            $.ajax({
+                url: '/doctor/logout/',
+                type: 'POST',
+                headers: { 'X-CSRFToken': csrftoken },
+                success: function(response) {
+                    alert(response.message);
+                    window.location.href = '/doctor/login';
+                },
+                error: function(xhr) {
+                    let errorMessage = xhr.responseJSON?.error || xhr.statusText || 'Unknown error';
+                    alert(`Logout failed: ${errorMessage}`);
+                }
+            });
         });
     });
-});
 
 <!---------------CHANGE PASSWORD---------------------->
 $(document).ready(function () {
